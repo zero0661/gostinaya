@@ -20,22 +20,21 @@
 
         <nav>
 
-            <a href="#">🏡 Главная</a>
+       <a href="/gostinaya">🏡 Главная</a>
 
-            <a href="#">📢 Голоса проекта</a>
+       <a href="/gostinaya/voices">🏳 Голоса проекта</a>
 
-            <a href="#">💬 Обсуждения</a>
+       <a href="/gostinaya/discussions">💬 Обсуждения</a>
 
-            <a href="#">❓ Вопросы автору</a>
+       <a href="/gostinaya/questions">❓ Вопросы автору</a>
 
-            <a href="#">🛠 Мастерская проекта</a>
+       <a href="/gostinaya/workshop">🛠 Мастерская проекта</a>
 
-            <a href="#">📚 Полка</a>
+       <a href="/gostinaya/library">📚 Полка</a>
 
-            <a href="#">🗄 Архив проекта</a>
+       <a href="/gostinaya/archive">🗄 Архив проекта</a>
 
-            <a href="#">❤️ Благодарности</a>
-
+       <a href="/gostinaya/gratitude">❤️ Благодарности</a>
             <hr>
 
             <a href="#">👤 Мой профиль</a>
@@ -51,16 +50,11 @@
 
     <main class="content">
 
-        <h1>Гостиная</h1>
-
-        <p class="lead">
-            Пространство для участников проекта «После логина».
-        </p>
-
+        <h1><%= title %></h1>
+        <p><%= lead %></p>
         <div class="placeholder">
 
-            Здесь будет открываться выбранная комната.
-
+        <%= text %>
         </div>
 
     </main>
