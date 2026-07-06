@@ -12,6 +12,8 @@ const PORT = process.env.PORT || 3001;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -21,20 +23,8 @@ app.get('/health', (req, res) => {
   res.status(200).send('Gostinaya is alive');
 });
 
-app.get(['/','/gostinaya'], (req, res) => {
-  res.send(`
-    <!doctype html>
-    <html lang="ru">
-      <head>
-        <meta charset="utf-8">
-        <title>Гостиная — После логина</title>
-      </head>
-      <body>
-        <h1>Гостиная</h1>
-        <p>Первый сервер Гостиной работает.</p>
-      </body>
-    </html>
-  `);
+app.get('/gostinaya', (req, res) => {
+    res.render('gostinaya');
 });
 
 app.listen(PORT, '127.0.0.1', () => {
