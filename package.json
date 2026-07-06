@@ -4,14 +4,11 @@
   "description": "Closed community for the project «После логина»",
   "private": true,
   "type": "module",
-
   "main": "app.js",
-
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
-
   "dependencies": {
     "bcrypt": "^5.1.1",
     "better-sqlite3": "^11.8.1",
@@ -19,16 +16,15 @@
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
+    "express-ejs-layouts": "^2.5.1",
     "express-session": "^1.18.1",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "sanitize-html": "^2.14.0"
   },
-
   "devDependencies": {
     "nodemon": "^3.1.9"
   },
-
   "engines": {
     "node": ">=22"
   }
