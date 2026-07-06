@@ -17,7 +17,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use('/gostinaya/public', express.static(path.join(__dirname, 'public')));
 
 app.get('/health', (req, res) => {
   res.status(200).send('Gostinaya is alive');
