@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import rooms from './config/rooms.js';
+import db from './database/db.js';
 
 dotenv.config();
 
