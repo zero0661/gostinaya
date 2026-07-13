@@ -1,3 +1,4 @@
+import GuestController from './controllers/GuestController.js';
 import express from 'express';
 import expressLayouts from 'express-ejs-layouts';
 import path from 'path';
@@ -43,6 +44,9 @@ app.get('/gostinaya/:room', (req, res) => {
     res.render('rooms/gostinaya', room);
 });
 
+app.post('/api/guests/register', (req, res) => {
+    GuestController.register(req, res);
+});
 
 app.listen(PORT, '127.0.0.1', () => {
   console.log(`Gostinaya app is running on http://127.0.0.1:${PORT}`);
