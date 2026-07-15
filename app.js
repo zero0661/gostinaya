@@ -29,6 +29,12 @@ app.get('/health', (req, res) => {
   res.status(200).send('Gostinaya is alive');
 });
 
+app.get('/gostinaya/register', (req, res) => {
+    res.render('auth/register', {
+        title: 'Стать гостем / Become a Guest'
+    });
+});
+
 app.get('/gostinaya', (req, res) => {
     res.render('rooms/gostinaya', rooms.home);
 });

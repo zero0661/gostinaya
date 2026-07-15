@@ -1,0 +1,169 @@
+<section class="auth-page">
+    <div class="auth-card">
+        <p class="auth-kicker">Гостиная / The Lounge</p>
+
+        <h1>🚪 Дверь в Гостиную</h1>
+
+        <p class="auth-intro">
+            Здесь начинаются разговоры, которых не хватает обычному интернету.
+            <br>
+            This is where the conversations missing from the ordinary internet begin.
+        </p>
+
+        <div class="auth-choice">
+            <button type="button" id="show-register">
+                Я у этой двери впервые
+                <span>Стать участником Гостиной</span>
+            </button>
+
+            <button type="button" id="show-login">
+                Я уже бывал здесь
+                <span>Войти в Гостиную</span>
+            </button>
+        </div>
+
+        <div id="register-panel" hidden>
+            <h2>Взяться за дверную ручку</h2>
+
+            <p>
+                Представьтесь, выберите ключ — и входите.
+            </p>
+
+            <form id="register-form" class="auth-form">
+                <label for="name">Как к вам обращаться / Your name</label>
+                <input id="name" name="name" type="text" autocomplete="name" required>
+
+                <label for="email">E-mail</label>
+                <input id="email" name="email" type="email" autocomplete="email" required>
+
+                <label for="country">Откуда вы? / Where are you from?</label>
+                <select id="country" name="country" required>
+                    <option value="">Выберите / Select</option>
+                    <option value="Russia">Россия / Russia</option>
+                    <option value="Germany">Германия / Germany</option>
+                    <option value="USA">США / USA</option>
+                    <option value="France">Франция / France</option>
+                    <option value="Netherlands">Нидерланды / Netherlands</option>
+                    <option value="Other">Другая страна / Other country</option>
+                    <option value="Prefer not to say">Не скажу / Prefer not to say</option>
+                </select>
+
+                <label for="language">Язык общения / Language</label>
+                <select id="language" name="language" required>
+                    <option value="ru">Русский</option>
+                    <option value="en">English</option>
+                </select>
+
+                <label for="password">Придумайте ключ / Create your key</label>
+                <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autocomplete="new-password"
+                    minlength="8"
+                    required
+                >
+
+                <button type="submit">🔓 Открыть дверь</button>
+            </form>
+
+            <p id="register-message" class="auth-message" aria-live="polite"></p>
+        </div>
+
+        <div id="login-panel" hidden>
+            <h2>Войти своим ключом</h2>
+
+            <form class="auth-form">
+                <label for="login-email">E-mail</label>
+                <input
+                    id="login-email"
+                    name="email"
+                    type="email"
+                    autocomplete="email"
+                    required
+                >
+
+                <label for="login-password">Ключ / Password</label>
+                <input
+                    id="login-password"
+                    name="password"
+                    type="password"
+                    autocomplete="current-password"
+                    required
+                >
+
+                <button type="submit" disabled>Войти в Гостиную</button>
+            </form>
+
+            <p class="auth-message">
+                Вход подключим следующим этапом.
+            </p>
+        </div>
+    </div>
+</section>
+
+<script>
+    const registerPanel = document.getElementById('register-panel');
+    const loginPanel = document.getElementById('login-panel');
+
+    document.getElementById('show-register').addEventListener('click', () => {
+        registerPanel.hidden = false;
+        loginPanel.hidden = true;
+    });
+
+    document.getElementById('show-login').addEventListener('click', () => {
+        loginPanel.hidden = false;
+        registerPanel.hidden = true;
+    });
+
+    const form = document.getElementById('register-form');
+    const message = document.getElementById('register-message');
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        message.textContent = 'Открываем дверь… / Opening the door…';
+
+        const formData = new FormData(form);
+
+        const payload = {
+            name: formData.get('name'),
+            email: formData.get('email'),
+            password: formData.get('password'),
+            country: formData.get('country'),
+            language: formData.get('language')
+        };
+
+        try {
+            const response = await fetch('/api/guests/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                message.textContent =
+                    data.error || 'Не удалось открыть дверь / Could not open the door';
+                return;
+            }
+
+            if (data.message === 'Guest already exists') {
+                message.textContent =
+                    'Этот e-mail уже знает дорогу в Гостиную. / This e-mail is already registered.';
+                return;
+            }
+
+            message.textContent =
+                '🚪 Дверь открылась. Добро пожаловать в Гостиную.';
+
+            form.reset();
+        } catch (error) {
+            message.textContent =
+                'Не удалось связаться с сервером. / Could not connect to the server.';
+        }
+    });
+</script>
