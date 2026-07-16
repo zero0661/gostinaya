@@ -39,6 +39,11 @@ app.get('/gostinaya', (req, res) => {
     res.render('rooms/gostinaya', rooms.home);
 });
 
+app.get('/gostinaya/hall', (req, res) => {
+    res.render('hall/index', {
+        title: 'Холл / Hall'
+    });
+});
 
 app.get('/gostinaya/:room', (req, res) => {
     const room = rooms[req.params.room];
