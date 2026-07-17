@@ -26,11 +26,11 @@ const { name, email, password } = req.body;
 const passwordHash = await AuthService.hashPassword(password);
 const guest = await GuestRepository.create(name, email, passwordHash);
 
-      res.json({
-        success: true,
-        guest
-      });
-
+res.json({
+    success: true,
+    guest,
+    redirect: '/gostinaya/hall'
+});
     } catch (err) {
       console.error(err);
 

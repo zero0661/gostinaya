@@ -55,7 +55,7 @@ app.get('/gostinaya/:room', (req, res) => {
     res.render('rooms/gostinaya', room);
 });
 
-app.post('/api/guests/register', (req, res) => {
+app.post('/gostinaya/api/guests/register', (req, res) => {
     GuestController.register(req, res);
 });
 

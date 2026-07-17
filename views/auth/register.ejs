@@ -160,7 +160,7 @@
         };
 
         try {
-            const response = await fetch('/api/guests/register', {
+            const response = await fetch('/gostinaya/api/guests/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -185,9 +185,14 @@
             message.textContent =
                 '🚪 Дверь открылась. Добро пожаловать в Гостиную.';
 
+if (data.redirect) {
+    window.location.href = data.redirect;
+    return;
+}
+
             form.reset();
         } catch (error) {
-            message.textContent =
+	            message.textContent =
                 'Не удалось связаться с сервером. / Could not connect to the server.';
         }
     });
