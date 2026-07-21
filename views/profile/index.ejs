@@ -1,113 +1,181 @@
 <section class="profile-page">
+
+    <%
+        const joinedDate = guest.created_at
+            ? new Date(
+                guest.created_at.replace(' ', 'T') + 'Z'
+              ).toLocaleDateString('ru-RU', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric'
+              })
+            : '—';
+    %>
+
     <header class="profile-header">
-        <p class="profile-kicker">Мой кабинет / My Cabinet</p>
-        <h1>Личное пространство участника</h1>
-        <p>
-            Здесь можно дополнить профиль, выбрать уведомления
-            и настроить подписки.
-        </p>
+        <p class="profile-eyebrow">Личный кабинет / Personal Cabinet</p>
+        <h1><%= guest.name %></h1>
+        <p>Ваше личное пространство в Гостиной.</p>
     </header>
 
-    <section class="profile-card">
-        <div class="profile-avatar">
-            <div class="profile-avatar-placeholder">👤</div>
-            <button type="button">Добавить фотографию</button>
-        </div>
-
-        <div class="profile-details">
-            <h2>Профиль</h2>
-
-            <div class="profile-field">
-                <span>Имя</span>
-                <strong>Участник Гостиной</strong>
-            </div>
-
-            <div class="profile-field">
-                <span>Страна</span>
-                <strong>Не указана</strong>
-            </div>
-
-            <div class="profile-field">
-                <span>Язык общения</span>
-                <strong>Русский</strong>
-            </div>
-
-            <div class="profile-field">
-                <span>Статус</span>
-                <strong>Участник</strong>
-            </div>
-
-            <div class="profile-field">
-                <span>Дата вступления</span>
-                <strong>Сегодня</strong>
-            </div>
-
-            <button type="button">Редактировать профиль</button>
-        </div>
-    </section>
-
-    <section class="profile-card">
-        <h2>О себе</h2>
-
-        <p>
-            Несколько слов, которые помогут другим участникам понять,
-            кто вы и что вам интересно.
+    <% if (saved) { %>
+        <p class="profile-success" id="profile-success">
+            Настройки сохранены.
         </p>
 
-        <textarea
-            rows="5"
-            maxlength="500"
-            placeholder="Расскажите о себе — не больше 500 символов."
-        ></textarea>
+        <script>
+            window.history.replaceState(
+                {},
+                document.title,
+                '/gostinaya/profile'
+            );
 
-        <button type="button">Сохранить</button>
-    </section>
+            window.setTimeout(() => {
+                const notice = document.getElementById('profile-success');
+
+                if (notice) {
+                    notice.style.opacity = '0';
+                    notice.style.transform = 'translateY(-6px)';
+
+                    window.setTimeout(() => notice.remove(), 300);
+                }
+            }, 4000);
+        </script>
+    <% } %>
+
+    <form method="post" action="/gostinaya/profile">
+
+        <section class="profile-card">
+            <h2>Профиль участника</h2>
+
+            <label>
+                Имя
+                <input
+                    type="text"
+                    name="name"
+                    value="<%= guest.name %>"
+                    maxlength="80"
+                    required
+                >
+            </label>
+
+            <label>
+                E-mail
+                <input
+                    type="email"
+                    value="<%= guest.email %>"
+                    disabled
+                >
+            </label>
+
+            <label>
+                Откуда вы?
+                <input
+                    type="text"
+                    name="location"
+                    value="<%= guest.location %>"
+                    maxlength="120"
+                    placeholder="Город, страна или «не скажу»"
+                >
+            </label>
+
+            <label>
+                Язык общения
+                <select name="language">
+                    <option value="ru" <%= guest.language === 'ru' ? 'selected' : '' %>>
+                        Русский
+                    </option>
+                    <option value="en" <%= guest.language === 'en' ? 'selected' : '' %>>
+                        English
+                    </option>
+                </select>
+            </label>
+
+            <label>
+                Немного о себе
+                <textarea
+                    name="bio"
+                    maxlength="1000"
+                    rows="6"
+                    placeholder="Несколько слов, которыми вы хотите представиться"
+                ><%= guest.bio %></textarea>
+            </label>
+        </section>
+
+        <section class="profile-card">
+            <h2>E-mail-уведомления</h2>
+
+            <label>
+                <input
+                    type="checkbox"
+                    name="notify_replies"
+                    <%= guest.notify_replies ? 'checked' : '' %>
+                >
+                Ответы на мои сообщения
+            </label>
+
+            <label>
+                <input
+                    type="checkbox"
+                    name="notify_followed_discussions"
+                    <%= guest.notify_followed_discussions ? 'checked' : '' %>
+                >
+                Новые сообщения в обсуждениях, за которыми я слежу
+            </label>
+
+            <label>
+                <input
+                    type="checkbox"
+                    name="notify_publications"
+                    <%= guest.notify_publications ? 'checked' : '' %>
+                >
+                Новые публикации проекта
+            </label>
+
+            <label>
+                <input
+                    type="checkbox"
+                    name="notify_new_topics"
+                    <%= guest.notify_new_topics ? 'checked' : '' %>
+                >
+                Новые темы в Гостиной
+            </label>
+
+            <button type="submit">
+                Сохранить изменения
+            </button>
+        </section>
+
+    </form>
 
     <section class="profile-card">
-        <h2>Уведомления</h2>
+        <h2>Сведения об аккаунте</h2>
 
-        <label>
-            <input type="checkbox" checked>
-            Новые статьи проекта
-        </label>
+        <dl class="profile-details">
+            <div>
+                <dt>Роль</dt>
+                <dd>
+                    <%= guest.role === 'author'
+                        ? 'Соавтор'
+                        : guest.role === 'admin'
+                            ? 'Администратор'
+                            : 'Участник' %>
+                </dd>
+            </div>
 
-        <label>
-            <input type="checkbox" checked>
-            Ответы на мои сообщения
-        </label>
-
-        <label>
-            <input type="checkbox">
-            Новые обсуждения
-        </label>
-
-        <label>
-            <input type="checkbox">
-            Новые вопросы автору
-        </label>
-
-        <label>
-            <input type="checkbox">
-            Публикации соавторов
-        </label>
-
-        <button type="button">Сохранить настройки</button>
-    </section>
-
-    <section class="profile-card">
-        <h2>Мои подписки</h2>
-
-        <p>
-            Здесь появятся комнаты, темы и обсуждения,
-            за которыми вы решите следить.
-        </p>
-
-        <a href="/gostinaya/subscriptions">
-            Перейти к подпискам →
-        </a>
+            <div>
+                <dt>В Гостиной с</dt>
+                <dd><%= joinedDate %></dd>
+            </div>
+        </dl>
     </section>
 
     <nav class="profile-navigation">
         <a href="/gostinaya/hall">← Вернуться в Холл</a>
+
+        <form method="post" action="/gostinaya/logout">
+            <button type="submit">Выйти из аккаунта</button>
+        </form>
     </nav>
+
 </section>

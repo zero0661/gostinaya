@@ -1,4 +1,5 @@
 import GuestController from './controllers/GuestController.js';
+import GuestRepository from './repositories/GuestRepository.js';
 import express from 'express';
 import expressLayouts from 'express-ejs-layouts';
 import path from 'path';
@@ -62,9 +63,74 @@ app.get('/gostinaya/hall', (req, res) => {
     });
 });
 
-app.get('/gostinaya/profile', (req, res) => {
-    res.render('profile/index', {
-        title: 'Мой кабинет / My Cabinet'
+app.get('/gostinaya/profile', async (req, res, next) => {
+    if (!req.session.guest?.id) {
+        return res.redirect('/gostinaya/login');
+    }
+
+    try {
+        const guest = await GuestRepository.findById(req.session.guest.id);
+
+        if (!guest) {
+            return req.session.destroy(() => {
+                res.redirect('/gostinaya/login');
+            });
+        }
+
+        res.render('profile/index', {
+            title: 'Мой кабинет / My Cabinet',
+            guest,
+            saved: req.query.saved === '1'
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+app.post('/gostinaya/profile', async (req, res, next) => {
+    if (!req.session.guest?.id) {
+        return res.redirect('/gostinaya/login');
+    }
+
+    const name = String(req.body.name || '').trim().slice(0, 80);
+    const location = String(req.body.location || '').trim().slice(0, 120);
+    const bio = String(req.body.bio || '').trim().slice(0, 1000);
+    const language = req.body.language === 'en' ? 'en' : 'ru';
+
+    if (!name) {
+        return res.status(400).send('Имя обязательно');
+    }
+
+    try {
+        await GuestRepository.updateProfile(req.session.guest.id, {
+            name,
+            location,
+            bio,
+            language,
+            notifyReplies: req.body.notify_replies ? 1 : 0,
+            notifyFollowedDiscussions:
+                req.body.notify_followed_discussions ? 1 : 0,
+            notifyPublications: req.body.notify_publications ? 1 : 0,
+            notifyNewTopics: req.body.notify_new_topics ? 1 : 0
+        });
+
+        req.session.guest.name = name;
+        req.session.guest.language = language;
+
+        res.redirect('/gostinaya/profile?saved=1');
+    } catch (error) {
+        next(error);
+    }
+});
+
+app.post('/gostinaya/logout', (req, res, next) => {
+    req.session.destroy((error) => {
+        if (error) {
+            return next(error);
+        }
+
+        res.clearCookie('gostinaya.sid');
+        res.redirect('/gostinaya/login');
     });
 });
 
