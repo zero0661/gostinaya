@@ -6,3 +6,6 @@ database/*.sqlite
 
 # Temporary backup files
 *.bak
+
+# Persistent user sessions
+database/sessions/

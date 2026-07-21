@@ -9,6 +9,7 @@ import morgan from 'morgan';
 import rooms from './config/rooms.js';
 import db from './database/db.js';
 import session from 'express-session';
+import sessionFileStore from 'session-file-store';
 
 dotenv.config();
 
@@ -17,6 +18,8 @@ const PORT = process.env.PORT || 3001;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const FileStore = sessionFileStore(session);
 
 app.set('view engine', 'ejs');
 app.use(expressLayouts);
@@ -29,6 +32,12 @@ app.use(express.json());
 app.set('trust proxy', 1);
 
 app.use(session({
+    store: new FileStore({
+        path: path.join(__dirname, 'database', 'sessions'),
+        ttl: 60 * 60 * 24 * 30,
+        reapInterval: 60 * 60,
+        retries: 1
+    }),
     name: 'gostinaya.sid',
     secret: process.env.SESSION_SECRET,
     resave: false,
