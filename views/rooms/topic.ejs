@@ -1,0 +1,76 @@
+<section class="room-page">
+
+<header class="room-header">
+    <p class="room-kicker">Гостиная / The Lounge</p>
+    <h1><%= topic.title %></h1>
+    <p class="lead">Автор: <%= topic.author %></p>
+</header>
+
+<section class="room-card">
+    <h2>Тема</h2>
+
+    <% if (messages.length) { %>
+        <article class="message-item">
+            <header>
+                <strong><%= messages[0].author %></strong>
+                <span><%= messages[0].created_at %></span>
+            </header>
+
+            <p><%= messages[0].body %></p>
+        </article>
+    <% } %>
+</section>
+
+<section class="room-card">
+    <h2>Ответы</h2>
+
+    <% if (messages.length <= 1) { %>
+        <p>Пока никто не ответил.</p>
+    <% } else { %>
+
+        <% messages.slice(1).forEach(message => { %>
+
+        <article class="message-item">
+            <header>
+                <strong><%= message.author %></strong>
+                <span><%= message.created_at %></span>
+            </header>
+
+            <p><%= message.body %></p>
+        </article>
+
+        <% }) %>
+
+    <% } %>
+</section>
+
+<% if (!topic.closed) { %>
+
+<section class="room-card">
+<h2>Ответить</h2>
+
+<form method="post" action="/gostinaya/topic/<%= topic.id %>/messages">
+
+<label>
+Сообщение
+<textarea
+name="body"
+rows="7"
+maxlength="5000"
+required
+></textarea>
+</label>
+
+<button type="submit">Опубликовать сообщение</button>
+
+</form>
+
+</section>
+
+<% } %>
+
+<nav class="room-navigation">
+<a href="/gostinaya/<%= topic.room %>">← Вернуться в комнату</a>
+</nav>
+
+</section>

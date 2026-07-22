@@ -1,0 +1,46 @@
+<section class="room-page">
+    <header class="room-header">
+        <p class="room-kicker">Гостиная / The Lounge</p>
+        <h1>Новая тема</h1>
+        <p class="lead">
+            Комната: <%= room.title %>
+        </p>
+    </header>
+
+    <section class="room-card">
+        <form method="post" action="/gostinaya/<%= roomKey %>/new">
+
+            <label>
+                Заголовок темы
+                <input
+                    type="text"
+                    name="title"
+                    maxlength="160"
+                    required
+                    autofocus
+                >
+            </label>
+
+            <label>
+                Первое сообщение
+                <textarea
+                    name="body"
+                    rows="10"
+                    maxlength="5000"
+                    required
+                ></textarea>
+            </label>
+
+            <button type="submit">
+                Создать тему
+            </button>
+
+        </form>
+    </section>
+
+    <nav class="room-navigation">
+        <a href="/gostinaya/<%= roomKey %>">
+            ← Вернуться в комнату
+        </a>
+    </nav>
+</section>

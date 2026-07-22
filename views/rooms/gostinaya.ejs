@@ -1,9 +1,72 @@
-<h1><%= title %></h1>
+<section class="room-page">
+    <header class="room-header">
+        <p class="room-kicker">Гостиная / The Lounge</p>
+        <h1><%= title %></h1>
+        <p class="lead"><%= lead %></p>
+    </header>
 
-<p class="lead">
-    <%= lead %>
-</p>
+    <section class="room-card">
+        <div class="room-card-header">
+            <div>
+                <h2>Темы</h2>
+                <p>Разговоры этой комнаты.</p>
+            </div>
 
-<div class="placeholder">
-    <%= text %>
-</div>
+            <a class="room-action" href="/gostinaya/<%= roomKey %>/new">
+                Создать тему
+            </a>
+        </div>
+
+        <% if (topics.length === 0) { %>
+            <div class="room-empty">
+                <h3>Здесь пока тихо</h3>
+                <p><%= text %></p>
+            </div>
+        <% } else { %>
+            <div class="topic-list">
+                <% topics.forEach((topic) => { %>
+                    <a class="topic-card-link" href="/gostinaya/topic/<%= topic.id %>"><article class="topic-item topic-card">
+                        <h3>
+                            <a href="/gostinaya/topic/<%= topic.id %>">
+                                <%= topic.title %>
+                            </a>
+                        </h3>
+
+                        <% if (topic.preview) { %>
+                            <p class="topic-preview">
+                                <%= topic.preview %><%= topic.preview.length >= 140 ? '…' : '' %>
+                            </p>
+                        <% } %>
+
+                        <div class="topic-meta">
+                            <span>👤 <%= topic.author %></span>
+                            <span>
+                                💬 <%= Math.max(Number(topic.replies || 0) - 1, 0) %>
+                                <%= Math.max(Number(topic.replies || 0) - 1, 0) === 1 ? 'ответ' : 'ответов' %>
+                            </span>
+
+                            <% if (topic.last_reply_at) { %>
+                                <span>
+                                    🕒 <%= topic.last_reply_author %> ·
+                                    <%= topic.last_reply_at %>
+                                </span>
+                            <% } %>
+
+                            <% if (topic.pinned) { %>
+                                <span>📌 Закреплено</span>
+                            <% } %>
+
+                            <% if (topic.closed) { %>
+                                <span>🔒 Закрыто</span>
+                            <% } %>
+                        </div>
+                    </article></a>
+                <% }) %>
+            </div>
+        <% } %>
+    </section>
+
+    <nav class="room-navigation">
+        <a href="/gostinaya/hall">← Вернуться в Холл</a>
+    </nav>
+</section>
