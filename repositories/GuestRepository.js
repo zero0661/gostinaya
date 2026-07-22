@@ -68,6 +68,36 @@ class GuestRepository {
         });
     }
 
+    updateSettings(id, settings) {
+        return new Promise((resolve, reject) => {
+            db.run(
+                `UPDATE guests
+                 SET
+                    language = ?,
+                    notify_replies = ?,
+                    notify_followed_discussions = ?,
+                    notify_publications = ?,
+                    notify_new_topics = ?
+                 WHERE id = ?`,
+                [
+                    settings.language,
+                    settings.notifyReplies,
+                    settings.notifyFollowedDiscussions,
+                    settings.notifyPublications,
+                    settings.notifyNewTopics,
+                    id
+                ],
+                function (error) {
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    resolve(this.changes);
+                }
+            );
+        });
+    }
+
     updateProfile(id, profile) {
         return new Promise((resolve, reject) => {
             db.run(

@@ -1,0 +1,98 @@
+<section class="profile-page">
+
+    <header class="profile-header">
+        <p class="profile-eyebrow">
+            Личный кабинет / Personal Cabinet
+        </p>
+
+        <h1>Настройки</h1>
+
+        <p>
+            Язык общения и e-mail-уведомления Гостиной.
+        </p>
+    </header>
+
+    <% if (saved) { %>
+        <p class="profile-success">
+            ✓ Настройки сохранены.
+        </p>
+    <% } %>
+
+    <form method="post" action="/gostinaya/settings">
+
+        <section class="profile-card">
+            <h2>Язык общения</h2>
+
+            <label>
+                Основной язык
+
+                <select name="language">
+                    <option
+                        value="ru"
+                        <%= guest.language === 'ru' ? 'selected' : '' %>
+                    >
+                        Русский
+                    </option>
+
+                    <option
+                        value="en"
+                        <%= guest.language === 'en' ? 'selected' : '' %>
+                    >
+                        English
+                    </option>
+                </select>
+            </label>
+        </section>
+
+        <section class="profile-card">
+            <h2>E-mail-уведомления</h2>
+
+            <label>
+                <input
+                    type="checkbox"
+                    name="notify_replies"
+                    <%= guest.notify_replies ? 'checked' : '' %>
+                >
+                Ответы на мои сообщения
+            </label>
+
+            <label>
+                <input
+                    type="checkbox"
+                    name="notify_followed_discussions"
+                    <%= guest.notify_followed_discussions ? 'checked' : '' %>
+                >
+                Новые сообщения в обсуждениях, за которыми я слежу
+            </label>
+
+            <label>
+                <input
+                    type="checkbox"
+                    name="notify_publications"
+                    <%= guest.notify_publications ? 'checked' : '' %>
+                >
+                Новые публикации проекта
+            </label>
+
+            <label>
+                <input
+                    type="checkbox"
+                    name="notify_new_topics"
+                    <%= guest.notify_new_topics ? 'checked' : '' %>
+                >
+                Новые темы в Гостиной
+            </label>
+
+            <button type="submit">
+                Сохранить настройки
+            </button>
+        </section>
+
+    </form>
+
+    <nav class="profile-navigation">
+        <a href="/gostinaya/profile">← Вернуться в Личный кабинет</a>
+        <a href="/gostinaya/hall">Перейти в Холл →</a>
+    </nav>
+
+</section>
