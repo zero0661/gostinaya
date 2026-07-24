@@ -3,74 +3,255 @@
 <header class="room-header">
     <p class="room-kicker">Гостиная / The Lounge</p>
     <h1><%= topic.title %></h1>
-    <p class="lead">Автор: <%= topic.author %></p>
+
+    <p class="lead">
+        Автор темы:
+        <a href="/gostinaya/member/<%= topic.author_id %>">
+            <%= topic.author %>
+        </a>
+    </p>
 </header>
 
 <section class="room-card">
     <h2>Тема</h2>
+    <h3 class="topic-title"><%= topic.title %></h3>
 
     <% if (messages.length) { %>
-        <article class="message-item">
+        <article class="message-item topic-first-message">
             <header>
-                <strong><%= messages[0].author %></strong>
+                <strong>
+                    <a href="/gostinaya/member/<%= messages[0].author_id %>">
+                        <%= messages[0].author %>
+                    </a>
+                </strong>
+
                 <span><%= messages[0].created_at %></span>
             </header>
 
             <p><%= messages[0].body %></p>
+
+            <% if (Number(currentUserId) === Number(topic.author_id)) { %>
+                <div class="message-actions">
+                    <a href="/gostinaya/topic/<%= topic.id %>/edit">
+                        ✏️ Изменить название темы
+                    </a>
+
+                    <a href="/gostinaya/message/<%= messages[0].id %>/edit">
+                        📝 Редактировать текст темы
+                    </a>
+                </div>
+            <% } %>
         </article>
     <% } %>
 </section>
 
+<%
+const discussionMessages = messages.slice(1);
+
+const topLevelMessages = discussionMessages.filter(
+    message => !message.parent_message_id
+);
+
+const repliesByParent = new Map();
+
+discussionMessages.forEach(message => {
+    if (!message.parent_message_id) return;
+
+    const parentId = Number(message.parent_message_id);
+
+    if (!repliesByParent.has(parentId)) {
+        repliesByParent.set(parentId, []);
+    }
+
+    repliesByParent.get(parentId).push(message);
+});
+
+function countThreadReplies(messageId) {
+    const directReplies =
+        repliesByParent.get(Number(messageId)) || [];
+
+    return directReplies.reduce(
+        (total, reply) =>
+            total + 1 + countThreadReplies(reply.id),
+        0
+    );
+}
+%>
+
 <section class="room-card">
     <h2>Ответы</h2>
 
-    <% if (messages.length <= 1) { %>
+    <% if (!topLevelMessages.length) { %>
         <p>Пока никто не ответил.</p>
     <% } else { %>
-
-        <% messages.slice(1).forEach(message => { %>
-
-        <article class="message-item">
-            <header>
-                <strong><%= message.author %></strong>
-                <span><%= message.created_at %></span>
-            </header>
-
-            <p><%= message.body %></p>
-        </article>
-
+        <% topLevelMessages.forEach(message => { %>
+            <%- include('partials/discussion-message', {
+                message,
+                parentAuthor: null,
+                repliesByParent,
+                countThreadReplies,
+                currentUserId
+            }) %>
         <% }) %>
-
     <% } %>
 </section>
 
 <% if (!topic.closed) { %>
 
-<section class="room-card">
-<h2>Ответить</h2>
+    <div id="reply-form-home"></div>
 
-<form method="post" action="/gostinaya/topic/<%= topic.id %>/messages">
+    <section class="room-card" id="reply-composer">
+        <h2 id="reply-form-title">Ответить в тему</h2>
 
-<label>
-Сообщение
-<textarea
-name="body"
-rows="7"
-maxlength="5000"
-required
-></textarea>
-</label>
+        <p id="reply-target" hidden></p>
 
-<button type="submit">Опубликовать сообщение</button>
+        <form
+            method="post"
+            action="/gostinaya/topic/<%= topic.id %>/messages"
+        >
+            <input
+                type="hidden"
+                name="parent_message_id"
+                id="parent-message-id"
+                value=""
+            >
 
-</form>
+            <label>
+                Сообщение
 
-</section>
+                <textarea
+                    name="body"
+                    rows="7"
+                    maxlength="5000"
+                    required
+                ></textarea>
+            </label>
+
+            <div class="message-actions">
+                <button type="submit">
+                    Опубликовать сообщение
+                </button>
+
+                <button
+                    type="button"
+                    id="cancel-reply"
+                    hidden
+                >
+                    Отменить ответ
+                </button>
+            </div>
+        </form>
+    </section>
 
 <% } %>
 
 <nav class="room-navigation">
-<a href="/gostinaya/<%= topic.room %>">← Вернуться в комнату</a>
+    <a href="/gostinaya/<%= topic.room %>">
+        ← Вернуться в комнату
+    </a>
 </nav>
 
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const hashTarget = window.location.hash
+        ? document.querySelector(window.location.hash)
+        : null;
+
+    if (hashTarget) {
+        let parent = hashTarget.parentElement;
+
+        while (parent) {
+            if (parent.tagName === 'DETAILS') {
+                parent.open = true;
+            }
+
+            parent = parent.parentElement;
+        }
+
+        requestAnimationFrame(function () {
+            hashTarget.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        });
+    }
+
+    const composer = document.getElementById('reply-composer');
+    const home = document.getElementById('reply-form-home');
+    const parentInput = document.getElementById('parent-message-id');
+    const title = document.getElementById('reply-form-title');
+    const target = document.getElementById('reply-target');
+    const cancelButton = document.getElementById('cancel-reply');
+
+    const textarea = composer
+        ? composer.querySelector('textarea[name="body"]')
+        : null;
+
+    if (
+        !composer ||
+        !home ||
+        !parentInput ||
+        !title ||
+        !cancelButton
+    ) {
+        return;
+    }
+
+    document.querySelectorAll('.reply-button').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const messageId = button.dataset.messageId;
+            const author = button.dataset.author || 'участнику';
+
+            const slot = document.querySelector(
+                '.reply-form-slot[data-message-id="' +
+                messageId +
+                '"]'
+            );
+
+            if (!slot) return;
+
+            parentInput.value = String(messageId);
+            parentInput.setAttribute('value', String(messageId));
+            title.textContent = 'Ответ участнику ' + author;
+
+            if (target) {
+                target.textContent =
+                    'Вы отвечаете участнику ' + author;
+                target.hidden = false;
+            }
+
+            cancelButton.hidden = false;
+            slot.appendChild(composer);
+
+            if (textarea) textarea.focus();
+        });
+    });
+
+    const replyForm = composer.querySelector('form');
+
+    if (replyForm) {
+        replyForm.addEventListener('submit', function () {
+            parentInput.value =
+                parentInput.getAttribute('value') || parentInput.value || '';
+        });
+    }
+
+    cancelButton.addEventListener('click', function () {
+        parentInput.value = '';
+        parentInput.setAttribute('value', '');
+        title.textContent = 'Ответить в тему';
+
+        if (target) {
+            target.textContent = '';
+            target.hidden = true;
+        }
+
+        cancelButton.hidden = true;
+        home.insertAdjacentElement('afterend', composer);
+
+        if (textarea) textarea.focus();
+    });
+});
+</script>

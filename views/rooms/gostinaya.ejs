@@ -12,7 +12,7 @@
                 <p>Разговоры этой комнаты.</p>
             </div>
 
-            <a class="room-action" href="/gostinaya/<%= roomKey %>/new">
+            <a class="room-action" href="/gostinaya/<%= typeof roomKey !== 'undefined' ? roomKey : 'discussions' %>/new">
                 Создать тему
             </a>
         </div>
@@ -25,7 +25,7 @@
         <% } else { %>
             <div class="topic-list">
                 <% topics.forEach((topic) => { %>
-                    <a class="topic-card-link" href="/gostinaya/topic/<%= topic.id %>"><article class="topic-item topic-card">
+                    <article class="topic-item topic-card">
                         <h3>
                             <a href="/gostinaya/topic/<%= topic.id %>">
                                 <%= topic.title %>
@@ -38,8 +38,14 @@
                             </p>
                         <% } %>
 
-                        <div class="topic-meta">
-                            <span>👤 <%= topic.author %></span>
+                        <% if (Number(topic.unread_count || 0) > 0) { %>
+  <span class="topic-unread">
+    ● Новое: <%= topic.unread_count %>
+  </span>
+<% } %>
+
+<div class="topic-meta">
+                            <span>👤 <a href="/gostinaya/member/<%= topic.author_id %>"><%= topic.author %></a></span>
                             <span>
                                 💬 <%= Math.max(Number(topic.replies || 0) - 1, 0) %>
                                 <%= Math.max(Number(topic.replies || 0) - 1, 0) === 1 ? 'ответ' : 'ответов' %>
@@ -60,7 +66,7 @@
                                 <span>🔒 Закрыто</span>
                             <% } %>
                         </div>
-                    </article></a>
+                    </article>
                 <% }) %>
             </div>
         <% } %>

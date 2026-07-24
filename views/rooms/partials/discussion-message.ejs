@@ -1,0 +1,75 @@
+<%
+const directReplies =
+    repliesByParent.get(Number(message.id)) || [];
+
+const replyCount = countThreadReplies(message.id);
+%>
+
+<article
+    class="message-item <%= parentAuthor ? 'thread-reply' : '' %>"
+    id="message-<%= message.id %>"
+>
+    <header>
+        <strong>
+            <a href="/gostinaya/member/<%= message.author_id %>">
+                <%= message.author %>
+            </a>
+        </strong>
+
+        <span><%= message.created_at %></span>
+    </header>
+
+    <% if (parentAuthor) { %>
+        <p class="reply-to-label">
+            ↳ Ответ участнику <%= parentAuthor %>
+        </p>
+    <% } %>
+
+    <p><%= message.body %></p>
+
+    <div class="message-actions">
+        <button
+            type="button"
+            class="reply-button"
+            data-message-id="<%= message.id %>"
+            data-author="<%= message.author %>"
+        >
+            Ответить
+        </button>
+
+        <% if (
+            Number(currentUserId) ===
+            Number(message.author_id)
+        ) { %>
+            <a href="/gostinaya/message/<%= message.id %>/edit">
+                ✏️ Редактировать
+            </a>
+        <% } %>
+    </div>
+
+    <div
+        class="reply-form-slot"
+        data-message-id="<%= message.id %>"
+    ></div>
+
+    <% if (replyCount) { %>
+        <details class="message-thread">
+            <summary>
+                <%= replyCount %>
+                <%= replyCount === 1 ? 'ответ' : 'ответов' %>
+            </summary>
+
+            <div class="thread-replies">
+                <% directReplies.forEach(reply => { %>
+                    <%- include('discussion-message', {
+                        message: reply,
+                        parentAuthor: message.author,
+                        repliesByParent,
+                        countThreadReplies,
+                        currentUserId
+                    }) %>
+                <% }) %>
+            </div>
+        </details>
+    <% } %>
+</article>

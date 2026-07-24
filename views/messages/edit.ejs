@@ -1,0 +1,26 @@
+<section class="room-page">
+  <header class="room-header">
+    <p class="room-kicker">Гостиная / The Lounge</p>
+    <h1>Редактировать сообщение</h1>
+    <p class="lead">Измените текст и сохраните его.</p>
+  </header>
+
+  <section class="room-card">
+    <form method="post" action="/gostinaya/message/<%= message.id %>/edit">
+      <label for="body"><strong>Сообщение</strong></label>
+
+      <textarea
+        id="body"
+        name="body"
+        rows="10"
+        maxlength="5000"
+        required
+      ><%= message.body %></textarea>
+
+      <div style="margin-top: 16px;">
+        <button class="room-action" type="submit">Сохранить изменения</button>
+        <a href="/gostinaya/topic/<%= message.topic_id %>">Отмена</a>
+      </div>
+    </form>
+  </section>
+</section>

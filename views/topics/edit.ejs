@@ -1,0 +1,38 @@
+<section class="room-page">
+
+<header class="room-header">
+    <p class="room-kicker">Гостиная / The Lounge</p>
+    <h1>Редактировать тему</h1>
+</header>
+
+<section class="room-card">
+
+<form method="post" action="/gostinaya/topic/<%= topic.id %>/edit">
+
+<label>
+<strong>Название темы</strong>
+</label>
+
+<input
+    type="text"
+    name="title"
+    maxlength="200"
+    value="<%= topic.title %>"
+    required
+>
+
+<div style="margin-top:16px;">
+    <button class="room-action" type="submit">
+        Сохранить
+    </button>
+
+    <a href="/gostinaya/topic/<%= topic.id %>">
+        Отмена
+    </a>
+</div>
+
+</form>
+
+</section>
+
+</section>

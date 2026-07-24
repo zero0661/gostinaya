@@ -133,6 +133,129 @@ class GuestRepository {
             );
         });
     }
+
+    findPublicById(id) {
+        return new Promise((resolve, reject) => {
+            db.get(
+                `SELECT
+                    g.id,
+                    g.name,
+                    g.role,
+                    g.language,
+                    g.created_at,
+                    COALESCE(g.location, '') AS location,
+                    COALESCE(g.bio, '') AS bio,
+                    (
+                        SELECT COUNT(*)
+                        FROM discussion_topics t
+                        WHERE t.author_id = g.id
+                    ) AS topics_count,
+                    (
+                        SELECT COUNT(*)
+                        FROM discussion_messages m
+                        WHERE m.author_id = g.id
+                    ) AS messages_count
+                 FROM guests g
+                 WHERE g.id = ?`,
+                [id],
+                (error, row) => {
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    resolve(row);
+                }
+            );
+        });
+    }
+
+
+    getPublicActivity(id) {
+        const topicsPromise = new Promise((resolve, reject) => {
+            db.all(
+                `SELECT
+                    id,
+                    title,
+                    created_at
+                 FROM discussion_topics
+                 WHERE author_id = ?
+                 ORDER BY created_at DESC
+                 LIMIT 10`,
+                [id],
+                (error, rows) => {
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    resolve(rows);
+                }
+            );
+        });
+
+        const messagesPromise = new Promise((resolve, reject) => {
+            db.all(
+                `SELECT
+                    m.id,
+                    m.body,
+                    m.created_at,
+                    m.topic_id,
+                    t.title
+                 FROM discussion_messages m
+                 JOIN discussion_topics t
+                      ON t.id = m.topic_id
+                 WHERE m.author_id = ?
+                 ORDER BY m.created_at DESC
+                 LIMIT 10`,
+                [id],
+                (error, rows) => {
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    resolve(rows);
+                }
+            );
+        });
+
+        return Promise.all([topicsPromise, messagesPromise])
+            .then(([topics, messages]) => ({ topics, messages }));
+    }
+
+    listMembers() {
+        return new Promise((resolve, reject) => {
+            db.all(
+                `SELECT
+                    g.id,
+                    g.name,
+                    g.role,
+                    g.language,
+                    g.created_at,
+                    COALESCE(g.location, '') AS location,
+                    COALESCE(g.bio, '') AS bio,
+                    (
+                        SELECT COUNT(*)
+                        FROM discussion_topics t
+                        WHERE t.author_id = g.id
+                    ) AS topics_count,
+                    (
+                        SELECT COUNT(*)
+                        FROM discussion_messages m
+                        WHERE m.author_id = g.id
+                    ) AS messages_count
+                 FROM guests g
+                 ORDER BY g.created_at ASC, g.id ASC`,
+                [],
+                (error, rows) => {
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    resolve(rows);
+                }
+            );
+        });
+    }
+
 }
 
 export default new GuestRepository();

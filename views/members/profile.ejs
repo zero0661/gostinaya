@@ -1,0 +1,77 @@
+<section class="room-page">
+
+<header class="room-header">
+    <p class="room-kicker">Гостиная / The Lounge</p>
+    <h1><%= member.name %></h1>
+    <p class="lead">
+        <%= member.bio || 'Пока участник ничего о себе не рассказал.' %>
+    </p>
+</header>
+
+<section class="room-card">
+    <div class="topic-meta">
+        <span>👤 <%= member.role %></span>
+        <span>🌍 <%= member.language %></span>
+
+        <% if (member.location) { %>
+            <span>📍 <%= member.location %></span>
+        <% } %>
+
+        <span>📝 <%= member.topics_count %> тем</span>
+        <span>💬 <%= member.messages_count %> сообщений</span>
+        <span>📅 <%= member.created_at %></span>
+    </div>
+</section>
+
+<section class="room-card">
+    <h2>Последние темы</h2>
+
+    <% if (!topics.length) { %>
+        <div class="room-empty">
+            <p>Тем пока нет.</p>
+        </div>
+    <% } else { %>
+        <div class="topic-list">
+            <% topics.forEach(topic => { %>
+                <a class="topic-card-link" href="/gostinaya/topic/<%= topic.id %>">
+                    <article class="topic-item topic-card">
+                        <h3><%= topic.title %></h3>
+                        <div class="topic-meta">
+                            <span>📅 <%= topic.created_at %></span>
+                        </div>
+                    </article>
+                </a>
+            <% }) %>
+        </div>
+    <% } %>
+</section>
+
+<section class="room-card">
+    <h2>Последние сообщения</h2>
+
+    <% if (!messages.length) { %>
+        <div class="room-empty">
+            <p>Сообщений пока нет.</p>
+        </div>
+    <% } else { %>
+        <div class="topic-list">
+            <% messages.forEach(message => { %>
+                <a class="topic-card-link" href="/gostinaya/topic/<%= message.topic_id %>">
+                    <article class="topic-item topic-card">
+                        <h3><%= message.title %></h3>
+                        <p class="topic-preview"><%= message.body %></p>
+                        <div class="topic-meta">
+                            <span>📅 <%= message.created_at %></span>
+                        </div>
+                    </article>
+                </a>
+            <% }) %>
+        </div>
+    <% } %>
+</section>
+
+<nav class="room-navigation">
+    <a href="/gostinaya/members">← Все участники</a>
+</nav>
+
+</section>

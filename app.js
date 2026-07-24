@@ -64,13 +64,70 @@ app.get('/gostinaya/register', (req, res) => {
 });
 
 app.get('/gostinaya', (req, res) => {
-    res.render('rooms/gostinaya', rooms.home);
+    if (!req.session.guest?.id) {
+        return res.redirect('/gostinaya/login');
+    }
+
+    return res.redirect('/gostinaya/hall');
 });
 
-app.get('/gostinaya/hall', (req, res) => {
+app.get('/gostinaya/hall', async (req, res, next) => {
+  try {
+    const [recentActivity, roomStats] = await Promise.all([
+        DiscussionRepository.getRecentActivity(15),
+        DiscussionRepository.getRoomStats()
+    ]);
+
     res.render('hall/index', {
-        title: 'Холл / Hall'
+      title: 'Холл / Hall',
+      recentActivity,
+        roomStats
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/gostinaya/members', async (req, res, next) => {
+    if (!req.session.guest?.id) {
+        return res.redirect('/gostinaya/login');
+    }
+
+    try {
+        const members = await GuestRepository.listMembers();
+
+        res.render('members/index', {
+            title: 'Участники / Members',
+            members
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+app.get('/gostinaya/member/:id', async (req, res, next) => {
+    if (!req.session.guest?.id) {
+        return res.redirect('/gostinaya/login');
+    }
+
+    try {
+        const member = await GuestRepository.findPublicById(req.params.id);
+
+        if (!member) {
+            return res.status(404).send('Участник не найден');
+        }
+
+        const activity = await GuestRepository.getPublicActivity(req.params.id);
+
+        res.render('members/profile', {
+            title: `${member.name} / Member`,
+            member,
+            topics: activity.topics,
+            messages: activity.messages
+        });
+    } catch (error) {
+        next(error);
+    }
 });
 
 app.get('/gostinaya/profile', async (req, res, next) => {
@@ -240,6 +297,9 @@ app.post('/gostinaya/topic/:id/messages', async (req, res, next) => {
     }
 
     const body = String(req.body.body || '').trim().slice(0, 5000);
+    const parentMessageId = req.body.parent_message_id
+        ? Number(req.body.parent_message_id)
+        : null;
 
     if (!body) {
         return res.status(400).send('Сообщение не может быть пустым');
@@ -256,13 +316,32 @@ app.post('/gostinaya/topic/:id/messages', async (req, res, next) => {
             return res.status(403).send('Тема закрыта');
         }
 
-        await DiscussionRepository.createMessage(
-            topic.id,
-            req.session.guest.id,
-            body
-        );
+        if (parentMessageId) {
+            const parentMessage =
+                await DiscussionRepository.getMessage(parentMessageId);
 
-        res.redirect(`/gostinaya/topic/${topic.id}`);
+            if (
+                !parentMessage ||
+                Number(parentMessage.topic_id) !== Number(topic.id)
+            ) {
+                return res.status(400).send(
+                    'Некорректное сообщение для ответа'
+                );
+            }
+        }
+
+        const createdMessage =
+            await DiscussionRepository.createMessage(
+                topic.id,
+                req.session.guest.id,
+                body,
+                parentMessageId
+            );
+
+        res.redirect(
+            `/gostinaya/topic/${topic.id}` +
+            `#message-${createdMessage.lastID}`
+        );
     } catch (error) {
         next(error);
     }
@@ -282,14 +361,141 @@ app.get('/gostinaya/topic/:id', async (req, res, next) => {
 
         const messages = await DiscussionRepository.listMessages(topic.id);
 
+    if (messages.length) {
+      await DiscussionRepository.markTopicRead(
+        req.session.guest.id,
+        topic.id,
+        messages[messages.length - 1].id
+      );
+    }
+
         res.render('rooms/topic', {
             title: topic.title,
             topic,
-            messages
+            messages,
+      currentUserId: req.session.guest.id
         });
     } catch (error) {
         next(error);
     }
+});
+
+app.get('/gostinaya/topic/:id/edit', async (req, res, next) => {
+  if (!req.session.guest?.id) {
+    return res.redirect('/gostinaya/login');
+  }
+
+  try {
+    const topic = await DiscussionRepository.getTopic(req.params.id);
+
+    if (!topic) {
+      return res.status(404).send('Тема не найдена');
+    }
+
+    if (Number(topic.author_id) !== Number(req.session.guest.id)) {
+      return res.status(403).send('Нельзя редактировать чужую тему');
+    }
+
+    res.render('topics/edit', {
+      title: 'Редактировать тему',
+      topic
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/gostinaya/topic/:id/edit', async (req, res, next) => {
+  if (!req.session.guest?.id) {
+    return res.redirect('/gostinaya/login');
+  }
+
+  try {
+    const topic = await DiscussionRepository.getTopic(req.params.id);
+
+    if (!topic) {
+      return res.status(404).send('Тема не найдена');
+    }
+
+    if (Number(topic.author_id) !== Number(req.session.guest.id)) {
+      return res.status(403).send('Нельзя редактировать чужую тему');
+    }
+
+    const title = String(req.body.title || '').trim();
+
+    if (!title) {
+      return res.status(400).send('Название темы не может быть пустым');
+    }
+
+    await DiscussionRepository.updateTopic(
+      topic.id,
+      req.session.guest.id,
+      title
+    );
+
+    return res.redirect(`/gostinaya/topic/${topic.id}`);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/gostinaya/message/:id/edit', async (req, res, next) => {
+  if (!req.session.guest?.id) {
+    return res.redirect('/gostinaya/login');
+  }
+
+  try {
+    const message = await DiscussionRepository.getMessage(req.params.id);
+
+    if (!message) {
+      return res.status(404).send('Сообщение не найдено');
+    }
+
+    if (Number(message.author_id) !== Number(req.session.guest.id)) {
+      return res.status(403).send('Нельзя редактировать чужое сообщение');
+    }
+
+    res.render('messages/edit', {
+      title: 'Редактировать сообщение',
+      message
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/gostinaya/message/:id/edit', async (req, res, next) => {
+  if (!req.session.guest?.id) {
+    return res.redirect('/gostinaya/login');
+  }
+
+  try {
+    const message = await DiscussionRepository.getMessage(req.params.id);
+
+    if (!message) {
+      return res.status(404).send('Сообщение не найдено');
+    }
+
+    if (Number(message.author_id) !== Number(req.session.guest.id)) {
+      return res.status(403).send('Нельзя редактировать чужое сообщение');
+    }
+
+    const body = String(req.body.body || '').trim();
+
+    if (!body) {
+      return res.status(400).send('Сообщение не может быть пустым');
+    }
+
+    await DiscussionRepository.updateMessage(
+      message.id,
+      req.session.guest.id,
+      body
+    );
+
+    return res.redirect(`/gostinaya/topic/${message.topic_id}`);
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.get('/gostinaya/:room/new', (req, res) => {
@@ -361,12 +567,16 @@ app.get('/gostinaya/:room', async (req, res, next) => {
     }
 
     try {
-        const topics = await DiscussionRepository.listTopics(roomKey);
+        const [topics, recentActivity] = await Promise.all([
+      DiscussionRepository.listTopics(roomKey, req.session.guest?.id || 0),
+      DiscussionRepository.getRecentActivity(10)
+    ]);
 
         res.render('rooms/gostinaya', {
             ...room,
             roomKey,
-            topics
+            topics,
+      recentActivity
         });
     } catch (error) {
         next(error);

@@ -1,0 +1,69 @@
+<section class="room-page">
+
+<header class="room-header">
+    <p class="room-kicker">Гостиная / The Lounge</p>
+    <h1>Участники</h1>
+    <p class="lead">Люди, которые уже присоединились к проекту.</p>
+</header>
+
+<section class="room-card">
+
+    <div class="room-card-header">
+        <div>
+            <h2>Сообщество</h2>
+            <p>Все зарегистрированные участники.</p>
+        </div>
+    </div>
+
+<% if (!members.length) { %>
+
+    <div class="room-empty">
+        <h3>Пока никого нет</h3>
+        <p>Вы будете первым участником.</p>
+    </div>
+
+<% } else { %>
+
+<div class="topic-list">
+
+<% members.forEach(member => { %>
+
+<article class="topic-item topic-card">
+
+    <h3><a href="/gostinaya/member/<%= member.id %>"><%= member.name %></a></h3>
+
+    <p class="topic-preview">
+        <%= member.bio || 'Пока без описания.' %>
+    </p>
+
+    <div class="topic-meta">
+
+        <span>👤 <%= member.role %></span>
+
+        <span>🌍 <%= member.language %></span>
+
+        <% if (member.location) { %>
+            <span>📍 <%= member.location %></span>
+        <% } %>
+
+        <span>💬 <%= member.messages_count %></span>
+
+        <span>📝 <%= member.topics_count %></span>
+
+    </div>
+
+</article>
+
+<% }) %>
+
+</div>
+
+<% } %>
+
+</section>
+
+<nav class="room-navigation">
+    <a href="/gostinaya/hall">← Вернуться в Холл</a>
+</nav>
+
+</section>

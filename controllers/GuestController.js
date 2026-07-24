@@ -30,6 +30,14 @@ class GuestController {
                 passwordHash
             );
 
+            req.session.guest = {
+                id: guest.id,
+                name: guest.name,
+                email: guest.email,
+                role: guest.role,
+                language: guest.language
+            };
+
             return res.json({
                 success: true,
                 guest,

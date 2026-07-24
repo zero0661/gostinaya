@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS discussion_messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     topic_id INTEGER NOT NULL,
     author_id INTEGER NOT NULL,
+    parent_message_id INTEGER,
     body TEXT NOT NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP
