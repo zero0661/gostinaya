@@ -1,47 +1,65 @@
 <section class="auth-page">
-    <div class="auth-card">
-        <p class="auth-kicker">Гостиная / The Lounge</p>
+  <nav class="public-nav" aria-label="Навигация / Navigation">
+    <a href="/gostinaya">← Добро пожаловать / <span>Welcome</span></a>
+    <a href="https://milenin.pro/">⌂ На сайт проекта / <span>Main website</span></a>
+  </nav>
 
-        <h1>Вход</h1>
+  <div class="auth-card">
+    <h1>
+      Вход<br>
+      <span>Sign in</span>
+    </h1>
 
-        <p>
-            Войдите, чтобы попасть в закрытое пространство проекта.
-        </p>
+    <p class="auth-intro">
+      Войдите, чтобы попасть в закрытое пространство проекта.<br>
+      <span>Sign in to enter the private community space.</span>
+    </p>
 
-        <form id="login-form">
-            <label for="email">E-mail</label>
-            <input
-                id="email"
-                name="email"
-                type="email"
-                autocomplete="email"
-                required
-            >
+    <form id="login-form" class="auth-form">
+      <label for="email">
+        E-mail
+      </label>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        autocomplete="email"
+        required
+      >
 
-            <label for="password">Пароль</label>
-            <input
-                id="password"
-                name="password"
-                type="password"
-                autocomplete="current-password"
-                required
-            >
+      <label for="password">
+        Пароль<br>
+        <span>Password</span>
+      </label>
+      <input
+        id="password"
+        name="password"
+        type="password"
+        autocomplete="current-password"
+        required
+      >
 
-            <button type="submit">
-                Войти / Sign in
-            </button>
+      <button type="submit">
+        Войти<br>
+        <span>Sign in</span>
+      </button>
 
-            <p id="login-message" aria-live="polite"></p>
-        </form>
+      <p id="login-message" class="auth-message" aria-live="polite"></p>
+    </form>
 
-        <div class="auth-links">
-            <a href="#">Забыли пароль?</a>
+    <div class="auth-links">
+      <a href="#" id="forgot-password-link">
+        Забыли пароль? / <span>Forgot password?</span>
+      </a>
 
-            <a href="/gostinaya/register">
-                Нет аккаунта? Зарегистрироваться
-            </a>
-        </div>
+      <p>
+        Нет аккаунта? / <span>No account yet?</span>
+        <a href="/gostinaya/register">
+          Зарегистрироваться / <span>Register</span>
+        </a>
+      </p>
     </div>
+  </div>
 </section>
 
 <script>
@@ -83,4 +101,32 @@
                 'Ошибка соединения. Попробуйте ещё раз.';
         }
     });
+
+
+document.getElementById('forgot-password-link').addEventListener('click', async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value.trim();
+
+    if (!email) {
+        message.textContent = 'Сначала укажите e-mail.';
+        return;
+    }
+
+    message.textContent = 'Отправляем письмо...';
+
+    try {
+        const response = await fetch('/gostinaya/api/guests/request-password-reset', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({email})
+        });
+
+        const data = await response.json();
+        message.textContent = data.message;
+    } catch {
+        message.textContent = 'Ошибка соединения.';
+    }
+});
+
 </script>

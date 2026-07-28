@@ -12,14 +12,16 @@
                 <p>Разговоры этой комнаты.</p>
             </div>
 
-            <a class="room-action" href="/gostinaya/<%= typeof roomKey !== 'undefined' ? roomKey : 'discussions' %>/new">
+            <% if (roomKey !== 'articles') { %>
+        <a class="room-action" href="/gostinaya/<%= typeof roomKey !== 'undefined' ? roomKey : 'discussions' %>/new">
                 Создать тему
             </a>
+        <% } %>
         </div>
 
         <% if (topics.length === 0) { %>
             <div class="room-empty">
-                <h3>Здесь пока тихо</h3>
+                <% if (roomKey === 'articles') { %><h3>Обсуждения появятся автоматически</h3><% } else { %><h3>Здесь пока тихо</h3><% } %>
                 <p><%= text %></p>
             </div>
         <% } else { %>

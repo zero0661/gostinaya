@@ -9,14 +9,45 @@
     </header>
 
     <div class="hall-grid">
-        <a class="hall-card" class="hall-card hall-card-blue" href="/gostinaya/discussions">
+        <a class="hall-card hall-card-blue" href="/gostinaya/articles">
+        <span class="hall-card-icon">📚</span>
+        <h2>Обсуждение статей</h2>
+        <p>
+            Все статьи проекта и разговоры вокруг них.
+        </p>
+
+        <% var articleStats = roomStats?.articles; %>
+        <div class="hall-card-stats">
+            <span>💬 <%= articleStats?.topics || 0 %> тем</span>
+            <span>✉️ <%= articleStats?.messages || 0 %> сообщений</span>
+        </div>
+
+        <% if (articleStats?.lastTopicTitle) { %>
+            <div class="hall-card-latest">
+                <span class="hall-card-latest-label">Последняя статья</span>
+                <strong><%= articleStats.lastTopicTitle %></strong>
+                <span>
+                    <%= articleStats.lastAuthor %> ·
+                    <%= articleStats.lastActivityAt %>
+                </span>
+            </div>
+        <% } else { %>
+            <div class="hall-card-latest hall-card-latest-empty">
+                Здесь пока нет статей
+            </div>
+        <% } %>
+
+        <span class="hall-card-link">Открыть статьи →</span>
+    </a>
+
+    <a class="hall-card hall-card-blue" href="/gostinaya/discussions">
             <span class="hall-card-icon">💬</span>
-            <h2>Обсуждение статей</h2>
+            <h2>Темы сообщества</h2>
             <p>
                 Все статьи проекта и разговоры вокруг них.
                 Комментарии участников публикуются без предварительной модерации.
             </p>
-            <% var stats = roomStats?.discussions || roomStats?.articles; %>
+            <% var stats = roomStats?.discussions; %>
     <div class="hall-card-stats">
       <span>💬 <%= stats?.topics || 0 %> тем</span>
       <span>✉️ <%= stats?.messages || 0 %> сообщений</span>
@@ -36,7 +67,7 @@
       <% } %>
     </div>
 
-    <span class="hall-card-link">Перейти к статьям →</span>
+    <span class="hall-card-link">Открыть темы →</span>
         </a>
 
         <a class="hall-card" class="hall-card hall-card-green" href="/gostinaya/voices">

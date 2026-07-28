@@ -88,7 +88,7 @@ body {
 
 .profile-page {
     width: 100%;
-    max-width: 920px;
+    max-width: 1280px;
     margin: 0 auto;
     padding-bottom: 48px;
 }
@@ -809,18 +809,22 @@ body {
 }
 
 
-.topic-unread {
-  display: inline-flex;
-  align-items: center;
-  margin: 0 0 10px;
-  padding: 5px 10px;
-  color: #1d4ed8;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 700;
+
+.topic-unread{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    margin:0 0 12px;
+    padding:4px 10px;
+    background:#f4e3b2;
+    color:#6d4b18;
+    border:1px solid #d6b56d;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.02em;
 }
+
 
 /* ===== Ветки обсуждений ===== */
 
@@ -1124,3 +1128,2138 @@ body {
     margin-top: 14px;
 }
 
+
+
+.notifications-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.notifications-heading h2 {
+    margin: 0;
+}
+
+.notifications-list {
+    display: grid;
+    gap: 10px;
+}
+
+.notification-item {
+    display: flex;
+    gap: 14px;
+    padding: 16px;
+    border: 1px solid #dfe6f3;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.notification-item.is-unread {
+    border-color: #8ea7d6;
+    background: #f3f7ff;
+}
+
+.notification-icon {
+    flex: 0 0 auto;
+    font-size: 20px;
+}
+
+.notification-content {
+    display: grid;
+    gap: 6px;
+}
+
+.notification-content p {
+    margin: 0;
+}
+
+.notification-content time {
+    color: #748198;
+    font-size: 13px;
+}
+
+.notification-badge {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    margin-left: 8px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #e53935 !important;
+    color: #ffffff !important;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+/* ===== Независимая прокрутка ===== */
+
+html,
+body{
+    height:100%;
+    overflow:hidden;
+}
+
+.layout{
+    display:flex;
+    height:100vh;
+    overflow:hidden;
+}
+
+.sidebar{
+    flex:0 0 280px;
+    height:100vh;
+    overflow-y:auto;
+    overflow-x:hidden;
+    position:sticky;
+    top:0;
+    scrollbar-gutter:stable;
+}
+
+.content{
+    flex:1;
+    background:#f3efe8;
+    height:100vh;
+    overflow-y:auto;
+    overflow-x:hidden;
+    padding:48px 56px 80px;
+    color:#222;
+    scrollbar-gutter:stable;
+}
+
+/* Мобильные устройства */
+
+@media (max-width:900px){
+
+    html,
+    body{
+        overflow:auto;
+    }
+
+    .layout{
+        display:block;
+        height:auto;
+    }
+
+    .sidebar{
+        position:relative;
+        width:100%;
+        height:auto;
+        overflow:visible;
+    }
+
+    .content{
+        height:auto;
+        overflow:visible;
+        padding:24px 18px 48px;
+    }
+}
+
+
+/* ===== Баннер личного кабинета ===== */
+
+.profile-hero{
+    position:relative;
+    min-height:320px;
+    margin-bottom:30px;
+    border-radius:24px;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    padding:42px 48px;
+    background:
+        url('/gostinaya/public/profile-hero.jpg')
+        center center / cover no-repeat;
+    box-shadow:0 18px 45px rgba(15,23,42,.18);
+}
+
+.profile-hero-overlay{
+    position:absolute;
+    inset:0;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(7,10,18,.12) 0%,
+            rgba(7,10,18,.28) 42%,
+            rgba(7,10,18,.84) 72%,
+            rgba(7,10,18,.95) 100%
+        );
+}
+
+.profile-hero-content{
+    position:relative;
+    z-index:1;
+    width:min(460px,100%);
+    color:#fff;
+}
+
+.profile-hero-eyebrow{
+    margin:0 0 10px;
+    color:#d2b48c;
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+}
+
+.profile-hero h1{
+    margin:0 0 10px;
+    color:#fff;
+    font-size:44px;
+    line-height:1.05;
+}
+
+.profile-hero-description{
+    margin:0 0 22px;
+    color:rgba(255,255,255,.82);
+    font-size:17px;
+}
+
+.profile-hero-meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.profile-hero-meta span,
+.profile-hero-meta a{
+    display:inline-flex;
+    align-items:center;
+    min-height:36px;
+    padding:8px 12px;
+    border:1px solid rgba(255,255,255,.16);
+    border-radius:999px;
+    background:rgba(7,10,18,.42);
+    color:#fff;
+    text-decoration:none;
+    font-size:13px;
+    backdrop-filter:blur(8px);
+}
+
+.profile-hero-meta a:hover{
+    background:rgba(255,255,255,.14);
+}
+
+@media (max-width:900px){
+    .profile-hero{
+        min-height:360px;
+        padding:28px 22px;
+        align-items:flex-end;
+        justify-content:flex-start;
+        background-position:42% center;
+    }
+
+    .profile-hero-overlay{
+        background:
+            linear-gradient(
+                180deg,
+                rgba(7,10,18,.12) 0%,
+                rgba(7,10,18,.42) 42%,
+                rgba(7,10,18,.94) 100%
+            );
+    }
+
+    .profile-hero-content{
+        width:100%;
+    }
+
+    .profile-hero h1{
+        font-size:34px;
+    }
+}
+
+
+/* ===== Баннер личного кабинета ===== */
+
+.profile-hero{
+    position:relative;
+    min-height:320px;
+    margin-bottom:30px;
+    border-radius:24px;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    padding:42px 48px;
+    background:
+        url('/gostinaya/public/profile-hero.jpg')
+        center center / cover no-repeat;
+    box-shadow:0 18px 45px rgba(15,23,42,.18);
+}
+
+.profile-hero-overlay{
+    position:absolute;
+    inset:0;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(7,10,18,.12) 0%,
+            rgba(7,10,18,.28) 42%,
+            rgba(7,10,18,.84) 72%,
+            rgba(7,10,18,.95) 100%
+        );
+}
+
+.profile-hero-content{
+    position:relative;
+    z-index:1;
+    width:min(460px,100%);
+    color:#fff;
+}
+
+.profile-hero-eyebrow{
+    margin:0 0 10px;
+    color:#d2b48c;
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+}
+
+.profile-hero h1{
+    margin:0 0 10px;
+    color:#fff;
+    font-size:44px;
+    line-height:1.05;
+}
+
+.profile-hero-description{
+    margin:0 0 22px;
+    color:rgba(255,255,255,.82);
+    font-size:17px;
+}
+
+.profile-hero-meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.profile-hero-meta span,
+.profile-hero-meta a{
+    display:inline-flex;
+    align-items:center;
+    min-height:36px;
+    padding:8px 12px;
+    border:1px solid rgba(255,255,255,.16);
+    border-radius:999px;
+    background:rgba(7,10,18,.42);
+    color:#fff;
+    text-decoration:none;
+    font-size:13px;
+    backdrop-filter:blur(8px);
+}
+
+.profile-hero-meta a:hover{
+    background:rgba(255,255,255,.14);
+}
+
+@media (max-width:900px){
+    .profile-hero{
+        min-height:360px;
+        padding:28px 22px;
+        align-items:flex-end;
+        justify-content:flex-start;
+        background-position:42% center;
+    }
+
+    .profile-hero-overlay{
+        background:
+            linear-gradient(
+                180deg,
+                rgba(7,10,18,.12) 0%,
+                rgba(7,10,18,.42) 42%,
+                rgba(7,10,18,.94) 100%
+            );
+    }
+
+    .profile-hero-content{
+        width:100%;
+    }
+
+    .profile-hero h1{
+        font-size:34px;
+    }
+}
+
+
+
+/* ==================================================
+   ОБЩИЙ БАННЕР ГОСТИНОЙ
+   ================================================== */
+
+:root{
+    --lounge-banner-height: 210px;
+}
+
+html,
+body{
+    height:100%;
+    overflow:hidden;
+}
+
+body{
+    display:flex;
+    flex-direction:column;
+}
+
+.lounge-banner{
+    position:relative;
+    flex:0 0 var(--lounge-banner-height);
+    width:100%;
+    min-height:var(--lounge-banner-height);
+    overflow:hidden;
+    background:
+        url('/gostinaya/public/profile-hero.jpg')
+        center 52% / cover no-repeat;
+    border-bottom:1px solid rgba(255,255,255,.08);
+    box-shadow:0 8px 28px rgba(7,10,18,.24);
+}
+
+.lounge-banner-overlay{
+    position:absolute;
+    inset:0;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(5,8,14,.88) 0%,
+            rgba(5,8,14,.58) 36%,
+            rgba(5,8,14,.18) 72%,
+            rgba(5,8,14,.38) 100%
+        );
+}
+
+.lounge-banner-content{
+    position:relative;
+    z-index:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    width:100%;
+    height:100%;
+    padding:28px 56px;
+    color:#fff;
+}
+
+.lounge-banner-eyebrow{
+    margin:0 0 7px;
+    color:#d7b27b;
+    font-size:13px;
+    font-weight:800;
+    letter-spacing:.14em;
+}
+
+.lounge-banner h1{
+    margin:0 0 8px;
+    color:#fff;
+    font-size:38px;
+    line-height:1.05;
+}
+
+.lounge-banner h1 span{
+    color:rgba(255,255,255,.68);
+    font-weight:500;
+}
+
+.lounge-banner-content > p:last-child{
+    margin:0;
+    color:rgba(255,255,255,.82);
+    font-size:16px;
+}
+
+.layout{
+    flex:1 1 auto;
+    min-height:0;
+    height:calc(100vh - var(--lounge-banner-height));
+}
+
+.sidebar{
+    height:100%;
+    min-height:0;
+    position:relative;
+    top:auto;
+}
+
+.content{
+    height:100%;
+    min-height:0;
+}
+
+/* Возвращаем ЛК к обычной ширине страницы */
+.profile-page{
+    max-width:1280px;
+}
+
+/* Старый баннер ЛК больше не участвует в оформлении */
+.profile-hero{
+    display:none;
+}
+
+@media (max-width:900px){
+    :root{
+        --lounge-banner-height: 132px;
+    }
+
+    html,
+    body{
+        height:auto;
+        min-height:100%;
+        overflow:auto;
+    }
+
+    body{
+        display:block;
+    }
+
+    .lounge-banner{
+        min-height:var(--lounge-banner-height);
+        background-position:38% center;
+    }
+
+    .lounge-banner-content{
+        padding:20px 22px;
+    }
+
+    .lounge-banner h1{
+        font-size:27px;
+    }
+
+    .lounge-banner-content > p:last-child{
+        font-size:13px;
+    }
+
+    .layout{
+        display:block;
+        height:auto;
+        min-height:auto;
+    }
+
+    .sidebar,
+    .content{
+        height:auto;
+        overflow:visible;
+    }
+}
+
+/* Корректировка общего баннера */
+.lounge-banner{
+    background-position:center 68%;
+}
+
+.lounge-banner-overlay{
+    background:
+        linear-gradient(
+            90deg,
+            rgba(5,8,14,.68) 0%,
+            rgba(5,8,14,.34) 38%,
+            rgba(5,8,14,.10) 72%,
+            rgba(5,8,14,.22) 100%
+        );
+}
+
+
+/* Полноформатный общий баннер */
+
+:root{
+    --lounge-banner-height:auto;
+}
+
+.lounge-banner{
+    position:relative;
+    flex:0 0 auto;
+    width:100%;
+    min-height:0;
+    overflow:hidden;
+    background:#080b11;
+    border-bottom:1px solid rgba(255,255,255,.08);
+    box-shadow:0 8px 28px rgba(7,10,18,.24);
+}
+
+.lounge-banner-top,
+.lounge-banner-bottom{
+    display:flex;
+    align-items:center;
+    width:100%;
+    min-height:44px;
+    padding:10px 48px;
+    background:#090c12;
+    color:#fff;
+}
+
+.lounge-banner-top{
+    gap:18px;
+}
+
+.lounge-banner-top span{
+    color:#d7b27b;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.16em;
+}
+
+.lounge-banner-top strong{
+    font-size:20px;
+    font-weight:650;
+}
+
+
+
+.lounge-banner-bottom{
+    color:rgba(255,255,255,.78);
+    font-size:14px;
+}
+
+.layout{
+    flex:1 1 auto;
+    min-height:0;
+    height:auto;
+}
+
+@media (max-width:900px){
+    .lounge-banner-top,
+    .lounge-banner-bottom{
+        min-height:38px;
+        padding:9px 18px;
+    }
+
+    .lounge-banner-top{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:3px;
+    }
+
+    .lounge-banner-top strong{
+        font-size:17px;
+    }
+
+    .lounge-banner-bottom{
+        font-size:12px;
+    }
+
+    
+}
+
+/* Исправление общего баннера: компактный, без перекрытия Гостиной */
+
+.lounge-banner{
+    flex:0 0 auto;
+    width:100%;
+    background:#080b11;
+}
+
+
+
+.layout{
+    flex:1 1 auto;
+    min-height:0;
+    height:calc(100vh - 318px);
+}
+
+.sidebar,
+.content{
+    height:100%;
+    min-height:0;
+    overflow-y:auto;
+}
+
+@media (max-width:900px){
+    
+
+    .layout{
+        height:auto;
+    }
+
+    .sidebar,
+    .content{
+        height:auto;
+        overflow:visible;
+    }
+}
+
+/* Показываем панораму целиком, без обрезки лампы и краёв */
+
+
+.layout{
+    height:calc(100vh - 348px);
+}
+
+@media (max-width:900px){
+    
+
+    .layout{
+        height:auto;
+    }
+}
+
+/* Точный полноширинный баннер без обрезки */
+
+
+.lounge-banner{
+    overflow:hidden;
+}
+
+.layout{
+    height:calc(100vh - 380px);
+}
+
+@media (max-width:900px){
+    
+
+    .layout{
+        height:auto;
+    }
+}
+
+
+/* Финальное отображение общего баннера */
+.lounge-banner-image{
+    display:block;
+    width:100%;
+    height:auto;
+    max-height:none;
+    object-fit:fill;
+}
+
+.lounge-banner{
+    width:100%;
+    overflow:hidden;
+    background:#080b11;
+}
+
+.layout{
+    height:auto;
+    min-height:0;
+}
+
+/* ===== Финальная конструкция общего баннера ===== */
+
+html,
+body{
+    height:100%;
+    overflow:hidden;
+}
+
+body{
+    display:flex;
+    flex-direction:column;
+}
+
+.lounge-banner{
+    position:relative !important;
+    flex:0 0 auto !important;
+    width:100% !important;
+    aspect-ratio:1774 / 325;
+    min-height:0 !important;
+    overflow:hidden !important;
+    background:#070a10 !important;
+    box-shadow:0 6px 22px rgba(0,0,0,.24);
+}
+
+.lounge-banner-image{
+    display:block !important;
+    width:100% !important;
+    height:100% !important;
+    max-height:none !important;
+    object-fit:fill !important;
+    object-position:center !important;
+    background:none !important;
+}
+
+.lounge-banner-brand{
+    position:absolute;
+    right:4.2%;
+    bottom:12%;
+    z-index:2;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    max-width:420px;
+    text-align:right;
+    color:#fff;
+    text-shadow:0 2px 12px rgba(0,0,0,.9);
+}
+
+.lounge-banner-logo{
+    margin-bottom:5px;
+    color:#d5ad73;
+    font-size:13px;
+    font-weight:800;
+    letter-spacing:.16em;
+}
+
+.lounge-banner-brand strong{
+    font-size:27px;
+    line-height:1.12;
+    font-weight:700;
+}
+
+.lounge-banner-brand small{
+    margin-top:7px;
+    color:rgba(255,255,255,.78);
+    font-size:13px;
+    line-height:1.35;
+}
+
+.layout{
+    flex:1 1 auto !important;
+    height:auto !important;
+    min-height:0 !important;
+}
+
+.sidebar,
+.content{
+    height:100% !important;
+    min-height:0 !important;
+    overflow-y:auto !important;
+}
+
+@media (max-width:900px){
+    html,
+    body{
+        height:auto;
+        min-height:100%;
+        overflow:auto;
+    }
+
+    body{
+        display:block;
+    }
+
+    .lounge-banner{
+        height:150px;
+        aspect-ratio:auto;
+    }
+
+    .lounge-banner-image{
+        object-fit:cover !important;
+        object-position:center !important;
+    }
+
+    .lounge-banner-brand{
+        right:18px;
+        bottom:14px;
+        max-width:260px;
+    }
+
+    .lounge-banner-logo{
+        font-size:10px;
+    }
+
+    .lounge-banner-brand strong{
+        font-size:19px;
+    }
+
+    .lounge-banner-brand small{
+        display:none;
+    }
+
+    .layout{
+        height:auto !important;
+    }
+
+    .sidebar,
+    .content{
+        height:auto !important;
+        overflow:visible !important;
+    }
+}
+
+/* ===== Тёплый кабинет: карточки и формы на всех страницах ===== */
+
+:root{
+    --lounge-bg:#f3efe8;
+    --lounge-card:#fbf8f2;
+    --lounge-card-strong:#fffdf9;
+    --lounge-border:#ded4c5;
+    --lounge-text:#2b2925;
+    --lounge-muted:#6f685e;
+    --lounge-shadow:0 12px 30px rgba(63,45,24,.08);
+}
+
+.content{
+    background:var(--lounge-bg) !important;
+    color:var(--lounge-text);
+}
+
+/* Карточки разных разделов */
+.profile-card,
+.room-card,
+.placeholder,
+.topic-card,
+.message-card,
+.notification-card,
+.settings-card,
+.subscription-card,
+.member-card,
+.hall-card,
+.card{
+    background:var(--lounge-card) !important;
+    border-color:var(--lounge-border) !important;
+    box-shadow:var(--lounge-shadow) !important;
+}
+
+/* Поля форм */
+input,
+select,
+textarea{
+    background:var(--lounge-card-strong) !important;
+    border-color:#d8cdbc !important;
+    color:var(--lounge-text) !important;
+}
+
+input:disabled{
+    background:#eee9e0 !important;
+    color:#71695f !important;
+}
+
+/* Вторичный текст */
+.lead,
+.profile-header p,
+.room-card p,
+.topic-card p,
+.message-card p,
+.notification-card p,
+small,
+.muted{
+    color:var(--lounge-muted);
+}
+
+/* Заголовки */
+.content h1,
+.content h2,
+.content h3{
+    color:#28251f;
+}
+
+/* Мягкий переход от баннера */
+.layout{
+    box-shadow:inset 0 14px 24px -24px rgba(52,35,16,.65);
+}
+
+/* Кнопки личного кабинета и настроек */
+.profile-page button,
+.profile-page input[type="submit"],
+.profile-page .button,
+.profile-page .btn{
+    font-family:inherit !important;
+    font-size:14px !important;
+    font-weight:700 !important;
+    color:#ffffff !important;
+    line-height:1.2 !important;
+}
+
+/* Текст внутри кнопок-ссылок */
+.profile-page a.button,
+.profile-page a.btn{
+    color:#ffffff !important;
+    text-decoration:none !important;
+}
+
+/* Убираем лишнюю пустоту над меню */
+.sidebar{
+    padding-top:18px !important;
+}
+
+.sidebar h2{
+    margin-top:0 !important;
+    margin-bottom:18px !important;
+}
+
+.sidebar nav{
+    margin-top:0 !important;
+}
+
+/* Публичные страницы Гостиной */
+
+.public-content {
+    width: 100%;
+    padding: 48px 24px 72px;
+    background: #f6f3ee;
+}
+
+.public-lounge {
+    width: min(900px, 100%);
+    margin: 0 auto;
+    padding: 44px 48px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+.public-lounge h1 {
+    margin-top: 0;
+    font-size: 38px;
+    line-height: 1.15;
+}
+
+.public-lounge h2 {
+    margin-top: 34px;
+}
+
+.public-lounge p,
+.public-lounge li {
+    line-height: 1.65;
+}
+
+.lounge-banner {
+    position: relative;
+    width: 100%;
+    height: 280px;
+    overflow: hidden;
+    background: #080b11;
+}
+
+.lounge-banner-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+@media (max-width: 700px) {
+    .public-content {
+        padding: 24px 14px 40px;
+    }
+
+    .public-lounge {
+        padding: 28px 22px;
+        border-radius: 12px;
+    }
+
+    .public-lounge h1 {
+        font-size: 30px;
+    }
+
+    .lounge-banner {
+        height: 210px;
+    }
+}
+
+.public-lounge > p:last-child {
+    display: flex;
+    gap: 14px;
+    margin-top: 34px !important;
+    margin-bottom: 0;
+}
+
+.public-lounge > p:last-child a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 22px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.public-lounge > p:last-child a:first-child {
+    background: #1d4ed8;
+    color: #fff;
+}
+
+.public-lounge > p:last-child a:last-child {
+    background: #eef1f5;
+    color: #243244;
+}
+
+@media (max-width: 520px) {
+    .public-lounge > p:last-child {
+        flex-direction: column;
+    }
+
+    .public-lounge > p:last-child a {
+        width: 100%;
+    }
+}
+
+/* Разрешаем обычную прокрутку публичных страниц */
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    height: auto !important;
+    overflow-y: auto !important;
+    overflow-x: hidden;
+}
+
+.public-content {
+    min-height: auto;
+    overflow: visible !important;
+}
+
+.public-lounge {
+    overflow: visible;
+}
+
+/* Публичная страница прокручивается целиком вместе с баннером */
+html {
+    height: auto !important;
+    min-height: 100% !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
+body {
+    height: auto !important;
+    min-height: 100% !important;
+    overflow-y: visible !important;
+    overflow-x: hidden !important;
+}
+
+.public-content {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+}
+
+/* Публичные формы входа и регистрации */
+
+.auth-page {
+    width: 100%;
+    padding: 48px 24px 72px;
+    background: #f6f3ee;
+}
+
+.auth-card {
+    width: min(540px, 100%);
+    margin: 0 auto;
+    padding: 40px 42px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+.auth-card h1 {
+    margin: 0 0 18px;
+    font-size: 34px;
+}
+
+.auth-card form {
+    display: grid;
+    gap: 14px;
+    margin-top: 28px;
+}
+
+.auth-card label {
+    display: block;
+    font-weight: 700;
+}
+
+.auth-card input {
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 12px;
+    border: 1px solid #d7dce2;
+    border-radius: 9px;
+    font: inherit;
+}
+
+.auth-card button {
+    min-height: 46px;
+    margin-top: 8px;
+    padding: 0 22px;
+    border: 0;
+    border-radius: 10px;
+    background: #1d4ed8;
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.auth-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    margin-top: 22px;
+}
+
+.auth-links a {
+    color: #1d4ed8;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+@media (max-width: 600px) {
+    .auth-page {
+        padding: 24px 14px 40px;
+    }
+
+    .auth-card {
+        padding: 28px 22px;
+    }
+}
+
+/* Публичные формы входа и регистрации */
+
+.auth-page {
+    width: 100%;
+    padding: 48px 24px 72px;
+    background: #f6f3ee;
+}
+
+.auth-card {
+    width: min(540px, 100%);
+    margin: 0 auto;
+    padding: 40px 42px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+.auth-card h1 {
+    margin: 0 0 18px;
+    font-size: 34px;
+}
+
+.auth-card form {
+    display: grid;
+    gap: 14px;
+    margin-top: 28px;
+}
+
+.auth-card label {
+    display: block;
+    font-weight: 700;
+}
+
+.auth-card input {
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 12px;
+    border: 1px solid #d7dce2;
+    border-radius: 9px;
+    font: inherit;
+}
+
+.auth-card button {
+    min-height: 46px;
+    margin-top: 8px;
+    padding: 0 22px;
+    border: 0;
+    border-radius: 10px;
+    background: #1d4ed8;
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.auth-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    margin-top: 22px;
+}
+
+.auth-links a {
+    color: #1d4ed8;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+@media (max-width: 600px) {
+    .auth-page {
+        padding: 24px 14px 40px;
+    }
+
+    .auth-card {
+        padding: 28px 22px;
+    }
+}
+
+/* Единый стандарт публичных карточек */
+
+.public-lounge,
+.auth-card {
+    width: min(900px, 100%);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.auth-card {
+    padding: 44px 48px;
+}
+
+.auth-card form {
+    max-width: 520px;
+}
+
+.auth-links {
+    max-width: 520px;
+}
+
+@media (max-width: 700px) {
+    .auth-card {
+        padding: 28px 22px;
+    }
+}
+
+/* ===== AFTER LOGIN DARK DESIGN SYSTEM v1 ===== */
+
+:root {
+    color-scheme: dark;
+
+    --al-bg: #0d1118;
+    --al-bg-soft: #121925;
+    --al-card: #18212e;
+    --al-card-hover: #1d2837;
+    --al-field: #101722;
+    --al-border: #2d3a4d;
+
+    --al-text: #f2eee7;
+    --al-text-soft: #c4cbd5;
+    --al-english: #929eae;
+
+    --al-link: #82aaff;
+    --al-blue: #315eea;
+    --al-blue-hover: #426df3;
+    --al-gold: #d6b36a;
+}
+
+/* Единый шрифт без внешней загрузки */
+html,
+body,
+button,
+input,
+select,
+textarea {
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif !important;
+}
+
+html,
+body {
+    background: var(--al-bg) !important;
+    color: var(--al-text) !important;
+}
+
+.public-content,
+.auth-page {
+    background:
+        radial-gradient(circle at 50% 0%, rgba(68, 85, 116, 0.18), transparent 38%),
+        var(--al-bg) !important;
+}
+
+.public-lounge,
+.auth-card {
+    background:
+        linear-gradient(145deg, rgba(29, 40, 55, 0.98), rgba(21, 29, 41, 0.98))
+        !important;
+    color: var(--al-text) !important;
+    border: 1px solid var(--al-border);
+    border-radius: 18px;
+    box-shadow:
+        0 22px 60px rgba(0, 0, 0, 0.34),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.public-lounge h1,
+.public-lounge h2,
+.auth-card h1,
+.auth-card h2,
+.auth-card label {
+    color: var(--al-text) !important;
+}
+
+.public-lounge p,
+.public-lounge li,
+.auth-intro,
+.auth-links,
+.auth-message {
+    color: var(--al-text-soft);
+}
+
+/* Английский перевод: меньше, светлее и курсивом */
+.auth-card h1 span,
+.auth-card label span,
+.auth-card button span,
+.auth-intro br + *,
+.auth-links br + *,
+.auth-kicker {
+    color: var(--al-english) !important;
+    font-size: 0.88em;
+    font-style: italic;
+    font-weight: 400;
+}
+
+.auth-kicker {
+    letter-spacing: 0.05em;
+}
+
+.auth-card input,
+.auth-card select,
+.auth-card textarea {
+    width: 100%;
+    min-height: 48px;
+    padding: 11px 13px;
+    color: var(--al-text) !important;
+    background: var(--al-field) !important;
+    border: 1px solid var(--al-border) !important;
+    border-radius: 10px;
+    outline: none;
+    transition:
+        border-color 0.18s ease,
+        box-shadow 0.18s ease,
+        background 0.18s ease;
+}
+
+.auth-card input:focus,
+.auth-card select:focus,
+.auth-card textarea:focus {
+    background: #131c29 !important;
+    border-color: #537cff !important;
+    box-shadow: 0 0 0 3px rgba(83, 124, 255, 0.16);
+}
+
+.auth-card select {
+    color-scheme: dark;
+}
+
+.auth-card button,
+.public-lounge > p:last-child a:first-child {
+    color: #fff !important;
+    background: linear-gradient(180deg, var(--al-blue-hover), var(--al-blue)) !important;
+    border: 1px solid rgba(122, 157, 255, 0.35) !important;
+    box-shadow: 0 8px 20px rgba(28, 71, 197, 0.25);
+    transition:
+        transform 0.16s ease,
+        filter 0.16s ease,
+        box-shadow 0.16s ease;
+}
+
+.auth-card button:hover,
+.public-lounge > p:last-child a:first-child:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+    box-shadow: 0 11px 25px rgba(28, 71, 197, 0.32);
+}
+
+.public-lounge > p:last-child a:last-child {
+    color: var(--al-text) !important;
+    background: var(--al-card-hover) !important;
+    border: 1px solid var(--al-border);
+}
+
+.auth-links a,
+.public-lounge a {
+    color: var(--al-link);
+}
+
+.auth-card input::placeholder,
+.auth-card textarea::placeholder {
+    color: #778293;
+}
+
+@media (max-width: 700px) {
+    .public-content,
+    .auth-page {
+        padding: 22px 12px 38px !important;
+    }
+
+    .public-lounge,
+    .auth-card {
+        padding: 28px 21px !important;
+        border-radius: 14px;
+    }
+
+    .auth-card h1,
+    .public-lounge h1 {
+        font-size: 30px;
+    }
+}
+
+/* ===== AFTER LOGIN DARK DESIGN SYSTEM v1.1 ===== */
+
+.public-content,
+.auth-page {
+    background:
+        radial-gradient(circle at 50% -10%, rgba(55, 84, 132, 0.22), transparent 42%),
+        linear-gradient(180deg, #0d131d 0%, #0a0f16 100%) !important;
+}
+
+.public-lounge,
+.auth-card {
+    padding: 44px 42px !important;
+}
+
+.auth-card h1,
+.public-lounge h1 {
+    font-size: 34px;
+    line-height: 1.08;
+    margin-bottom: 6px;
+}
+
+.auth-card form {
+    margin-top: 26px;
+}
+
+.auth-card .form-group,
+.auth-card form > div {
+    margin-bottom: 18px;
+}
+
+.auth-card label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.auth-card h1 span,
+.auth-card label span,
+.auth-card button span,
+.auth-kicker {
+    color: #aab4c3 !important;
+}
+
+.auth-intro {
+    line-height: 1.5;
+    margin-top: 18px;
+    margin-bottom: 26px;
+}
+
+.auth-card input,
+.auth-card select,
+.auth-card textarea {
+    min-height: 50px;
+}
+
+.auth-card input:focus,
+.auth-card select:focus,
+.auth-card textarea:focus {
+    background: #162131 !important;
+}
+
+.auth-card button {
+    min-height: 52px;
+    border-radius: 11px !important;
+    font-size: 16px;
+}
+
+.auth-links {
+    margin-top: 28px;
+    line-height: 1.45;
+}
+
+@media (max-width: 700px) {
+    .public-lounge,
+    .auth-card {
+        padding: 30px 22px !important;
+    }
+
+    .auth-card h1,
+    .public-lounge h1 {
+        font-size: 30px;
+    }
+
+    .auth-card form {
+        margin-top: 22px;
+    }
+}
+
+/* ===== AFTER LOGIN DARK DESIGN SYSTEM v1.2 ===== */
+
+/* Убираем повтор названия Гостиной внутри карточки */
+.auth-card .auth-kicker,
+.public-lounge .auth-kicker {
+    display: none !important;
+}
+
+/* Более собранная ширина карточки */
+.auth-card,
+.public-lounge {
+    width: min(680px, calc(100% - 32px)) !important;
+    max-width: 680px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* Заголовок становится главным визуальным акцентом */
+.auth-card h1,
+.public-lounge h1 {
+    font-size: 38px !important;
+    font-weight: 750;
+    letter-spacing: -0.025em;
+    margin-top: 0 !important;
+}
+
+/* Английский заголовок — отдельная спокойная подпись */
+.auth-card h1 span,
+.public-lounge h1 span {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.78em !important;
+    line-height: 1.05;
+    color: #a8b3c3 !important;
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+}
+
+/* Мягкое растворение баннера в фоне */
+.lounge-hero,
+.public-hero,
+.hero-banner,
+.banner {
+    position: relative;
+}
+
+.lounge-hero::after,
+.public-hero::after,
+.hero-banner::after,
+.banner::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 55px;
+    pointer-events: none;
+    background: linear-gradient(
+        to bottom,
+        rgba(13, 19, 29, 0),
+        rgba(13, 19, 29, 0.9) 78%,
+        #0d131d 100%
+    );
+}
+
+/* Чуть более выразительная фирменная кнопка */
+.auth-card button {
+    box-shadow:
+        0 10px 26px rgba(47, 94, 234, 0.3),
+        0 0 22px rgba(62, 105, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
+}
+
+.auth-card button:hover {
+    box-shadow:
+        0 14px 32px rgba(47, 94, 234, 0.38),
+        0 0 28px rgba(62, 105, 255, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+}
+
+/* Чуть больше воздуха перед формой */
+.auth-card .auth-intro {
+    margin-top: 16px;
+    margin-bottom: 30px;
+}
+
+@media (max-width: 700px) {
+    .auth-card,
+    .public-lounge {
+        width: calc(100% - 24px) !important;
+        padding: 28px 20px !important;
+    }
+
+    .auth-card h1,
+    .public-lounge h1 {
+        font-size: 31px !important;
+    }
+
+    .lounge-hero::after,
+    .public-hero::after,
+    .hero-banner::after,
+    .banner::after {
+        height: 36px;
+    }
+}
+
+
+/* ===== PUBLIC NAVIGATION ===== */
+
+.public-nav {
+    width: min(680px, calc(100% - 32px));
+    margin: 0 auto 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    font-size: 15px;
+}
+
+.public-nav a {
+    color: #aab5c6;
+    text-decoration: none;
+    line-height: 1.3;
+    transition:
+        color 0.18s ease,
+        transform 0.18s ease;
+}
+
+.public-nav a:hover {
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.public-nav span {
+    color: #8490a1;
+    font-size: 0.92em;
+    font-style: italic;
+    font-weight: 400;
+}
+
+@media (max-width: 700px) {
+    .public-nav {
+        width: calc(100% - 24px);
+        gap: 14px;
+        font-size: 13px;
+    }
+
+    .public-nav a:last-child {
+        text-align: right;
+    }
+}
+
+
+/* ===== WELCOME PAGE ===== */
+
+.public-welcome span{
+display:block;
+margin-top:3px;
+color:var(--al-english)!important;
+font-style:italic;
+font-weight:400;
+font-size:.92em;
+}
+
+.public-welcome ul span{
+display:block;
+margin-left:18px;
+margin-top:2px;
+}
+
+.welcome-actions{
+display:flex;
+gap:16px;
+margin-top:34px;
+}
+
+.welcome-actions a{
+flex:1;
+text-align:center;
+text-decoration:none;
+border-radius:11px;
+padding:14px 18px;
+transition:.18s;
+}
+
+.welcome-primary{
+background:linear-gradient(180deg,var(--al-blue-hover),var(--al-blue));
+color:#fff!important;
+box-shadow:0 10px 24px rgba(49,94,234,.28);
+}
+
+.welcome-primary:hover{
+transform:translateY(-1px);
+}
+
+.welcome-secondary{
+background:var(--al-card-hover);
+border:1px solid var(--al-border);
+color:var(--al-text)!important;
+}
+
+.welcome-secondary:hover{
+background:#263446;
+}
+
+.welcome-actions span{
+display:block;
+margin-top:3px;
+color:#b0bac8;
+font-style:italic;
+font-size:.9em;
+}
+
+@media(max-width:700px){
+
+.welcome-actions{
+flex-direction:column;
+}
+
+}
+
+/* ===== PUBLIC ENTRANCE FINAL POLISH ===== */
+
+/* Карточку Добро пожаловать не сужаем */
+.auth-card.public-welcome {
+    width: min(820px, calc(100% - 32px)) !important;
+    max-width: 820px !important;
+}
+
+/* Русский текст — основной */
+.public-welcome p,
+.public-welcome li {
+    color: var(--al-text-soft) !important;
+    font-size: 16px;
+    line-height: 1.55;
+    font-weight: 400;
+}
+
+/* Вводная фраза не должна проваливаться */
+.public-welcome .auth-intro {
+    color: var(--al-text) !important;
+    font-size: 17px !important;
+    line-height: 1.5;
+    font-weight: 500;
+}
+
+/* Английский текст — всегда второй уровень */
+.public-welcome p > span,
+.public-welcome li > span,
+.public-welcome h2 > span,
+.public-welcome .auth-intro > span {
+    display: block;
+    margin-top: 3px;
+    color: var(--al-english) !important;
+    font-size: 0.92em !important;
+    line-height: 1.45;
+    font-style: italic !important;
+    font-weight: 400 !important;
+}
+
+/* Английский текст в пунктах списка */
+.public-welcome li > span {
+    margin-left: 0;
+}
+
+/* Заголовки разделов */
+.public-welcome h2 {
+    margin-top: 30px;
+    margin-bottom: 14px;
+    color: var(--al-text) !important;
+    font-size: 24px;
+    line-height: 1.2;
+}
+
+.public-welcome h2 > span {
+    font-size: 0.72em !important;
+}
+
+/* Кнопки */
+.welcome-actions {
+    display: flex !important;
+    gap: 16px;
+    margin-top: 34px;
+}
+
+.welcome-actions a {
+    display: flex !important;
+    flex: 1;
+    min-height: 56px;
+    padding: 10px 18px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 11px;
+    text-align: center;
+    text-decoration: none !important;
+    font-size: 16px;
+    font-weight: 700;
+    transition:
+        transform 0.18s ease,
+        filter 0.18s ease,
+        background 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.welcome-actions a > span {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.88em !important;
+    line-height: 1.1;
+    font-style: italic !important;
+    font-weight: 400 !important;
+}
+
+.welcome-primary {
+    color: #fff !important;
+    background: linear-gradient(
+        180deg,
+        var(--al-blue-hover),
+        var(--al-blue)
+    ) !important;
+    border: 1px solid rgba(122, 157, 255, 0.35);
+    box-shadow:
+        0 10px 26px rgba(47, 94, 234, 0.3),
+        0 0 22px rgba(62, 105, 255, 0.1);
+}
+
+.welcome-primary > span {
+    color: #cbd7ff !important;
+}
+
+.welcome-secondary {
+    color: var(--al-text) !important;
+    background: var(--al-card-hover) !important;
+    border: 1px solid var(--al-border);
+}
+
+.welcome-secondary > span {
+    color: var(--al-english) !important;
+}
+
+.welcome-actions a:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.08);
+}
+
+/* Реальное плавное растворение баннера */
+.lounge-banner {
+    position: relative !important;
+    overflow: hidden;
+}
+
+.lounge-banner::after {
+    content: "";
+    position: absolute;
+    z-index: 3;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 74px;
+    pointer-events: none;
+    background: linear-gradient(
+        to bottom,
+        rgba(13, 19, 29, 0) 0%,
+        rgba(13, 19, 29, 0.42) 45%,
+        rgba(13, 19, 29, 0.92) 86%,
+        #0d131d 100%
+    );
+}
+
+.lounge-banner-image {
+    filter: brightness(0.88);
+}
+
+/* Надписи баннера остаются поверх затемнения */
+.lounge-banner-brand,
+.lounge-banner-content {
+    position: relative;
+    z-index: 4;
+}
+
+@media (max-width: 700px) {
+    .auth-card.public-welcome {
+        width: calc(100% - 24px) !important;
+    }
+
+    .welcome-actions {
+        flex-direction: column;
+    }
+
+    .lounge-banner::after {
+        height: 48px;
+    }
+}
+
+/* ===== LOUNGE BANNER LAYOUT FIX ===== */
+
+/* Баннер выше, без искажения изображения */
+.lounge-banner {
+    height: 320px !important;
+    min-height: 320px !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.lounge-banner-image {
+    width: 100% !important;
+    height: 100% !important;
+    display: block !important;
+    object-fit: cover !important;
+    object-position: center 62% !important;
+    filter: brightness(0.9) !important;
+}
+
+/* Убираем весь текст с баннера */
+.lounge-banner-brand,
+.lounge-banner-content,
+.lounge-banner-top,
+.lounge-banner-bottom,
+.lounge-banner-eyebrow {
+    display: none !important;
+}
+
+/* Мягкое затемнение снизу без перекрытия изображения */
+.lounge-banner::after {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 72px;
+    pointer-events: none;
+    background: linear-gradient(
+        to bottom,
+        rgba(13, 19, 29, 0),
+        rgba(13, 19, 29, 0.55) 58%,
+        #0d131d 100%
+    );
+}
+
+/* Убираем лишнюю пустоту после баннера */
+.auth-page {
+    padding-top: 34px !important;
+}
+
+/* Навигация и карточка ближе к баннеру */
+.public-nav {
+    margin-top: 0 !important;
+}
+
+.auth-card.public-welcome {
+    margin-top: 0 !important;
+}
+
+/* Вводная фраза заметнее */
+.public-welcome .auth-intro {
+    font-size: 18px !important;
+    line-height: 1.5 !important;
+    font-weight: 600 !important;
+    color: var(--al-text) !important;
+}
+
+.public-welcome .auth-intro > span {
+    font-size: 0.9em !important;
+    font-weight: 400 !important;
+    color: var(--al-english) !important;
+    font-style: italic !important;
+}
+
+@media (max-width: 700px) {
+    .lounge-banner {
+        height: 230px !important;
+        min-height: 230px !important;
+    }
+
+    .lounge-banner-image {
+        object-position: center 58% !important;
+    }
+
+    .auth-page {
+        padding-top: 22px !important;
+    }
+}
+
+/* ===== PUBLIC ENTRANCE FINAL SPACING ===== */
+
+.lounge-banner {
+    height: 340px !important;
+    min-height: 340px !important;
+}
+
+.auth-page {
+    padding-top: 12px !important;
+}
+
+.public-nav {
+    margin-bottom: 14px !important;
+}
+
+.auth-card.public-welcome {
+    transform: translateY(-6px);
+}
+
+@media (max-width: 700px) {
+    .lounge-banner {
+        height: 240px !important;
+        min-height: 240px !important;
+    }
+
+    .auth-page {
+        padding-top: 14px !important;
+    }
+
+    .auth-card.public-welcome {
+        transform: none;
+    }
+}
+
+/* ===== REGISTER FORM FINAL FIX ===== */
+
+.auth-card select {
+    display: block !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+    min-height: 50px !important;
+    padding: 11px 42px 11px 13px !important;
+}
+
+/* Английские строки внизу форм */
+.auth-links > span,
+.auth-links p > span {
+    color: var(--al-english) !important;
+    font-style: italic !important;
+    font-weight: 400 !important;
+    font-size: 0.92em !important;
+}
+
+/* Английская часть ссылок */
+.auth-links a span {
+    color: #91a9d8 !important;
+    font-style: italic !important;
+    font-weight: 400 !important;
+}
+
+/* Password reset — match the public auth group */
+.auth-card h1 span,
+.auth-intro span,
+.auth-form label span,
+.auth-form button span,
+.auth-links span {
+  color: rgba(226, 232, 240, 0.68);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.auth-card h1 span {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: 0.78em;
+  line-height: 1.05;
+}
+
+.auth-form label span {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: 0.88em;
+  line-height: 1.1;
+}
+
+.auth-form button span {
+  font-size: 0.9em;
+}
+
+.auth-message {
+  min-height: 24px;
+  margin-top: 14px;
+  line-height: 1.45;
+}
+
+.auth-message.is-success {
+  color: #86efac;
+}
+
+.auth-message.is-error {
+  color: #fca5a5;
+}

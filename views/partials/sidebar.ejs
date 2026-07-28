@@ -1,11 +1,5 @@
 <aside class="sidebar">
 
-    <div class="logo">
-        &gt;_
-    </div>
-
-    <h2>Гостиная</h2>
-
     <nav>
 
         <a href="/gostinaya">🏡 Главная / Home</a>
@@ -14,7 +8,8 @@
 
         <a href="/gostinaya/voices">🏳 Голоса проекта / Project Voices</a>
 
-        <a href="/gostinaya/discussions">💬 Обсуждения / Discussions</a>
+        <a href="/gostinaya/articles">📚 Обсуждение статей / Article Discussions</a>
+    <a href="/gostinaya/discussions">💬 Темы сообщества / Community Topics</a>
 
         <a href="/gostinaya/questions">❓ Вопросы автору / Ask the Author</a>
 
@@ -31,6 +26,13 @@
         <a href="/gostinaya/profile">👤 Мой профиль / My Profile</a>
 
         <a href="/gostinaya/subscriptions">🔔 Подписки / Subscriptions</a>
+
+<a href="/gostinaya/notifications">
+    🔔 Уведомления / Notifications
+    <% if (typeof notificationUnreadCount !== 'undefined' && notificationUnreadCount > 0) { %>
+        <span class="notification-badge"><%= notificationUnreadCount %></span>
+    <% } %>
+</a>
 
         <a href="/gostinaya/settings">⚙ Настройки / Settings</a>
 

@@ -8,6 +8,20 @@
 
 <body>
 
+<header class="lounge-banner">
+    <img
+        class="lounge-banner-image"
+        src="/gostinaya/public/lounge-banner.jpg"
+        alt="Гостиная проекта После логина"
+    >
+
+    <div class="lounge-banner-brand">
+        <span class="lounge-banner-logo">ПОСЛЕ ЛОГИНА</span>
+        <strong>Гостиная / The Lounge</strong>
+        <small>До логина мы думаем. После логина нас ведут.</small>
+    </div>
+</header>
+
 <div class="layout">
 
     <%- include('../partials/sidebar') %>
@@ -17,6 +31,39 @@
     </main>
 
 </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const sidebar = document.querySelector('.sidebar');
+
+    if (!sidebar) return;
+
+    const savedPosition = sessionStorage.getItem('gostinayaSidebarScroll');
+
+    if (savedPosition !== null) {
+        requestAnimationFrame(() => {
+            sidebar.scrollTop = Number(savedPosition);
+        });
+    }
+
+    sidebar.addEventListener('scroll', () => {
+        sessionStorage.setItem(
+            'gostinayaSidebarScroll',
+            String(sidebar.scrollTop)
+        );
+    });
+
+    sidebar.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            sessionStorage.setItem(
+                'gostinayaSidebarScroll',
+                String(sidebar.scrollTop)
+            );
+        });
+    });
+});
+</script>
 
 </body>
 </html>

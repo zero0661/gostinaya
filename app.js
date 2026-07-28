@@ -1,6 +1,8 @@
+import AuthService from './services/AuthService.js';
 import GuestController from './controllers/GuestController.js';
 import GuestRepository from './repositories/GuestRepository.js';
 import DiscussionRepository from './repositories/DiscussionRepository.js';
+import NotificationRepository from './repositories/NotificationRepository.js';
 import express from 'express';
 import expressLayouts from 'express-ejs-layouts';
 import path from 'path';
@@ -28,6 +30,7 @@ app.set('layout', 'layouts/main');
 app.set('views', path.join(__dirname, 'views'));
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
+
 app.use(express.json());
 
 app.set('trust proxy', 1);
@@ -51,6 +54,25 @@ app.use(session({
     }
 }));
 
+app.use(async (req, res, next) => {
+    res.locals.notificationUnreadCount = 0;
+
+    if (!req.session?.guest?.id) {
+        return next();
+    }
+
+    try {
+        res.locals.notificationUnreadCount =
+            await NotificationRepository.countUnread(
+                req.session.guest.id
+            );
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
+
 app.use('/gostinaya/public', express.static(path.join(__dirname, 'public')));
 
 app.get('/health', (req, res) => {
@@ -59,13 +81,17 @@ app.get('/health', (req, res) => {
 
 app.get('/gostinaya/register', (req, res) => {
     res.render('auth/register', {
-        title: 'Стать гостем / Become a Guest'
+        title: 'Регистрация / Registration',
+        layout: 'layouts/public'
     });
 });
 
 app.get('/gostinaya', (req, res) => {
     if (!req.session.guest?.id) {
-        return res.redirect('/gostinaya/login');
+        return res.render('public-lounge', {
+        title: 'Гостиная / The Lounge',
+        layout: 'layouts/public'
+    });
     }
 
     return res.redirect('/gostinaya/hall');
@@ -214,6 +240,47 @@ app.get('/gostinaya/subscriptions', async (req, res, next) => {
     }
 });
 
+
+app.get('/gostinaya/notifications', async (req, res, next) => {
+    if (!req.session?.guest?.id) {
+        return res.redirect('/gostinaya/login');
+    }
+
+    try {
+        const notifications =
+            await NotificationRepository.listForRecipient(
+                req.session.guest.id,
+                50
+            );
+
+        res.render('notifications/index', {
+            title: 'Уведомления',
+            notifications
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+app.post(
+    '/gostinaya/notifications/read-all',
+    async (req, res, next) => {
+        if (!req.session?.guest?.id) {
+            return res.redirect('/gostinaya/login');
+        }
+
+        try {
+            await NotificationRepository.markAllRead(
+                req.session.guest.id
+            );
+
+            res.redirect('/gostinaya/notifications');
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
 app.get('/gostinaya/settings', async (req, res, next) => {
     if (!req.session.guest?.id) {
         return res.redirect('/gostinaya/login');
@@ -282,9 +349,19 @@ app.post('/gostinaya/logout', (req, res, next) => {
     });
 });
 
+
+app.get('/gostinaya/reset-password', (req, res) => {
+  res.render('auth/reset-password', {
+    layout: 'layouts/public',
+    title: 'Новый пароль / New password',
+    token: req.query.token || ''
+  });
+});
+
 app.get('/gostinaya/login', (req, res) => {
     res.render('auth/login', {
-        title: 'Вход / Login'
+        title: 'Вход / Login',
+        layout: 'layouts/public'
     });
 });
 
@@ -316,8 +393,10 @@ app.post('/gostinaya/topic/:id/messages', async (req, res, next) => {
             return res.status(403).send('Тема закрыта');
         }
 
+        let parentMessage = null;
+
         if (parentMessageId) {
-            const parentMessage =
+            parentMessage =
                 await DiscussionRepository.getMessage(parentMessageId);
 
             if (
@@ -337,6 +416,34 @@ app.post('/gostinaya/topic/:id/messages', async (req, res, next) => {
                 body,
                 parentMessageId
             );
+
+        if (parentMessage) {
+            if (
+                Number(parentMessage.author_id) !==
+                    Number(req.session.guest.id)
+            ) {
+                await NotificationRepository.create({
+                    recipientId: parentMessage.author_id,
+                    actorId: req.session.guest.id,
+                    type: 'reply',
+                    topicId: topic.id,
+                    messageId: createdMessage.lastID,
+                    text: 'ответил на ваше сообщение'
+                });
+            }
+        } else if (
+            Number(topic.author_id) !==
+                Number(req.session.guest.id)
+        ) {
+            await NotificationRepository.create({
+                recipientId: topic.author_id,
+                actorId: req.session.guest.id,
+                type: 'topic_reply',
+                topicId: topic.id,
+                messageId: createdMessage.lastID,
+                text: 'оставил новое сообщение в вашей теме'
+            });
+        }
 
         res.redirect(
             `/gostinaya/topic/${topic.id}` +
@@ -510,6 +617,10 @@ app.get('/gostinaya/:room/new', (req, res) => {
         return res.status(404).send('Комната не найдена');
     }
 
+    if (roomKey === 'articles') {
+        return res.redirect('/gostinaya/articles');
+    }
+
     res.render('rooms/new-topic', {
         title: 'Новая тема',
         roomKey,
@@ -529,6 +640,10 @@ app.post('/gostinaya/:room/new', async (req, res, next) => {
 
     if (!room) {
         return res.status(404).send('Комната не найдена');
+    }
+
+    if (roomKey === 'articles') {
+        return res.status(403).send('Темы обсуждения статей создаются автоматически');
     }
 
     if (!title) {
@@ -589,6 +704,45 @@ app.post('/gostinaya/api/guests/register', (req, res) => {
 
 app.post('/gostinaya/api/guests/login', (req, res) => {
     GuestController.login(req, res);
+});
+
+app.post('/gostinaya/api/guests/request-password-reset', (req, res) => {
+    GuestController.requestPasswordReset(req, res);
+});
+
+app.post('/gostinaya/api/guests/reset-password', async (req, res) => {
+    try {
+        const token = String(req.body.token || '').trim();
+        const password = String(req.body.password || '');
+
+        if (!token || password.length < 8) {
+            return res.status(400).json({
+                message: 'Пароль должен содержать не менее 8 символов / Password must be at least 8 characters'
+            });
+        }
+
+        const guest = await GuestRepository.findByResetToken(token);
+
+        if (!guest) {
+            return res.status(400).json({
+                message: 'Ссылка недействительна или истекла / Link is invalid or expired'
+            });
+        }
+
+        const passwordHash = await AuthService.hashPassword(password);
+        await GuestRepository.updatePassword(guest.id, passwordHash);
+
+        return res.json({
+            success: true,
+            message: 'Пароль изменён / Password changed'
+        });
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            message: 'Не удалось изменить пароль / Could not change password'
+        });
+    }
 });
 
 app.listen(PORT, '127.0.0.1', () => {

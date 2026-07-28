@@ -1,0 +1,58 @@
+<section class="room-page">
+    <header class="room-header">
+        <p class="room-kicker">Гостиная / The Lounge</p>
+        <h1>Уведомления</h1>
+        <p class="lead">
+            Ответы, новые сообщения и события сообщества.
+        </p>
+    </header>
+
+    <section class="room-card">
+        <div class="notifications-heading">
+            <h2>Последние уведомления</h2>
+
+            <% if (notifications.some(item => !item.read_at)) { %>
+                <form
+                    method="post"
+                    action="/gostinaya/notifications/read-all"
+                >
+                    <button type="submit">
+                        Отметить все прочитанными
+                    </button>
+                </form>
+            <% } %>
+        </div>
+
+        <% if (!notifications.length) { %>
+            <p>У вас пока нет уведомлений.</p>
+        <% } else { %>
+            <div class="notifications-list">
+                <% notifications.forEach(item => { %>
+                    <article
+                        class="notification-item <%= item.read_at ? '' : 'is-unread' %>"
+                    >
+                        <div class="notification-icon">🔔</div>
+
+                        <div class="notification-content">
+                            <p>
+                                <strong>
+                                    <%= item.actor_name || 'Участник' %>
+                                </strong>
+
+                                <%= item.text %>
+                            </p>
+
+                            <% if (item.topic_id) { %>
+                                <a href="/gostinaya/topic/<%= item.topic_id %><%= item.message_id ? '#message-' + item.message_id : '' %>">
+                                    Открыть обсуждение
+                                </a>
+                            <% } %>
+
+                            <time><%= item.created_at %></time>
+                        </div>
+                    </article>
+                <% }) %>
+            </div>
+        <% } %>
+    </section>
+</section>
