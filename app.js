@@ -171,7 +171,7 @@ app.get('/gostinaya/profile', async (req, res, next) => {
         }
 
         res.render('profile/index', {
-            title: 'Мой кабинет / My Cabinet',
+            title: 'Личный кабинет / Personal cabinet',
             guest,
             saved: req.query.saved === '1'
         });
