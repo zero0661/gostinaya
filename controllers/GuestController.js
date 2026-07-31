@@ -6,7 +6,7 @@ import { sendMail } from '../utils/mailer.js';
 class GuestController {
     async register(req, res) {
         try {
-            const { name, email, password } = req.body;
+            const { name, email, password, location, language } = req.body;
 
             if (!name || !email || !password) {
                 return res.status(400).json({
@@ -29,7 +29,9 @@ class GuestController {
             const guest = await GuestRepository.create(
                 name,
                 email,
-                passwordHash
+                passwordHash,
+		location,
+		language
             );
 
             req.session.guest = {

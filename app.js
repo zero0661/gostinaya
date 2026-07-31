@@ -204,7 +204,8 @@ app.post('/gostinaya/profile', async (req, res, next) => {
             notifyFollowedDiscussions:
                 req.body.notify_followed_discussions ? 1 : 0,
             notifyPublications: req.body.notify_publications ? 1 : 0,
-            notifyNewTopics: req.body.notify_new_topics ? 1 : 0
+            notifyNewTopics: req.body.notify_new_topics ? 1 : 0,
+            profileCompleted: 1
         });
 
         req.session.guest.name = name;

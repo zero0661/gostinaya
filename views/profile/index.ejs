@@ -13,14 +13,14 @@
     %>
 
     <header class="profile-header">
-    <p class="profile-eyebrow">Личный кабинет / Personal Cabinet</p>
+    <p class="profile-eyebrow">Личный кабинет / <span>Personal cabinet</span></p>
     <h1><%= guest.name %></h1>
-    <p>Ваше личное пространство в Гостиной.</p>
+    <p>Ваше личное пространство в Гостиной.<br><span>Your personal space in the Lounge.</span></p>
 </header>
 
     <% if (saved) { %>
         <p class="profile-success" id="profile-success">
-            Настройки сохранены.
+            Настройки сохранены.<br><span>Settings saved successfully.</span>
         </p>
 
         <script>
@@ -46,10 +46,10 @@
     <form method="post" action="/gostinaya/profile">
 
         <section class="profile-card">
-            <h2>Профиль участника</h2>
+            <h2>Профиль участника<br><span>Member profile</span></h2>
 
             <label>
-                Имя
+                Имя<br><span>Name</span>
                 <input
                     type="text"
                     name="name"
@@ -60,7 +60,7 @@
             </label>
 
             <label>
-                E-mail
+                E-mail<br><span>E-mail</span>
                 <input
                     type="email"
                     value="<%= guest.email %>"
@@ -69,7 +69,7 @@
             </label>
 
             <label>
-                Откуда вы?
+                Откуда вы?<br><span>Where are you from?</span>
                 <input
                     type="text"
                     name="location"
@@ -80,7 +80,7 @@
             </label>
 
             <label>
-                Язык общения
+                Язык общения<br><span>Communication language</span>
                 <select name="language">
                     <option value="ru" <%= guest.language === 'ru' ? 'selected' : '' %>>
                         Русский
@@ -92,7 +92,7 @@
             </label>
 
             <label>
-                Немного о себе
+                Немного о себе<br><span>About you</span>
                 <textarea
                     name="bio"
                     maxlength="1000"
@@ -103,7 +103,7 @@
         </section>
 
         <section class="profile-card">
-            <h2>E-mail-уведомления</h2>
+            <h2>E-mail-уведомления<br><span>E-mail notifications</span></h2>
 
             <label>
                 <input
@@ -111,7 +111,7 @@
                     name="notify_replies"
                     <%= guest.notify_replies ? 'checked' : '' %>
                 >
-                Ответы на мои сообщения
+                Ответы на мои сообщения <span>/ Replies to my messages</span>
             </label>
 
             <label>
@@ -120,7 +120,7 @@
                     name="notify_followed_discussions"
                     <%= guest.notify_followed_discussions ? 'checked' : '' %>
                 >
-                Новые сообщения в обсуждениях, за которыми я слежу
+                Новые сообщения в обсуждениях, за которыми я слежу <span>/ New messages in followed discussions</span>
             </label>
 
             <label>
@@ -129,7 +129,7 @@
                     name="notify_publications"
                     <%= guest.notify_publications ? 'checked' : '' %>
                 >
-                Новые публикации проекта
+                Новые публикации проекта <span>/ New project publications</span>
             </label>
 
             <label>
@@ -138,7 +138,7 @@
                     name="notify_new_topics"
                     <%= guest.notify_new_topics ? 'checked' : '' %>
                 >
-                Новые темы в Гостиной
+                Новые темы в Гостиной <span>/ New topics in the Lounge</span>
             </label>
 
             <button type="submit">
@@ -149,11 +149,11 @@
     </form>
 
     <section class="profile-card">
-        <h2>Сведения об аккаунте</h2>
+        <h2>Сведения об аккаунте<br><span>Account information</span></h2>
 
         <dl class="profile-details">
             <div>
-                <dt>Роль</dt>
+                <dt>Роль<br><span>Role</span></dt>
                 <dd>
                     <%= guest.role === 'author'
                         ? 'Соавтор'
@@ -164,17 +164,17 @@
             </div>
 
             <div>
-                <dt>В Гостиной с</dt>
+                <dt>В Гостиной с<br><span>Member since</span></dt>
                 <dd><%= joinedDate %></dd>
             </div>
         </dl>
     </section>
 
     <nav class="profile-navigation">
-        <a href="/gostinaya/hall">← Вернуться в Холл</a>
+        <a href="/gostinaya/hall">← Вернуться в Холл / <span>Back to Hall</span></a>
 
         <form method="post" action="/gostinaya/logout">
-            <button type="submit">Выйти из аккаунта</button>
+            <button type="submit">Выйти из аккаунта / <span>Sign out</span></button>
         </form>
     </nav>
 

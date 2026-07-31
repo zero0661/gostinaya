@@ -47,12 +47,12 @@ class GuestRepository {
         });
     }
 
-    create(name, email, passwordHash) {
+    create(name, email, passwordHash, location, language) {
         return new Promise((resolve, reject) => {
             db.run(
-                `INSERT INTO guests (name, email, password_hash)
-                 VALUES (?, ?, ?)`,
-                [name, email, passwordHash],
+               `INSERT INTO guests (name, email, password_hash, location, language)
+                VALUES (?, ?, ?, ?, ?)`,
+                [name, email, passwordHash, location, language],
                 function (err) {
                     if (err) {
                         return reject(err);
@@ -77,7 +77,8 @@ class GuestRepository {
                     notify_replies = ?,
                     notify_followed_discussions = ?,
                     notify_publications = ?,
-                    notify_new_topics = ?
+                    notify_new_topics = ?,
+            profile_completed = ?
                  WHERE id = ?`,
                 [
                     settings.language,
@@ -99,42 +100,44 @@ class GuestRepository {
     }
 
     updateProfile(id, profile) {
-        return new Promise((resolve, reject) => {
-            db.run(
-                `UPDATE guests
-                 SET
-                    name = ?,
-                    location = ?,
-                    bio = ?,
-                    language = ?,
-                    notify_replies = ?,
-                    notify_followed_discussions = ?,
-                    notify_publications = ?,
-                    notify_new_topics = ?
-                 WHERE id = ?`,
-                [
-                    profile.name,
-                    profile.location,
-                    profile.bio,
-                    profile.language,
-                    profile.notifyReplies,
-                    profile.notifyFollowedDiscussions,
-                    profile.notifyPublications,
-                    profile.notifyNewTopics,
-                    id
-                ],
-                function (err) {
-                    if (err) {
-                        return reject(err);
-                    }
+    return new Promise((resolve, reject) => {
+      db.run(
+        `UPDATE guests
+         SET
+           name = ?,
+           location = ?,
+           bio = ?,
+           language = ?,
+           notify_replies = ?,
+           notify_followed_discussions = ?,
+           notify_publications = ?,
+           notify_new_topics = ?,
+           profile_completed = ?
+         WHERE id = ?`,
+        [
+          profile.name,
+          profile.location,
+          profile.bio,
+          profile.language,
+          profile.notifyReplies,
+          profile.notifyFollowedDiscussions,
+          profile.notifyPublications,
+          profile.notifyNewTopics,
+          profile.profileCompleted,
+          id
+        ],
+        function (err) {
+          if (err) {
+            return reject(err);
+          }
 
-                    resolve(this.changes);
-                }
-            );
-        });
-    }
+          resolve(this.changes);
+        }
+      );
+    });
+  }
 
-    findPublicById(id) {
+  findPublicById(id) {
         return new Promise((resolve, reject) => {
             db.get(
                 `SELECT

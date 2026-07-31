@@ -78,7 +78,18 @@
         minlength="8"
         required
       >
-
+<label for="confirmPassword">
+  Повторите пароль<br>
+  <span>Confirm password</span>
+</label>
+<input
+  id="confirmPassword"
+  name="confirmPassword"
+  type="password"
+  autocomplete="new-password"
+  minlength="8"
+  required
+>
       <button type="submit">
         Зарегистрироваться<br>
         <span>Register</span>
@@ -112,6 +123,15 @@
     message.textContent = 'Создаём учётную запись... / Creating your account...';
 
     const formData = new FormData(form);
+
+const password = formData.get('password');
+const confirmPassword = formData.get('confirmPassword');
+
+if (password !== confirmPassword) {
+  message.textContent =
+    'Пароли не совпадают. / Passwords do not match.';
+  return;
+}
 
     const payload = {
       name: formData.get('name'),

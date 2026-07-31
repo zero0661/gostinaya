@@ -3263,3 +3263,338 @@ flex-direction:column;
 .auth-message.is-error {
   color: #fca5a5;
 }
+
+/* Personal cabinet — unified visual language */
+.profile-page {
+  width: min(980px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 28px 0 48px;
+}
+
+.profile-header {
+  margin-bottom: 22px;
+}
+
+.profile-eyebrow {
+  margin: 0 0 8px;
+  color: rgba(226, 232, 240, 0.68);
+  font-size: 0.95rem;
+}
+
+.profile-header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.05;
+}
+
+.profile-header > p:last-child {
+  margin: 12px 0 0;
+  color: rgba(226, 232, 240, 0.72);
+  line-height: 1.6;
+}
+
+.profile-card {
+  margin-top: 18px;
+  padding: 24px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 18px;
+  background: linear-gradient(
+    180deg,
+    rgba(30, 41, 59, 0.96),
+    rgba(24, 34, 49, 0.96)
+  );
+  box-shadow: 0 18px 48px rgba(2, 6, 23, 0.18);
+}
+
+.profile-card h2 {
+  margin: 0 0 20px;
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+.profile-page label {
+  display: block;
+  margin-bottom: 18px;
+  font-weight: 700;
+}
+
+.profile-page input[type="text"],
+.profile-page input[type="email"],
+.profile-page input[type="password"],
+.profile-page select,
+.profile-page textarea {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 8px;
+  padding: 12px 14px;
+  color: #f8fafc;
+  background: rgba(8, 18, 32, 0.92);
+  border: 1px solid rgba(100, 116, 139, 0.48);
+  border-radius: 10px;
+  font: inherit;
+}
+
+.profile-page textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.profile-page input:focus,
+.profile-page select:focus,
+.profile-page textarea:focus {
+  outline: none;
+  border-color: rgba(96, 133, 255, 0.9);
+  box-shadow: 0 0 0 3px rgba(65, 105, 225, 0.16);
+}
+
+.profile-page button {
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 18px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.profile-page form > button[type="submit"] {
+  width: 100%;
+  color: #fff;
+  background: linear-gradient(180deg, #4b72ff, #3562ee);
+  box-shadow: 0 12px 28px rgba(53, 98, 238, 0.24);
+}
+
+.profile-success {
+  padding: 12px 14px;
+  border: 1px solid rgba(134, 239, 172, 0.26);
+  border-radius: 10px;
+  color: #86efac;
+  background: rgba(20, 83, 45, 0.18);
+}
+
+.profile-details {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.profile-details > div {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.profile-details > div:last-child {
+  border-bottom: 0;
+}
+
+.profile-details dt {
+  color: rgba(226, 232, 240, 0.66);
+}
+
+.profile-details dd {
+  margin: 0;
+}
+
+.profile-navigation {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 22px;
+}
+
+.profile-navigation a,
+.profile-navigation button {
+  color: #8fb0ff;
+  background: transparent;
+  text-decoration: none;
+}
+
+.profile-navigation a:hover,
+.profile-navigation button:hover {
+  color: #b6c9ff;
+}
+
+@media (max-width: 700px) {
+  .profile-page {
+    width: min(100% - 24px, 980px);
+    padding-top: 20px;
+  }
+
+  .profile-card {
+    padding: 18px;
+  }
+
+  .profile-details > div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .profile-navigation {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+/* ===== Personal cabinet — dark unified theme ===== */
+
+.content:has(.profile-page) {
+  background: #081321 !important;
+  color: #f8fafc !important;
+}
+
+.content .profile-page {
+  width: min(980px, calc(100% - 40px)) !important;
+  max-width: 980px !important;
+  margin: 0 auto !important;
+  padding: 30px 0 52px !important;
+  color: #f8fafc !important;
+}
+
+.content .profile-header,
+.content .profile-header h1,
+.content .profile-header p {
+  color: #f8fafc !important;
+}
+
+.content .profile-eyebrow {
+  color: rgba(226, 232, 240, 0.7) !important;
+}
+
+.content .profile-header > p:last-child {
+  color: rgba(226, 232, 240, 0.72) !important;
+}
+
+.content .profile-card {
+  margin: 18px 0 0 !important;
+  padding: 24px !important;
+  background: linear-gradient(
+    180deg,
+    rgba(30, 41, 59, 0.98),
+    rgba(24, 34, 49, 0.98)
+  ) !important;
+  border: 1px solid rgba(148, 163, 184, 0.24) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 18px 48px rgba(2, 6, 23, 0.28) !important;
+  color: #f8fafc !important;
+}
+
+.content .profile-card h2,
+.content .profile-card label,
+.content .profile-card dt,
+.content .profile-card dd {
+  color: #f8fafc !important;
+}
+
+.content .profile-page input[type="text"],
+.content .profile-page input[type="email"],
+.content .profile-page input[type="password"],
+.content .profile-page select,
+.content .profile-page textarea {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  margin-top: 8px !important;
+  padding: 12px 14px !important;
+  color: #f8fafc !important;
+  background: rgba(8, 18, 32, 0.96) !important;
+  border: 1px solid rgba(100, 116, 139, 0.5) !important;
+  border-radius: 10px !important;
+}
+
+.content .profile-page input:disabled {
+  color: rgba(226, 232, 240, 0.58) !important;
+  background: rgba(15, 23, 42, 0.72) !important;
+}
+
+.content .profile-page input::placeholder,
+.content .profile-page textarea::placeholder {
+  color: rgba(148, 163, 184, 0.72) !important;
+}
+
+.content .profile-page input:focus,
+.content .profile-page select:focus,
+.content .profile-page textarea:focus {
+  outline: none !important;
+  border-color: rgba(96, 133, 255, 0.95) !important;
+  box-shadow: 0 0 0 3px rgba(65, 105, 225, 0.18) !important;
+}
+
+.content .profile-page form > button[type="submit"] {
+  width: 100% !important;
+  color: #fff !important;
+  background: linear-gradient(180deg, #4b72ff, #3562ee) !important;
+  box-shadow: 0 12px 28px rgba(53, 98, 238, 0.26) !important;
+}
+
+.content .profile-details > div {
+  border-bottom-color: rgba(148, 163, 184, 0.16) !important;
+}
+
+.content .profile-details dt {
+  color: rgba(226, 232, 240, 0.66) !important;
+}
+
+@media (max-width: 700px) {
+  .content .profile-page {
+    width: calc(100% - 24px) !important;
+    padding-top: 20px !important;
+  }
+
+  .content .profile-card {
+    padding: 18px !important;
+  }
+}
+
+/* Personal cabinet — bilingual typography */
+.profile-page h2 span,
+.profile-page label span,
+.profile-page dt span,
+.profile-page .profile-eyebrow span,
+.profile-page .profile-header > p span,
+.profile-page button span,
+.profile-page a span,
+.profile-success span {
+  color: rgba(226, 232, 240, 0.66);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.profile-page h2 span {
+  display: inline-block;
+  margin-top: 3px;
+  font-size: 0.72em;
+}
+
+.profile-page label > span {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: 0.88em;
+}
+
+.profile-page .profile-card label:has(input[type="checkbox"]) span {
+  display: inline;
+  margin: 0;
+  font-size: 0.92em;
+}
+
+.profile-page button span {
+  font-size: 0.9em;
+}
+
+.profile-page dt span {
+  font-size: 0.86em;
+}
+
+/* Safari: normal height for registration selects */
+#register-form select {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 100% !important;
+  height: 50px !important;
+  min-height: 50px !important;
+  padding: 0 42px 0 13px !important;
+  font-size: 16px !important;
+  line-height: 50px !important;
+}
