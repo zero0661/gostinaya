@@ -171,7 +171,7 @@ app.get('/gostinaya/profile', async (req, res, next) => {
         }
 
         res.render('profile/index', {
-            title: 'Личный кабинет / Personal cabinet',
+            title: 'Мой профиль / My Profile',
             guest,
             saved: req.query.saved === '1'
         });
@@ -217,31 +217,6 @@ app.post('/gostinaya/profile', async (req, res, next) => {
     }
 });
 
-
-app.get('/gostinaya/subscriptions', async (req, res, next) => {
-    if (!req.session.guest?.id) {
-        return res.redirect('/gostinaya/login');
-    }
-
-    try {
-        const guest = await GuestRepository.findById(req.session.guest.id);
-
-        if (!guest) {
-            return req.session.destroy(() => {
-                res.redirect('/gostinaya/login');
-            });
-        }
-
-        res.render('profile/subscriptions', {
-            title: 'Мои подписки / My Subscriptions',
-            guest
-        });
-    } catch (error) {
-        next(error);
-    }
-});
-
-
 app.get('/gostinaya/notifications', async (req, res, next) => {
     if (!req.session?.guest?.id) {
         return res.redirect('/gostinaya/login');
@@ -282,62 +257,6 @@ app.post(
     }
 );
 
-app.get('/gostinaya/settings', async (req, res, next) => {
-    if (!req.session.guest?.id) {
-        return res.redirect('/gostinaya/login');
-    }
-
-    try {
-        const guest = await GuestRepository.findById(req.session.guest.id);
-
-        if (!guest) {
-            return req.session.destroy(() => {
-                res.redirect('/gostinaya/login');
-            });
-        }
-
-        res.render('profile/settings', {
-            title: 'Настройки / Settings',
-            guest,
-            saved: req.query.saved === '1'
-        });
-    } catch (error) {
-        next(error);
-    }
-});
-
-app.post('/gostinaya/settings', async (req, res, next) => {
-    if (!req.session.guest?.id) {
-        return res.redirect('/gostinaya/login');
-    }
-
-    const language = req.body.language === 'en' ? 'en' : 'ru';
-
-    try {
-        await GuestRepository.updateSettings(req.session.guest.id, {
-            language,
-            notifyReplies: req.body.notify_replies ? 1 : 0,
-            notifyFollowedDiscussions:
-                req.body.notify_followed_discussions ? 1 : 0,
-            notifyPublications:
-                req.body.notify_publications ? 1 : 0,
-            notifyNewTopics:
-                req.body.notify_new_topics ? 1 : 0
-        });
-
-        req.session.guest.language = language;
-
-        req.session.save((error) => {
-            if (error) {
-                return next(error);
-            }
-
-            res.redirect('/gostinaya/settings?saved=1');
-        });
-    } catch (error) {
-        next(error);
-    }
-});
 
 app.post('/gostinaya/logout', (req, res, next) => {
     req.session.destroy((error) => {

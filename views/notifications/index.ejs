@@ -1,15 +1,16 @@
-<section class="room-page">
-    <header class="room-header">
-        <p class="room-kicker">Гостиная / The Lounge</p>
+<section class="profile-page notifications-page">
+    <header class="profile-header">
+        <p class="profile-eyebrow">Мой профиль / <span>My Profile</span></p>
         <h1>Уведомления</h1>
-        <p class="lead">
-            Ответы, новые сообщения и события сообщества.
+        <p>
+        Ответы, новые сообщения и события сообщества.<br>
+        <span>Replies, new messages and community activity.</span>
         </p>
     </header>
 
-    <section class="room-card">
+    <section class="profile-card notifications-card">
         <div class="notifications-heading">
-            <h2>Последние уведомления</h2>
+            <h2>Последние уведомления <span>/ Latest notifications</span></h2>
 
             <% if (notifications.some(item => !item.read_at)) { %>
                 <form
@@ -24,7 +25,7 @@
         </div>
 
         <% if (!notifications.length) { %>
-            <p>У вас пока нет уведомлений.</p>
+            <p>У вас пока нет уведомлений. <span>/ You have no notifications yet.</span></p>
         <% } else { %>
             <div class="notifications-list">
                 <% notifications.forEach(item => { %>

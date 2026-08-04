@@ -13,7 +13,7 @@
     %>
 
     <header class="profile-header">
-    <p class="profile-eyebrow">Личный кабинет / <span>Personal cabinet</span></p>
+    <p class="profile-eyebrow">Мой профиль / <span>My Profile</span></p>
     <h1><%= guest.name %></h1>
     <p>Ваше личное пространство в Гостиной.<br><span>Your personal space in the Lounge.</span></p>
 </header>
@@ -46,7 +46,7 @@
     <form method="post" action="/gostinaya/profile">
 
         <section class="profile-card">
-            <h2>Профиль участника<br><span>Member profile</span></h2>
+            <h2>Профиль участника<br><span>Profile</span></h2>
 
             <label>
                 Имя<br><span>Name</span>
@@ -80,7 +80,7 @@
             </label>
 
             <label>
-                Язык общения<br><span>Communication language</span>
+                Язык общения<br><span>Language</span>
                 <select name="language">
                     <option value="ru" <%= guest.language === 'ru' ? 'selected' : '' %>>
                         Русский
@@ -92,7 +92,7 @@
             </label>
 
             <label>
-                Немного о себе<br><span>About you</span>
+                О себе<br><span>About</span>
                 <textarea
                     name="bio"
                     maxlength="1000"
