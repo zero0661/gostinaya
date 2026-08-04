@@ -1,80 +1,167 @@
-<section class="room-page">
-    <header class="room-header">
-        <p class="room-kicker">Гостиная / The Lounge</p>
-        <h1><%= title %></h1>
-        <p class="lead"><%= lead %></p>
-    </header>
+<%
+  const titleParts = String(title || '').split(/\s+\/\s+/);
+  const leadParts = String(lead || '').split(/\s+\/\s+/);
 
-    <section class="room-card">
-        <div class="room-card-header">
-            <div>
-                <h2>Темы</h2>
-                <p>Разговоры этой комнаты.</p>
-            </div>
+  const titleRu = titleParts.shift() || '';
+  const titleEn = titleParts.join(' / ');
 
-            <% if (roomKey !== 'articles') { %>
-        <a class="room-action" href="/gostinaya/<%= typeof roomKey !== 'undefined' ? roomKey : 'discussions' %>/new">
-                Создать тему
-            </a>
-        <% } %>
-        </div>
+  const leadRu = leadParts.shift() || '';
+  const leadEn = leadParts.join(' / ');
+%>
 
-        <% if (topics.length === 0) { %>
-            <div class="room-empty">
-                <% if (roomKey === 'articles') { %><h3>Обсуждения появятся автоматически</h3><% } else { %><h3>Здесь пока тихо</h3><% } %>
-                <p><%= text %></p>
-            </div>
+<section class="profile-page room-page">
+
+  <header class="profile-header room-page-header">
+
+    <p class="profile-eyebrow">
+      Гостиная <span>/ The Lounge</span>
+    </p>
+
+    <h1>
+      <% if (roomKey === 'articles') { %>
+        Обсуждение статей <span>/ Article Discussions</span>
+      <% } else { %>
+        Темы сообщества <span>/ Community Topics</span>
+      <% } %>
+    </h1>
+
+    <p>
+      <% if (roomKey === 'articles') { %>
+        Все статьи проекта и комментарии к ним.
+        <span>All project articles and their discussions.</span>
+      <% } else { %>
+        Свободные обсуждения участников Гостиной.
+        <span>Open discussions among Lounge members.</span>
+      <% } %>
+    </p>
+
+  </header>
+
+  <section class="profile-card room-panel">
+
+    <div class="room-panel-header">
+
+      <div>
+        <h2>
+          <% if (roomKey === 'articles') { %>
+            Обсуждения <span>/ Discussions</span>
+          <% } else { %>
+            Темы <span>/ Topics</span>
+          <% } %>
+        </h2>
+
+        <p>
+          <% if (roomKey === 'articles') { %>
+            Разговоры о публикациях проекта.
+            <span>Conversations about project publications.</span>
+          <% } else { %>
+            Разговоры этого пространства.
+            <span>Conversations in this space.</span>
+          <% } %>
+        </p>
+      </div>
+
+      <% if (roomKey !== 'articles') { %>
+        <a class="room-action"
+           href="/gostinaya/<%= typeof roomKey !== 'undefined' ? roomKey : 'discussions' %>/new">
+          Создать тему <span>/ New topic</span>
+        </a>
+      <% } %>
+
+    </div>
+
+    <% if (topics.length === 0) { %>
+
+      <div class="room-empty">
+
+        <% if (roomKey === 'articles') { %>
+          <h3>
+            Обсуждения появятся автоматически
+            <span>/ Discussions will appear automatically</span>
+          </h3>
         <% } else { %>
-            <div class="topic-list">
-                <% topics.forEach((topic) => { %>
-                    <article class="topic-item topic-card">
-                        <h3>
-                            <a href="/gostinaya/topic/<%= topic.id %>">
-                                <%= topic.title %>
-                            </a>
-                        </h3>
-
-                        <% if (topic.preview) { %>
-                            <p class="topic-preview">
-                                <%= topic.preview %><%= topic.preview.length >= 140 ? '…' : '' %>
-                            </p>
-                        <% } %>
-
-                        <% if (Number(topic.unread_count || 0) > 0) { %>
-  <span class="topic-unread">
-    ● Новое: <%= topic.unread_count %>
-  </span>
-<% } %>
-
-<div class="topic-meta">
-                            <span>👤 <a href="/gostinaya/member/<%= topic.author_id %>"><%= topic.author %></a></span>
-                            <span>
-                                💬 <%= Math.max(Number(topic.replies || 0) - 1, 0) %>
-                                <%= Math.max(Number(topic.replies || 0) - 1, 0) === 1 ? 'ответ' : 'ответов' %>
-                            </span>
-
-                            <% if (topic.last_reply_at) { %>
-                                <span>
-                                    🕒 <%= topic.last_reply_author %> ·
-                                    <%= topic.last_reply_at %>
-                                </span>
-                            <% } %>
-
-                            <% if (topic.pinned) { %>
-                                <span>📌 Закреплено</span>
-                            <% } %>
-
-                            <% if (topic.closed) { %>
-                                <span>🔒 Закрыто</span>
-                            <% } %>
-                        </div>
-                    </article>
-                <% }) %>
-            </div>
+          <h3>
+            Здесь пока тихо
+            <span>/ It is quiet here for now</span>
+          </h3>
         <% } %>
-    </section>
 
-    <nav class="room-navigation">
-        <a href="/gostinaya/hall">← Вернуться в Холл</a>
-    </nav>
+        <p><%= text %></p>
+
+      </div>
+
+    <% } else { %>
+
+      <div class="topic-list">
+
+        <% topics.forEach(topic => { %>
+
+          <article class="topic-item">
+
+            <div class="topic-main">
+
+              <h3>
+                <a href="/gostinaya/topic/<%= topic.id %>">
+                  <%= topic.title %>
+                </a>
+              </h3>
+
+              <% if (topic.preview) { %>
+                <p class="topic-preview">
+                  <%= topic.preview %><%= topic.preview.length >= 140 ? '…' : '' %>
+                </p>
+              <% } %>
+
+              <% if (Number(topic.unread_count || 0) > 0) { %>
+                <span class="topic-unread">
+                  Новое / New: <%= topic.unread_count %>
+                </span>
+              <% } %>
+
+            </div>
+
+            <div class="topic-meta">
+
+              <span>
+                👤
+                <a href="/gostinaya/member/<%= topic.author_id %>">
+                  <%= topic.author %>
+                </a>
+              </span>
+
+              <span>
+                💬 <%= Math.max(Number(topic.replies || 0) - 1, 0) %>
+                <%= Math.max(Number(topic.replies || 0) - 1, 0) === 1 ? 'ответ' : 'ответов' %>
+              </span>
+
+              <% if (topic.last_reply_at) { %>
+                <span>
+                  🕘 <%= topic.last_reply_author %> · <%= topic.last_reply_at %>
+                </span>
+              <% } %>
+
+              <% if (topic.pinned) { %>
+                <span>📌 Закреплено / Pinned</span>
+              <% } %>
+
+              <% if (topic.closed) { %>
+                <span>🔒 Закрыто / Closed</span>
+              <% } %>
+
+            </div>
+
+          </article>
+
+        <% }) %>
+
+      </div>
+
+    <% } %>
+
+  </section>
+
+  <nav class="room-navigation">
+    <a href="/gostinaya/hall">← Вернуться в Холл / Back to the Hall</a>
+  </nav>
+
 </section>

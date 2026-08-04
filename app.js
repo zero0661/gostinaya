@@ -107,7 +107,8 @@ app.get('/gostinaya/hall', async (req, res, next) => {
     res.render('hall/index', {
       title: 'Холл / Hall',
       recentActivity,
-        roomStats
+      roomStats,
+      guest: req.session.guest
     });
   } catch (error) {
     next(error);
