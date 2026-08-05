@@ -10,6 +10,16 @@
                   year: 'numeric'
               })
             : '—';
+
+  const joinedDateEn = guest.created_at
+    ? new Date(
+        guest.created_at.replace(' ', 'T') + 'Z'
+      ).toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      })
+    : '—';
     %>
 
     <header class="profile-header">
@@ -142,7 +152,7 @@
             </label>
 
             <button type="submit">
-                Сохранить изменения
+                Сохранить изменения / <span class="en-secondary">Save Changes</span>
             </button>
         </section>
 
@@ -155,17 +165,22 @@
             <div>
                 <dt>Роль<br><span>Role</span></dt>
                 <dd>
-                    <%= guest.role === 'author'
-                        ? 'Соавтор'
-                        : guest.role === 'admin'
-                            ? 'Администратор'
-                            : 'Участник' %>
-                </dd>
+          <%= guest.role === 'author'
+            ? 'Соавтор'
+            : guest.role === 'admin'
+              ? 'Администратор'
+              : 'Участник' %> /
+          <span class="en-secondary"><%= guest.role === 'author'
+            ? 'Co-author'
+            : guest.role === 'admin'
+              ? 'Administrator'
+              : 'Member' %></span>
+        </dd>
             </div>
 
             <div>
                 <dt>В Гостиной с<br><span>Member since</span></dt>
-                <dd><%= joinedDate %></dd>
+                <dd><%= joinedDate %> / <span class="en-secondary"><%= joinedDateEn %></span></dd>
             </div>
         </dl>
     </section>

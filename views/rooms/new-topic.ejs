@@ -1,59 +1,85 @@
-<section class="room-page">
-    <header class="room-header">
-        <p class="room-kicker">Гостиная / The Lounge</p>
-        <h1>Новая тема</h1>
-        <p class="lead">
-            Комната: <%= room.title %>
+<section class="profile-page room-page">
+  <header class="profile-header room-page-header">
+    <h1>
+      Новая тема
+      <span>New Topic</span>
+    </h1>
+
+    <p>
+      Создайте новое обсуждение для участников Гостиной.
+      <span>Create a new discussion for Lounge members.</span>
+    </p>
+  </header>
+
+  <form
+    method="post"
+    action="/gostinaya/<%= roomKey %>/new"
+  >
+    <section class="profile-card room-pane">
+      <h2>
+        Новое обсуждение<br>
+        <span>New Discussion</span>
+      </h2>
+
+      <label>
+        Заголовок темы / <span>Topic Title</span>
+
+        <input
+          type="text"
+          name="title"
+          maxlength="160"
+          required
+          autofocus
+        >
+      </label>
+
+      <label>
+        Первое сообщение / <span>First Message</span>
+
+        <textarea
+          name="body"
+          rows="10"
+          maxlength="5000"
+          required
+        ></textarea>
+      </label>
+
+      <div class="room-intro">
+        <p>
+          После публикации тема становится частью общего обсуждения.<br>
+          <span class="en-secondary">
+            Once published, the topic becomes part of the community discussion.
+          </span>
         </p>
-    </header>
 
-    <section class="room-card">
-        <form method="post" action="/gostinaya/<%= roomKey %>/new">
+        <p>
+          До появления первого ответа вы можете изменить название,
+          текст или удалить тему.<br>
+          <span class="en-secondary">
+            Before the first reply, you can edit the title and message
+            or delete the topic.
+          </span>
+        </p>
 
-            <label>
-                Заголовок темы
-                <input
-                    type="text"
-                    name="title"
-                    maxlength="160"
-                    required
-                    autofocus
-                >
-            </label>
+        <p>
+          После появления ответов изменение или удаление темы возможно
+          только через модератора.<br>
+          <span class="en-secondary">
+            After replies appear, the topic can be changed or deleted
+            only by a moderator.
+          </span>
+        </p>
+      </div>
 
-            <label>
-                Первое сообщение
-                <textarea
-                    name="body"
-                    rows="10"
-                    maxlength="5000"
-                    required
-                ></textarea>
-            </label>
-
-            <div class="topic-rules">
-    <strong>После публикации тема становится частью общего обсуждения.</strong>
-    <p>
-        До появления первого ответа вы можете изменить название,
-        текст или удалить тему.
-    </p>
-    <p>
-        После появления ответов изменение или удаление темы возможно
-        только через модератора — в знак уважения ко времени и мыслям
-        всех участников обсуждения.
-    </p>
-</div>
-
-<button type="submit">
-                Создать тему
-            </button>
-
-        </form>
+      <button type="submit">
+        Создать тему / <span class="en-secondary">Create Topic</span>
+      </button>
     </section>
+  </form>
 
-    <nav class="room-navigation">
-        <a href="/gostinaya/<%= roomKey %>">
-            ← Вернуться в комнату
-        </a>
-    </nav>
+  <nav class="room-navigation">
+    <a href="/gostinaya/<%= roomKey %>">
+      ← Вернуться к темам / <span class="en-secondary">Back to Topics</span>
+    </a>
+  </nav>
 </section>
