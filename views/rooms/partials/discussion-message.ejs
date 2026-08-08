@@ -3,38 +3,68 @@ const directReplies =
     repliesByParent.get(Number(message.id)) || [];
 
 const replyCount = countThreadReplies(message.id);
+
+function getRussianReplyWord(count) {
+    const lastTwoDigits = count % 100;
+    const lastDigit = count % 10;
+
+    if (lastTwoDigits >= 11 && lastTwoDigits <= 14) {
+        return 'ответов';
+    }
+
+    if (lastDigit === 1) {
+        return 'ответ';
+    }
+
+    if (lastDigit >= 2 && lastDigit <= 4) {
+        return 'ответа';
+    }
+
+    return 'ответов';
+}
+
+const englishReplyWord =
+    replyCount === 1 ? 'reply' : 'replies';
 %>
 
 <article
-    class="message-item <%= parentAuthor ? 'thread-reply' : '' %>"
+    class="message-item topic-message-card <%= parentAuthor ? 'thread-reply' : 'thread-root' %>"
     id="message-<%= message.id %>"
 >
-    <header>
-        <strong>
+    <header class="topic-message-header">
+        <strong class="topic-message-author">
             <a href="/gostinaya/member/<%= message.author_id %>">
                 <%= message.author %>
             </a>
         </strong>
 
-        <span><%= message.created_at %></span>
+        <span class="topic-message-date">
+            <%= message.created_at %>
+        </span>
     </header>
 
     <% if (parentAuthor) { %>
         <p class="reply-to-label">
-            ↳ Ответ участнику <%= parentAuthor %>
+            ↳ Ответ участнику <%= parentAuthor %> /
+            <span class="en-secondary">
+                Reply to <%= parentAuthor %>
+            </span>
         </p>
     <% } %>
 
-    <p><%= message.body %></p>
+    <div class="topic-message-body">
+        <p><%= message.body %></p>
+    </div>
 
-    <div class="message-actions">
+    <div class="message-actions topic-message-actions">
         <button
             type="button"
             class="reply-button"
             data-message-id="<%= message.id %>"
             data-author="<%= message.author %>"
         >
-            Ответить
+            Ответить /
+            <span class="en-secondary">Reply</span>
         </button>
 
         <% if (
@@ -42,7 +72,8 @@ const replyCount = countThreadReplies(message.id);
             Number(message.author_id)
         ) { %>
             <a href="/gostinaya/message/<%= message.id %>/edit">
-                ✏️ Редактировать
+                Редактировать /
+                <span class="en-secondary">Edit</span>
             </a>
         <% } %>
     </div>
@@ -56,7 +87,10 @@ const replyCount = countThreadReplies(message.id);
         <details class="message-thread">
             <summary>
                 <%= replyCount %>
-                <%= replyCount === 1 ? 'ответ' : 'ответов' %>
+                <%= getRussianReplyWord(replyCount) %> /
+                <span class="en-secondary">
+                    <%= replyCount %> <%= englishReplyWord %>
+                </span>
             </summary>
 
             <div class="thread-replies">

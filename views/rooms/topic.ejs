@@ -1,155 +1,212 @@
-<section class="room-page">
 
-<header class="room-header">
-    <p class="room-kicker">Гостиная / The Lounge</p>
-    <h1><%= topic.title %></h1>
+<section class="profile-page room-page topic-page">
 
-    <p class="lead">
-        Автор темы:
-        <a href="/gostinaya/member/<%= topic.author_id %>">
-            <%= topic.author %>
-        </a>
-    </p>
-</header>
+    <header class="profile-header room-page-header topic-page-header">
+        <p class="profile-eyebrow">
+            Тема сообщества / <span>Community Topic</span>
+        </p>
 
-<section class="room-card">
-    <h2>Тема</h2>
-    <h3 class="topic-title"><%= topic.title %></h3>
+        <h1><%= topic.title %></h1>
 
-    <% if (messages.length) { %>
-        <article class="message-item topic-first-message">
-            <header>
-                <strong>
-                    <a href="/gostinaya/member/<%= messages[0].author_id %>">
-                        <%= messages[0].author %>
-                    </a>
-                </strong>
+        <p>
+            Автор темы:
+            <a href="/gostinaya/member/<%= topic.author_id %>">
+                <%= topic.author %>
+            </a>
+            <br>
+            <span>
+                Topic author:
+                <a href="/gostinaya/member/<%= topic.author_id %>">
+                    <%= topic.author %>
+                </a>
+            </span>
+        </p>
+    </header>
 
-                <span><%= messages[0].created_at %></span>
-            </header>
-
-            <p><%= messages[0].body %></p>
-
-            <% if (Number(currentUserId) === Number(topic.author_id)) { %>
-                <div class="message-actions">
-                    <a href="/gostinaya/topic/<%= topic.id %>/edit">
-                        ✏️ Изменить название темы
-                    </a>
-
-                    <a href="/gostinaya/message/<%= messages[0].id %>/edit">
-                        📝 Редактировать текст темы
-                    </a>
-                </div>
-            <% } %>
-        </article>
-    <% } %>
-</section>
-
-<%
-const discussionMessages = messages.slice(1);
-
-const topLevelMessages = discussionMessages.filter(
-    message => !message.parent_message_id
-);
-
-const repliesByParent = new Map();
-
-discussionMessages.forEach(message => {
-    if (!message.parent_message_id) return;
-
-    const parentId = Number(message.parent_message_id);
-
-    if (!repliesByParent.has(parentId)) {
-        repliesByParent.set(parentId, []);
-    }
-
-    repliesByParent.get(parentId).push(message);
-});
-
-function countThreadReplies(messageId) {
-    const directReplies =
-        repliesByParent.get(Number(messageId)) || [];
-
-    return directReplies.reduce(
-        (total, reply) =>
-            total + 1 + countThreadReplies(reply.id),
-        0
-    );
-}
-%>
-
-<section class="room-card">
-    <h2>Ответы</h2>
-
-    <% if (!topLevelMessages.length) { %>
-        <p>Пока никто не ответил.</p>
-    <% } else { %>
-        <% topLevelMessages.forEach(message => { %>
-            <%- include('partials/discussion-message', {
-                message,
-                parentAuthor: null,
-                repliesByParent,
-                countThreadReplies,
-                currentUserId
-            }) %>
-        <% }) %>
-    <% } %>
-</section>
-
-<% if (!topic.closed) { %>
-
-    <div id="reply-form-home"></div>
-
-    <section class="room-card" id="reply-composer">
-        <h2 id="reply-form-title">Ответить в тему</h2>
-
-        <p id="reply-target" hidden></p>
-
-        <form
-            method="post"
-            action="/gostinaya/topic/<%= topic.id %>/messages"
-        >
-            <input
-                type="hidden"
-                name="parent_message_id"
-                id="parent-message-id"
-                value=""
-            >
-
-            <label>
-                Сообщение
-
-                <textarea
-                    name="body"
-                    rows="7"
-                    maxlength="5000"
-                    required
-                ></textarea>
-            </label>
-
-            <div class="message-actions">
-                <button type="submit">
-                    Опубликовать сообщение
-                </button>
-
-                <button
-                    type="button"
-                    id="cancel-reply"
-                    hidden
-                >
-                    Отменить ответ
-                </button>
+    <section class="profile-card room-panel topic-panel topic-opening-panel">
+        <div class="room-panel-header">
+            <div>
+                <h2>
+                    Первое сообщение /
+                    <span>Opening Message</span>
+                </h2>
             </div>
-        </form>
+        </div>
+
+        <% if (messages.length) { %>
+            <article class="message-item topic-first-message">
+                <header>
+                    <strong>
+                        <a href="/gostinaya/member/<%= messages[0].author_id %>">
+                            <%= messages[0].author %>
+                        </a>
+                    </strong>
+
+                    <span><%= messages[0].created_at %></span>
+                </header>
+
+                <p><%= messages[0].body %></p>
+
+                <% if (Number(currentUserId) === Number(topic.author_id)) { %>
+                    <div class="message-actions">
+                        <a href="/gostinaya/topic/<%= topic.id %>/edit">
+                            Изменить название темы /
+                            <span class="en-secondary">Edit Topic Title</span>
+                        </a>
+
+                        <a href="/gostinaya/message/<%= messages[0].id %>/edit">
+                            Редактировать текст темы /
+                            <span class="en-secondary">Edit Opening Message</span>
+                        </a>
+                    </div>
+                <% } %>
+            </article>
+        <% } %>
     </section>
 
-<% } %>
+    <%
+        const discussionMessages = messages.slice(1);
 
-<nav class="room-navigation">
-    <a href="/gostinaya/<%= topic.room %>">
-        ← Вернуться в комнату
-    </a>
-</nav>
+        const topLevelMessages = discussionMessages.filter(
+            message => !message.parent_message_id
+        );
+
+        const repliesByParent = new Map();
+
+        discussionMessages.forEach(message => {
+            if (!message.parent_message_id) return;
+
+            const parentId = Number(message.parent_message_id);
+
+            if (!repliesByParent.has(parentId)) {
+                repliesByParent.set(parentId, []);
+            }
+
+            repliesByParent.get(parentId).push(message);
+        });
+
+        function countThreadReplies(messageId) {
+            const directReplies =
+                repliesByParent.get(Number(messageId)) || [];
+
+            return directReplies.reduce(
+                (total, reply) =>
+                    total + 1 + countThreadReplies(reply.id),
+                0
+            );
+        }
+    %>
+
+    <section class="profile-card room-panel topic-panel topic-replies-panel">
+        <div class="room-panel-header">
+            <div>
+                <h2>
+                    Ответы /
+                    <span>Replies</span>
+                </h2>
+
+                <p>
+                    Продолжение разговора участников.
+                    <span>The members’ conversation continues here.</span>
+                </p>
+            </div>
+        </div>
+
+        <% if (!topLevelMessages.length) { %>
+            <div class="room-empty topic-empty">
+                <h3>
+                    Пока никто не ответил /
+                    <span>No Replies Yet</span>
+                </h3>
+
+                <p>
+                    Вы можете стать первым участником разговора.
+                    <span>You can be the first to join the conversation.</span>
+                </p>
+            </div>
+        <% } else { %>
+            <div class="topic-message-list">
+                <% topLevelMessages.forEach(message => { %>
+                    <%- include('partials/discussion-message', {
+                        message,
+                        parentAuthor: null,
+                        repliesByParent,
+                        countThreadReplies,
+                        currentUserId
+                    }) %>
+                <% }) %>
+            </div>
+        <% } %>
+    </section>
+
+    <% if (!topic.closed) { %>
+
+        <div id="reply-form-home"></div>
+
+        <section
+            class="profile-card room-panel topic-panel topic-composer"
+            id="reply-composer"
+        >
+            <div class="room-panel-header">
+                <div>
+                    <h2 id="reply-form-title">
+                        Ответить в тему /
+                        <span>Reply to Topic</span>
+                    </h2>
+                </div>
+            </div>
+
+            <p id="reply-target" class="reply-target" hidden></p>
+
+            <form
+                method="post"
+                action="/gostinaya/topic/<%= topic.id %>/messages"
+            >
+                <input
+                    type="hidden"
+                    name="parent_message_id"
+                    id="parent-message-id"
+                    value=""
+                >
+
+                <label>
+                    Сообщение /
+                    <span class="en-secondary">Message</span>
+
+                    <textarea
+                        name="body"
+                        rows="7"
+                        maxlength="5000"
+                        required
+                    ></textarea>
+                </label>
+
+                <div class="message-actions">
+                    <button type="submit">
+                        Опубликовать сообщение /
+                        <span class="en-secondary">Post Message</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        id="cancel-reply"
+                        hidden
+                    >
+                        Отменить ответ /
+                        <span class="en-secondary">Cancel Reply</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+    <% } %>
+
+    <nav class="room-navigation">
+        <a href="/gostinaya/<%= topic.room %>">
+            ← Вернуться к темам /
+            <span class="en-secondary">Back to Topics</span>
+        </a>
+    </nav>
 
 </section>
 
@@ -199,6 +256,16 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
+    function setBilingualText(element, russianText, englishText) {
+        element.textContent = russianText + ' / ';
+
+        const english = document.createElement('span');
+        english.className = 'en-secondary';
+        english.textContent = englishText;
+
+        element.appendChild(english);
+    }
+
     document.querySelectorAll('.reply-button').forEach(function (button) {
         button.addEventListener('click', function () {
             const messageId = button.dataset.messageId;
@@ -214,11 +281,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
             parentInput.value = String(messageId);
             parentInput.setAttribute('value', String(messageId));
-            title.textContent = 'Ответ участнику ' + author;
+
+            setBilingualText(
+                title,
+                'Ответ участнику ' + author,
+                'Reply to ' + author
+            );
 
             if (target) {
-                target.textContent =
-                    'Вы отвечаете участнику ' + author;
+                setBilingualText(
+                    target,
+                    'Вы отвечаете участнику ' + author,
+                    'You are replying to ' + author
+                );
+
                 target.hidden = false;
             }
 
@@ -234,14 +310,21 @@ document.addEventListener('DOMContentLoaded', function () {
     if (replyForm) {
         replyForm.addEventListener('submit', function () {
             parentInput.value =
-                parentInput.getAttribute('value') || parentInput.value || '';
+                parentInput.getAttribute('value') ||
+                parentInput.value ||
+                '';
         });
     }
 
     cancelButton.addEventListener('click', function () {
         parentInput.value = '';
         parentInput.setAttribute('value', '');
-        title.textContent = 'Ответить в тему';
+
+        setBilingualText(
+            title,
+            'Ответить в тему',
+            'Reply to Topic'
+        );
 
         if (target) {
             target.textContent = '';

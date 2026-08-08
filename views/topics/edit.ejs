@@ -1,38 +1,70 @@
-<section class="room-page">
+<section class="profile-page room-page topic-page topic-edit-page">
 
-<header class="room-header">
-    <p class="room-kicker">Гостиная / The Lounge</p>
-    <h1>Редактировать тему</h1>
-</header>
+  <header class="profile-header room-page-header topic-page-header">
+    <p class="profile-eyebrow">
+      Редактирование темы /
+      <span>Edit Topic</span>
+    </p>
 
-<section class="room-card">
+    <h1>
+      Изменить название темы /
+      <span class="en-secondary">Edit Topic Title</span>
+    </h1>
 
-<form method="post" action="/gostinaya/topic/<%= topic.id %>/edit">
+    <p>
+      Измените название темы и сохраните изменения.
+      <br>
+      <span>Edit the topic title and save your changes.</span>
+    </p>
+  </header>
 
-<label>
-<strong>Название темы</strong>
-</label>
+  <section class="profile-card room-panel topic-panel topic-composer">
+    <div class="room-panel-header">
+      <div>
+        <h2>
+          Название темы /
+          <span>Topic Title</span>
+        </h2>
+      </div>
+    </div>
 
-<input
-    type="text"
-    name="title"
-    maxlength="200"
-    value="<%= topic.title %>"
-    required
->
+    <form
+      method="post"
+      action="/gostinaya/topic/<%= topic.id %>/edit"
+    >
+      <label for="title">
+        Название /
+        <span class="en-secondary">Title</span>
 
-<div style="margin-top:16px;">
-    <button class="room-action" type="submit">
-        Сохранить
-    </button>
+        <input
+          id="title"
+          type="text"
+          name="title"
+          value="<%= topic.title %>"
+          maxlength="200"
+          required
+        >
+      </label>
 
+      <div class="message-actions">
+        <button type="submit">
+          Сохранить изменения /
+          <span class="en-secondary">Save Changes</span>
+        </button>
+
+        <a href="/gostinaya/topic/<%= topic.id %>">
+          Отмена /
+          <span class="en-secondary">Cancel</span>
+        </a>
+      </div>
+    </form>
+  </section>
+
+  <nav class="room-navigation">
     <a href="/gostinaya/topic/<%= topic.id %>">
-        Отмена
+      ← Вернуться к теме /
+      <span class="en-secondary">Back to Topic</span>
     </a>
-</div>
-
-</form>
-
-</section>
+  </nav>
 
 </section>

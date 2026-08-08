@@ -1,26 +1,69 @@
-<section class="room-page">
-  <header class="room-header">
-    <p class="room-kicker">Гостиная / The Lounge</p>
-    <h1>Редактировать сообщение</h1>
-    <p class="lead">Измените текст и сохраните его.</p>
+<section class="profile-page room-page topic-page message-edit-page">
+
+  <header class="profile-header room-page-header topic-page-header">
+    <p class="profile-eyebrow">
+      Редактирование сообщения /
+      <span>Edit Message</span>
+    </p>
+
+    <h1>
+      Редактировать сообщение /
+      <span class="en-secondary">Edit Message</span>
+    </h1>
+
+    <p>
+      Измените текст сообщения и сохраните изменения.
+      <br>
+      <span>Edit the message and save your changes.</span>
+    </p>
   </header>
 
-  <section class="room-card">
-    <form method="post" action="/gostinaya/message/<%= message.id %>/edit">
-      <label for="body"><strong>Сообщение</strong></label>
+  <section class="profile-card room-panel topic-panel topic-composer">
+    <div class="room-panel-header">
+      <div>
+        <h2>
+          Текст сообщения /
+          <span>Message Text</span>
+        </h2>
+      </div>
+    </div>
 
-      <textarea
-        id="body"
-        name="body"
-        rows="10"
-        maxlength="5000"
-        required
-      ><%= message.body %></textarea>
+    <form
+      method="post"
+      action="/gostinaya/message/<%= message.id %>/edit"
+    >
+      <label for="body">
+        Сообщение /
+        <span class="en-secondary">Message</span>
 
-      <div style="margin-top: 16px;">
-        <button class="room-action" type="submit">Сохранить изменения</button>
-        <a href="/gostinaya/topic/<%= message.topic_id %>">Отмена</a>
+        <textarea
+          id="body"
+          name="body"
+          rows="10"
+          maxlength="5000"
+          required
+        ><%= message.body %></textarea>
+      </label>
+
+      <div class="message-actions">
+        <button type="submit">
+          Сохранить изменения /
+          <span class="en-secondary">Save Changes</span>
+        </button>
+
+        <a href="/gostinaya/topic/<%= message.topic_id %>">
+          Отмена /
+          <span class="en-secondary">Cancel</span>
+        </a>
       </div>
     </form>
   </section>
+
+  <nav class="room-navigation">
+    <a href="/gostinaya/topic/<%= message.topic_id %>">
+      ← Вернуться к теме /
+      <span class="en-secondary">Back to Topic</span>
+    </a>
+  </nav>
+
 </section>
