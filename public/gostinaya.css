@@ -4427,3 +4427,157 @@ flex-direction:column;
   display: none !important;
   content: none !important;
 }
+
+
+/* ===== MAIN PAGES BILINGUAL HEADER NORMALIZATION ===== */
+
+/* English part of main page titles */
+.hall-page .profile-header h1 > span,
+.members-page .profile-header h1 > span,
+.room-page .profile-header h1 > span,
+.notifications-page .profile-header h1 > span {
+  display: inline !important;
+  margin: 0 !important;
+  color: rgba(226, 232, 240, 0.66) !important;
+  -webkit-text-fill-color: rgba(226, 232, 240, 0.66) !important;
+  font-size: 0.82em !important;
+  font-style: italic !important;
+  font-weight: 400 !important;
+}
+
+/* English part of lower navigation */
+.members-navigation a > span,
+.room-navigation a > span {
+  color: rgba(226, 232, 240, 0.66) !important;
+  -webkit-text-fill-color: rgba(226, 232, 240, 0.66) !important;
+  font-size: 0.92em !important;
+  font-style: italic !important;
+  font-weight: 400 !important;
+}
+
+/* English text in article empty-state description */
+.room-page .room-empty p > span {
+  display: block;
+  margin-top: 4px;
+  color: rgba(226, 232, 240, 0.66) !important;
+  -webkit-text-fill-color: rgba(226, 232, 240, 0.66) !important;
+  font-size: 0.82em;
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* ===== MEMBER PROFILE — unified dark design ===== */
+
+.member-profile-page {
+  width: min(980px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 30px 0 52px;
+}
+
+.member-profile-header h1 {
+  margin: 0;
+  color: #f8fafc !important;
+}
+
+.member-profile-header > p:last-child {
+  margin-top: 12px;
+  color: rgba(226, 232, 240, 0.72) !important;
+  line-height: 1.6;
+}
+
+.member-profile-header > p:last-child span,
+.member-profile-page h2 > span,
+.member-profile-page .room-empty p > span,
+.member-profile-page .members-navigation a > span {
+  color: rgba(226, 232, 240, 0.66) !important;
+  -webkit-text-fill-color: rgba(226, 232, 240, 0.66) !important;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.member-profile-page h2 > span {
+  font-size: 0.82em;
+}
+
+.member-profile-meta .topic-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+.member-profile-meta .topic-meta > span {
+  padding: 6px 9px;
+  color: rgba(203, 213, 225, 0.82);
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.member-profile-section .room-empty {
+  padding: 26px 22px;
+  background: rgba(15, 23, 42, 0.72) !important;
+  border: 1px solid rgba(148, 163, 184, 0.16) !important;
+  border-radius: 14px;
+  text-align: center;
+}
+
+.member-profile-section .room-empty p {
+  margin: 0;
+  color: rgba(226, 232, 240, 0.72) !important;
+}
+
+.member-profile-section .room-empty p > span {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.88em;
+}
+
+.member-profile-page .topic-list {
+  display: grid;
+  gap: 14px;
+}
+
+.member-profile-page .topic-card-link {
+  text-decoration: none;
+}
+
+.member-profile-page .topic-item {
+  padding: 20px 21px;
+  background: rgba(15, 23, 42, 0.76) !important;
+  border: 1px solid rgba(148, 163, 184, 0.16) !important;
+  border-radius: 14px !important;
+}
+
+.member-profile-page .topic-item h3 {
+  margin: 0;
+  color: rgba(248, 250, 252, 0.96) !important;
+}
+
+.member-profile-page .topic-preview {
+  margin: 9px 0 0;
+  color: rgba(226, 232, 240, 0.72) !important;
+  line-height: 1.55;
+}
+
+.member-profile-page .members-navigation {
+  margin-top: 22px;
+}
+
+.member-profile-page .members-navigation a {
+  color: #93c5fd;
+  text-decoration: none;
+}
+
+.member-profile-page .members-navigation a:hover {
+  color: #bfdbfe;
+}
+
+@media (max-width: 700px) {
+  .member-profile-page {
+    width: calc(100% - 24px);
+    padding-top: 20px;
+  }
+}
+

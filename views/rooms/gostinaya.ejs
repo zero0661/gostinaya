@@ -86,7 +86,14 @@
           </h3>
         <% } %>
 
-        <p><%= text %></p>
+        <% if (roomKey === 'articles') { %>
+          <p>
+            Каждая статья проекта появляется здесь как отдельная тема обсуждения.
+            <span>Every project article appears here as a separate discussion topic.</span>
+          </p>
+        <% } else { %>
+          <p><%= text %></p>
+        <% } %>
 
       </div>
 
@@ -161,7 +168,7 @@
   </section>
 
   <nav class="room-navigation">
-    <a href="/gostinaya/hall">← Вернуться в Холл / Back to the Hall</a>
+    <a href="/gostinaya/hall">← Вернуться в Холл / <span>Back to Hall</span></a>
   </nav>
 
 </section>
