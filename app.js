@@ -2,6 +2,8 @@ import AuthService from './services/AuthService.js';
 import GuestController from './controllers/GuestController.js';
 import GuestRepository from './repositories/GuestRepository.js';
 import DiscussionRepository from './repositories/DiscussionRepository.js';
+import ArticleDiscussionRepository from './repositories/ArticleDiscussionRepository.js';
+import ArticleMetadataService from './services/ArticleMetadataService.js';
 import NotificationRepository from './repositories/NotificationRepository.js';
 import express from 'express';
 import expressLayouts from 'express-ejs-layouts';
@@ -603,16 +605,59 @@ app.get('/gostinaya/:room', async (req, res, next) => {
     }
 
     try {
-        const [topics, recentActivity] = await Promise.all([
-      DiscussionRepository.listTopics(roomKey, req.session.guest?.id || 0),
-      DiscussionRepository.getRecentActivity(10)
-    ]);
+        const [topics, articleDiscussions, recentActivity] = await Promise.all([
+            roomKey === 'articles'
+                ? Promise.resolve([])
+                : DiscussionRepository.listTopics(
+                    roomKey,
+                    req.session.guest?.id || 0
+                ),
+            roomKey === 'articles'
+                ? ArticleDiscussionRepository.list()
+                : Promise.resolve([]),
+            DiscussionRepository.getRecentActivity(10)
+        ]);
+
+        let enrichedArticleDiscussions = articleDiscussions;
+
+        if (roomKey === 'articles') {
+            enrichedArticleDiscussions = await Promise.all(
+                articleDiscussions.map(async (discussion) => {
+                    try {
+                        const articlePair =
+                            await ArticleMetadataService.getPair(
+                                discussion.url_ru,
+                                discussion.url_en
+                            );
+
+                        return {
+                            ...discussion,
+                            article_ru: articlePair.ru,
+                            article_en: articlePair.en
+                        };
+                    } catch (error) {
+                        console.error(
+                            'Could not load article metadata:',
+                            discussion.id,
+                            error.message
+                        );
+
+                        return {
+                            ...discussion,
+                            article_ru: null,
+                            article_en: null
+                        };
+                    }
+                })
+            );
+        }
 
         res.render('rooms/gostinaya', {
             ...room,
             roomKey,
             topics,
-      recentActivity
+            articleDiscussions: enrichedArticleDiscussions,
+            recentActivity
         });
     } catch (error) {
         next(error);

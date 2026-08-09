@@ -70,98 +70,211 @@
 
     </div>
 
-    <% if (topics.length === 0) { %>
+    <% if (roomKey === 'articles') { %>
 
-      <div class="room-empty">
+      <% if (!articleDiscussions || articleDiscussions.length === 0) { %>
 
-        <% if (roomKey === 'articles') { %>
+        <div class="room-empty">
           <h3>
             Обсуждения появятся автоматически
             <span>/ Discussions will appear automatically</span>
           </h3>
-        <% } else { %>
+
+          <p>
+            Каждая публикация проекта получает здесь одну общую дискуссию для русской и английской аудитории.
+            <span>Each project publication gets one shared discussion for Russian and English readers.</span>
+          </p>
+        </div>
+
+      <% } else { %>
+
+        <div class="article-discussion-list">
+
+          <% articleDiscussions.forEach(discussion => { %>
+
+            <article class="article-discussion-card">
+
+              <div class="article-language-grid">
+
+                <% if (discussion.article_ru) { %>
+                  <a
+                    class="article-language-card"
+                    href="<%= discussion.url_ru %>"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    <% if (discussion.article_ru.image) { %>
+                      <img
+                        src="<%= discussion.article_ru.image %>"
+                        alt=""
+                        class="article-language-image"
+                      >
+                    <% } %>
+
+                    <div class="article-language-body">
+                      <span class="article-language-label">RU</span>
+
+                      <h3><%= discussion.article_ru.title %></h3>
+
+                      <% if (discussion.article_ru.excerpt) { %>
+                        <p><%= discussion.article_ru.excerpt %></p>
+                      <% } %>
+
+                      <span class="article-read-link">
+                        Читать статью →
+                      </span>
+                    </div>
+                  </a>
+                <% } %>
+
+                <% if (discussion.article_en) { %>
+                  <a
+                    class="article-language-card"
+                    href="<%= discussion.url_en %>"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    <% if (discussion.article_en.image) { %>
+                      <img
+                        src="<%= discussion.article_en.image %>"
+                        alt=""
+                        class="article-language-image"
+                      >
+                    <% } %>
+
+                    <div class="article-language-body">
+                      <span class="article-language-label">EN</span>
+
+                      <h3><%= discussion.article_en.title %></h3>
+
+                      <% if (discussion.article_en.excerpt) { %>
+                        <p><%= discussion.article_en.excerpt %></p>
+                      <% } %>
+
+                      <span class="article-read-link">
+                        Read article →
+                      </span>
+                    </div>
+                  </a>
+                <% } %>
+
+              </div>
+
+              <div class="article-discussion-footer">
+
+                <div class="article-discussion-stats">
+                  <strong>Обсуждение <span>/ Discussion</span></strong>
+
+                  <span>
+                    💬 <%= Number(discussion.messages_count || 0) %>
+                    сообщений / messages
+                  </span>
+
+                  <% if (discussion.last_message_at) { %>
+                    <span>
+                      🕘 <%= discussion.last_message_author %>
+                      · <%= discussion.last_message_at %>
+                    </span>
+                  <% } %>
+                </div>
+
+                <a
+                  class="room-action article-discussion-action"
+                  href="/gostinaya/topic/<%= discussion.topic_id %>"
+                >
+                  Обсудить <span>/ Join Discussion</span>
+                </a>
+
+              </div>
+
+            </article>
+
+          <% }) %>
+
+        </div>
+
+      <% } %>
+
+    <% } else { %>
+
+      <% if (topics.length === 0) { %>
+
+        <div class="room-empty">
           <h3>
             Здесь пока тихо
             <span>/ It is quiet here for now</span>
           </h3>
-        <% } %>
 
-        <% if (roomKey === 'articles') { %>
-          <p>
-            Каждая статья проекта появляется здесь как отдельная тема обсуждения.
-            <span>Every project article appears here as a separate discussion topic.</span>
-          </p>
-        <% } else { %>
           <p><%= text %></p>
-        <% } %>
+        </div>
 
-      </div>
+      <% } else { %>
 
-    <% } else { %>
+        <div class="topic-list">
 
-      <div class="topic-list">
+          <% topics.forEach(topic => { %>
 
-        <% topics.forEach(topic => { %>
+            <article class="topic-item">
 
-          <article class="topic-item">
+              <div class="topic-main">
 
-            <div class="topic-main">
+                <h3>
+                  <a href="/gostinaya/topic/<%= topic.id %>">
+                    <%= topic.title %>
+                  </a>
+                </h3>
 
-              <h3>
-                <a href="/gostinaya/topic/<%= topic.id %>">
-                  <%= topic.title %>
-                </a>
-              </h3>
+                <% if (topic.preview) { %>
+                  <p class="topic-preview">
+                    <%= topic.preview %><%= topic.preview.length >= 140 ? '…' : '' %>
+                  </p>
+                <% } %>
 
-              <% if (topic.preview) { %>
-                <p class="topic-preview">
-                  <%= topic.preview %><%= topic.preview.length >= 140 ? '…' : '' %>
-                </p>
-              <% } %>
+                <% if (Number(topic.unread_count || 0) > 0) { %>
+                  <span class="topic-unread">
+                    Новое / New: <%= topic.unread_count %>
+                  </span>
+                <% } %>
 
-              <% if (Number(topic.unread_count || 0) > 0) { %>
-                <span class="topic-unread">
-                  Новое / New: <%= topic.unread_count %>
-                </span>
-              <% } %>
+              </div>
 
-            </div>
+              <div class="topic-meta">
 
-            <div class="topic-meta">
-
-              <span>
-                👤
-                <a href="/gostinaya/member/<%= topic.author_id %>">
-                  <%= topic.author %>
-                </a>
-              </span>
-
-              <span>
-                💬 <%= Math.max(Number(topic.replies || 0) - 1, 0) %>
-                <%= Math.max(Number(topic.replies || 0) - 1, 0) === 1 ? 'ответ' : 'ответов' %>
-              </span>
-
-              <% if (topic.last_reply_at) { %>
                 <span>
-                  🕘 <%= topic.last_reply_author %> · <%= topic.last_reply_at %>
+                  👤
+                  <a href="/gostinaya/member/<%= topic.author_id %>">
+                    <%= topic.author %>
+                  </a>
                 </span>
-              <% } %>
 
-              <% if (topic.pinned) { %>
-                <span>📌 Закреплено / Pinned</span>
-              <% } %>
+                <span>
+                  💬 <%= Math.max(Number(topic.replies || 0) - 1, 0) %>
+                  <%= Math.max(Number(topic.replies || 0) - 1, 0) === 1 ? 'ответ' : 'ответов' %>
+                </span>
 
-              <% if (topic.closed) { %>
-                <span>🔒 Закрыто / Closed</span>
-              <% } %>
+                <% if (topic.last_reply_at) { %>
+                  <span>
+                    🕘 <%= topic.last_reply_author %> · <%= topic.last_reply_at %>
+                  </span>
+                <% } %>
 
-            </div>
+                <% if (topic.pinned) { %>
+                  <span>📌 Закреплено / Pinned</span>
+                <% } %>
 
-          </article>
+                <% if (topic.closed) { %>
+                  <span>🔒 Закрыто / Closed</span>
+                <% } %>
 
-        <% }) %>
+              </div>
 
-      </div>
+            </article>
+
+          <% }) %>
+
+        </div>
+
+      <% } %>
 
     <% } %>
 
