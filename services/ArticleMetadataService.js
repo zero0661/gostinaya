@@ -7,6 +7,12 @@ function decodeHtml(value = '') {
         .replace(/&gt;/g, '>');
 }
 
+function cleanArticleTitle(value = '') {
+    return String(value)
+        .replace(/\s*[|—-]\s*После логина\s*$/i, '')
+        .trim();
+}
+
 function getMeta(html, property) {
     const escaped = property.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -53,9 +59,10 @@ async function fetchArticle(url) {
 
     return {
         url,
-        title:
+        title: cleanArticleTitle(
             getMeta(html, 'og:title') ||
-            getMeta(html, 'twitter:title'),
+            getMeta(html, 'twitter:title')
+        ),
         excerpt:
             getMeta(html, 'og:description') ||
             getMeta(html, 'description'),

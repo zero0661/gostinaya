@@ -389,21 +389,50 @@ app.get('/gostinaya/topic/:id', async (req, res, next) => {
             return res.status(404).send('Тема не найдена');
         }
 
-        const messages = await DiscussionRepository.listMessages(topic.id);
+        const [messages, articleDiscussionRaw] = await Promise.all([
+            DiscussionRepository.listMessages(topic.id),
+            topic.room === 'articles'
+                ? ArticleDiscussionRepository.getByTopicId(topic.id)
+                : Promise.resolve(null)
+        ]);
 
-    if (messages.length) {
-      await DiscussionRepository.markTopicRead(
-        req.session.guest.id,
-        topic.id,
-        messages[messages.length - 1].id
-      );
-    }
+        let articleDiscussion = articleDiscussionRaw;
+
+        if (articleDiscussionRaw) {
+            try {
+                const articlePair = await ArticleMetadataService.getPair(
+                    articleDiscussionRaw.url_ru,
+                    articleDiscussionRaw.url_en
+                );
+
+                articleDiscussion = {
+                    ...articleDiscussionRaw,
+                    article_ru: articlePair.ru,
+                    article_en: articlePair.en
+                };
+            } catch (error) {
+                console.error(
+                    'Could not load article metadata for discussion:',
+                    topic.id,
+                    error.message
+                );
+            }
+        }
+
+        if (messages.length) {
+            await DiscussionRepository.markTopicRead(
+                req.session.guest.id,
+                topic.id,
+                messages[messages.length - 1].id
+            );
+        }
 
         res.render('rooms/topic', {
             title: topic.title,
             topic,
             messages,
-      currentUserId: req.session.guest.id
+            articleDiscussion,
+            currentUserId: req.session.guest.id
         });
     } catch (error) {
         next(error);

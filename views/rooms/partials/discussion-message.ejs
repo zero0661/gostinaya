@@ -43,15 +43,6 @@ const englishReplyWord =
         </span>
     </header>
 
-    <% if (parentAuthor) { %>
-        <p class="reply-to-label">
-            ↳ Ответ участнику <%= parentAuthor %> /
-            <span class="en-secondary">
-                Reply to <%= parentAuthor %>
-            </span>
-        </p>
-    <% } %>
-
     <div class="topic-message-body">
         <p><%= message.body %></p>
     </div>
@@ -83,27 +74,17 @@ const englishReplyWord =
         data-message-id="<%= message.id %>"
     ></div>
 
-    <% if (replyCount) { %>
-        <details class="message-thread">
-            <summary>
-                <%= replyCount %>
-                <%= getRussianReplyWord(replyCount) %> /
-                <span class="en-secondary">
-                    <%= replyCount %> <%= englishReplyWord %>
-                </span>
-            </summary>
-
-            <div class="thread-replies">
-                <% directReplies.forEach(reply => { %>
-                    <%- include('discussion-message', {
-                        message: reply,
-                        parentAuthor: message.author,
-                        repliesByParent,
-                        countThreadReplies,
-                        currentUserId
-                    }) %>
-                <% }) %>
-            </div>
-        </details>
+    <% if (directReplies.length) { %>
+        <div class="thread-replies">
+            <% directReplies.forEach(reply => { %>
+                <%- include('discussion-message', {
+                    message: reply,
+                    parentAuthor: message.author,
+                    repliesByParent,
+                    countThreadReplies,
+                    currentUserId
+                }) %>
+            <% }) %>
+        </div>
     <% } %>
 </article>

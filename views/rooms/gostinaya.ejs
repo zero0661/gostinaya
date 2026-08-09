@@ -94,6 +94,20 @@
 
             <article class="article-discussion-card">
 
+              <% const sharedImage =
+                   discussion.article_ru?.image ||
+                   discussion.article_en?.image; %>
+
+              <% if (sharedImage) { %>
+                <div class="article-shared-image-wrap">
+                  <img
+                    src="<%= sharedImage %>"
+                    alt=""
+                    class="article-shared-image"
+                  >
+                </div>
+              <% } %>
+
               <div class="article-language-grid">
 
                 <% if (discussion.article_ru) { %>
@@ -103,14 +117,6 @@
                     target="_blank"
                     rel="noopener"
                   >
-                    <% if (discussion.article_ru.image) { %>
-                      <img
-                        src="<%= discussion.article_ru.image %>"
-                        alt=""
-                        class="article-language-image"
-                      >
-                    <% } %>
-
                     <div class="article-language-body">
                       <span class="article-language-label">RU</span>
 
@@ -134,14 +140,6 @@
                     target="_blank"
                     rel="noopener"
                   >
-                    <% if (discussion.article_en.image) { %>
-                      <img
-                        src="<%= discussion.article_en.image %>"
-                        alt=""
-                        class="article-language-image"
-                      >
-                    <% } %>
-
                     <div class="article-language-body">
                       <span class="article-language-label">EN</span>
 

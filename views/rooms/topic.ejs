@@ -2,27 +2,87 @@
 <section class="profile-page room-page topic-page">
 
     <header class="profile-header room-page-header topic-page-header">
-        <p class="profile-eyebrow">
-            Тема сообщества / <span>Community Topic</span>
-        </p>
 
-        <h1><%= topic.title %></h1>
+        <% if (topic.room === 'articles') { %>
 
-        <p>
-            Автор темы:
-            <a href="/gostinaya/member/<%= topic.author_id %>">
-                <%= topic.author %>
-            </a>
-            <br>
-            <span>
-                Topic author:
+            <h1 class="article-discussion-page-title">
+                Здесь обсуждается статья
+                <span>/ This discussion is about the article</span>
+            </h1>
+
+            <% if (articleDiscussion) { %>
+                <div class="article-discussion-source-links">
+
+                    <% if (
+                        articleDiscussion.url_ru &&
+                        articleDiscussion.article_ru?.title
+                    ) { %>
+                        <a
+                            href="<%= articleDiscussion.url_ru %>"
+                            target="_blank"
+                            rel="noopener"
+                        >
+                            <%= articleDiscussion.article_ru.title %>
+                        </a>
+                    <% } %>
+
+                    <% if (
+                        articleDiscussion.url_en &&
+                        articleDiscussion.article_en?.title
+                    ) { %>
+                        <a
+                            href="<%= articleDiscussion.url_en %>"
+                            target="_blank"
+                            rel="noopener"
+                        >
+                            <%= articleDiscussion.article_en.title %>
+                        </a>
+                    <% } %>
+
+                </div>
+
+                <% const discussionImage =
+                    articleDiscussion.article_ru?.image ||
+                    articleDiscussion.article_en?.image; %>
+
+                <% if (discussionImage) { %>
+                    <div class="article-discussion-source-image">
+                        <img
+                            src="<%= discussionImage %>"
+                            alt=""
+                        >
+                    </div>
+                <% } %>
+
+            <% } %>
+
+        <% } else { %>
+
+            <p class="profile-eyebrow">
+                Тема сообщества / <span>Community Topic</span>
+            </p>
+
+            <h1><%= topic.title %></h1>
+
+            <p>
+                Автор темы:
                 <a href="/gostinaya/member/<%= topic.author_id %>">
                     <%= topic.author %>
                 </a>
-            </span>
-        </p>
+                <br>
+                <span>
+                    Topic author:
+                    <a href="/gostinaya/member/<%= topic.author_id %>">
+                        <%= topic.author %>
+                    </a>
+                </span>
+            </p>
+
+        <% } %>
+
     </header>
 
+    <% if (topic.room !== 'articles') { %>
     <section class="profile-card room-panel topic-panel topic-opening-panel">
         <div class="room-panel-header">
             <div>
@@ -63,9 +123,13 @@
             </article>
         <% } %>
     </section>
+    <% } %>
 
     <%
-        const discussionMessages = messages.slice(1);
+        const discussionMessages =
+            topic.room === 'articles'
+                ? messages
+                : messages.slice(1);
 
         const topLevelMessages = discussionMessages.filter(
             message => !message.parent_message_id
@@ -101,13 +165,23 @@
         <div class="room-panel-header">
             <div>
                 <h2>
-                    Ответы /
-                    <span>Replies</span>
+                    <% if (topic.room === 'articles') { %>
+                        Комментарии /
+                        <span>Comments</span>
+                    <% } else { %>
+                        Ответы /
+                        <span>Replies</span>
+                    <% } %>
                 </h2>
 
                 <p>
-                    Продолжение разговора участников.
-                    <span>The members’ conversation continues here.</span>
+                    <% if (topic.room === 'articles') { %>
+                        Обсуждение публикации участниками Гостиной.
+                        <span>The Lounge members discuss the publication here.</span>
+                    <% } else { %>
+                        Продолжение разговора участников.
+                        <span>The members’ conversation continues here.</span>
+                    <% } %>
                 </p>
             </div>
         </div>
@@ -115,13 +189,23 @@
         <% if (!topLevelMessages.length) { %>
             <div class="room-empty topic-empty">
                 <h3>
-                    Пока никто не ответил /
-                    <span>No Replies Yet</span>
+                    <% if (topic.room === 'articles') { %>
+                        Комментариев пока нет /
+                        <span>No Comments Yet</span>
+                    <% } else { %>
+                        Пока никто не ответил /
+                        <span>No Replies Yet</span>
+                    <% } %>
                 </h3>
 
                 <p>
-                    Вы можете стать первым участником разговора.
-                    <span>You can be the first to join the conversation.</span>
+                    <% if (topic.room === 'articles') { %>
+                        Вы можете оставить первый комментарий к статье.
+                        <span>You can leave the first comment on the article.</span>
+                    <% } else { %>
+                        Вы можете стать первым участником разговора.
+                        <span>You can be the first to join the conversation.</span>
+                    <% } %>
                 </p>
             </div>
         <% } else { %>
@@ -150,8 +234,13 @@
             <div class="room-panel-header">
                 <div>
                     <h2 id="reply-form-title">
-                        Ответить в тему /
-                        <span>Reply to Topic</span>
+                        <% if (topic.room === 'articles') { %>
+                            Оставить комментарий /
+                            <span>Leave a Comment</span>
+                        <% } else { %>
+                            Ответить в тему /
+                            <span>Reply to Topic</span>
+                        <% } %>
                     </h2>
                 </div>
             </div>
@@ -203,8 +292,13 @@
 
     <nav class="room-navigation">
         <a href="/gostinaya/<%= topic.room %>">
-            ← Вернуться к темам /
-            <span class="en-secondary">Back to Topics</span>
+            <% if (topic.room === 'articles') { %>
+                ← Вернуться к обсуждению статей /
+                <span class="en-secondary">Back to Article Discussions</span>
+            <% } else { %>
+                ← Вернуться к темам /
+                <span class="en-secondary">Back to Topics</span>
+            <% } %>
         </a>
     </nav>
 
