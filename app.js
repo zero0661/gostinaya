@@ -650,35 +650,45 @@ app.get('/gostinaya/:room', async (req, res, next) => {
         let enrichedArticleDiscussions = articleDiscussions;
 
         if (roomKey === 'articles') {
-            enrichedArticleDiscussions = await Promise.all(
-                articleDiscussions.map(async (discussion) => {
-                    try {
-                        const articlePair =
-                            await ArticleMetadataService.getPair(
-                                discussion.url_ru,
-                                discussion.url_en
+            enrichedArticleDiscussions = [];
+
+            const batchSize = 3;
+
+            for (let i = 0; i < articleDiscussions.length; i += batchSize) {
+                const batch = articleDiscussions.slice(i, i + batchSize);
+
+                const enrichedBatch = await Promise.all(
+                    batch.map(async (discussion) => {
+                        try {
+                            const articlePair =
+                                await ArticleMetadataService.getPair(
+                                    discussion.url_ru,
+                                    discussion.url_en
+                                );
+
+                            return {
+                                ...discussion,
+                                article_ru: articlePair.ru,
+                                article_en: articlePair.en
+                            };
+                        } catch (error) {
+                            console.error(
+                                'Could not load article metadata:',
+                                discussion.id,
+                                error.message
                             );
 
-                        return {
-                            ...discussion,
-                            article_ru: articlePair.ru,
-                            article_en: articlePair.en
-                        };
-                    } catch (error) {
-                        console.error(
-                            'Could not load article metadata:',
-                            discussion.id,
-                            error.message
-                        );
+                            return {
+                                ...discussion,
+                                article_ru: null,
+                                article_en: null
+                            };
+                        }
+                    })
+                );
 
-                        return {
-                            ...discussion,
-                            article_ru: null,
-                            article_en: null
-                        };
-                    }
-                })
-            );
+                enrichedArticleDiscussions.push(...enrichedBatch);
+            }
         }
 
         res.render('rooms/gostinaya', {

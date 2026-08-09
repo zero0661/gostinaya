@@ -68,7 +68,11 @@ async function fetchArticle(url) {
             getMeta(html, 'description'),
         image:
             getMeta(html, 'og:image') ||
-            getMeta(html, 'twitter:image')
+            getMeta(html, 'twitter:image'),
+        publishedAt:
+            getMeta(html, 'article:published_time') ||
+            html.match(/"datePublished"\s*:\s*"([^"]+)"/i)?.[1] ||
+            ''
     };
 }
 
