@@ -4,6 +4,7 @@ import GuestRepository from './repositories/GuestRepository.js';
 import DiscussionRepository from './repositories/DiscussionRepository.js';
 import ArticleDiscussionRepository from './repositories/ArticleDiscussionRepository.js';
 import ArticleMetadataService from './services/ArticleMetadataService.js';
+import GhostWebhookService from './services/GhostWebhookService.js';
 import NotificationRepository from './repositories/NotificationRepository.js';
 import express from 'express';
 import expressLayouts from 'express-ejs-layouts';
@@ -76,6 +77,33 @@ app.use(async (req, res, next) => {
 });
 
 app.use('/gostinaya/public', express.static(path.join(__dirname, 'public')));
+
+app.post('/gostinaya/webhooks/ghost/post-published', async (req, res) => {
+  const secret = req.get('x-ghost-webhook-secret');
+
+  if (!process.env.GHOST_WEBHOOK_SECRET || secret !== process.env.GHOST_WEBHOOK_SECRET) {
+    return res.status(401).json({
+      ok: false,
+      error: 'Unauthorized'
+    });
+  }
+
+  try {
+    const result = await GhostWebhookService.handlePublishedPost(req.body);
+
+    return res.status(200).json({
+      ok: true,
+      ...result
+    });
+  } catch (error) {
+    console.error('Ghost post.published webhook error:', error);
+
+    return res.status(500).json({
+      ok: false,
+      error: 'Webhook processing failed'
+    });
+  }
+});
 
 app.get('/health', (req, res) => {
   res.status(200).send('Gostinaya is alive');

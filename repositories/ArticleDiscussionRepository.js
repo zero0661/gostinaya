@@ -78,7 +78,20 @@ export default {
         );
     },
 
-    async create({
+    async getByGhostPostId(ghostPostId) {
+    return get(
+      `
+        SELECT *
+        FROM article_discussions
+        WHERE ghost_post_id_ru = ?
+           OR ghost_post_id_en = ?
+        LIMIT 1
+      `,
+      [ghostPostId, ghostPostId]
+    );
+  },
+
+  async create({
         topicId,
         ghostPostIdRu = null,
         ghostPostIdEn = null,
