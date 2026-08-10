@@ -1,5 +1,6 @@
 import DiscussionRepository from '../repositories/DiscussionRepository.js';
 import ArticleDiscussionRepository from '../repositories/ArticleDiscussionRepository.js';
+import GhostApiService from './GhostApiService.js';
 
 const AUTHOR_ID = 2;
 
@@ -24,6 +25,44 @@ export default {
       };
     }
 
+    const fullPost = await GhostApiService.getPostById(post.id);
+    const discussionTag = (fullPost?.tags || []).find(tag =>
+      tag.name?.startsWith('#discussion-')
+    );
+
+    const isEnglish = new URL(post.url).pathname.startsWith('/en/');
+
+    if (discussionTag) {
+      const relatedPosts =
+        await GhostApiService.findPostsByDiscussionTag(discussionTag.name);
+
+      for (const relatedPost of relatedPosts) {
+        if (relatedPost.id === post.id) continue;
+
+        const relatedDiscussion =
+          await ArticleDiscussionRepository.getByGhostPostId(relatedPost.id);
+
+        if (!relatedDiscussion) continue;
+
+        await ArticleDiscussionRepository.updateLanguageVersion(
+          relatedDiscussion.topic_id,
+          {
+            ghostPostIdRu: isEnglish ? null : post.id,
+            ghostPostIdEn: isEnglish ? post.id : null,
+            urlRu: isEnglish ? null : post.url,
+            urlEn: isEnglish ? post.url : null,
+            publishedAt: post.published_at || null
+          }
+        );
+
+        return {
+          created: false,
+          linked: true,
+          topicId: relatedDiscussion.topic_id
+        };
+      }
+    }
+
     const topicResult = await DiscussionRepository.createTopic(
       'articles',
       post.title,
@@ -34,8 +73,10 @@ export default {
 
     await ArticleDiscussionRepository.create({
       topicId,
-      ghostPostIdRu: post.id,
-      urlRu: post.url,
+      ghostPostIdRu: isEnglish ? null : post.id,
+      ghostPostIdEn: isEnglish ? post.id : null,
+      urlRu: isEnglish ? null : post.url,
+      urlEn: isEnglish ? post.url : null,
       publishedAt: post.published_at || null
     });
 

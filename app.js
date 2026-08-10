@@ -79,7 +79,9 @@ app.use(async (req, res, next) => {
 app.use('/gostinaya/public', express.static(path.join(__dirname, 'public')));
 
 app.post('/gostinaya/webhooks/ghost/post-published', async (req, res) => {
-  const secret = req.get('x-ghost-webhook-secret');
+  const secret =
+    req.get('x-ghost-webhook-secret') ||
+    req.query.secret;
 
   if (!process.env.GHOST_WEBHOOK_SECRET || secret !== process.env.GHOST_WEBHOOK_SECRET) {
     return res.status(401).json({

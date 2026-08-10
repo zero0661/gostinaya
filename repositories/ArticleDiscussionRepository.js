@@ -91,6 +91,35 @@ export default {
     );
   },
 
+  async updateLanguageVersion(topicId, {
+    ghostPostIdRu = null,
+    ghostPostIdEn = null,
+    urlRu = null,
+    urlEn = null,
+    publishedAt = null
+  }) {
+    return run(
+      `
+        UPDATE article_discussions
+        SET
+          ghost_post_id_ru = COALESCE(?, ghost_post_id_ru),
+          ghost_post_id_en = COALESCE(?, ghost_post_id_en),
+          url_ru = COALESCE(?, url_ru),
+          url_en = COALESCE(?, url_en),
+          published_at = COALESCE(?, published_at)
+        WHERE topic_id = ?
+      `,
+      [
+        ghostPostIdRu,
+        ghostPostIdEn,
+        urlRu,
+        urlEn,
+        publishedAt,
+        topicId
+      ]
+    );
+  },
+
   async create({
         topicId,
         ghostPostIdRu = null,
