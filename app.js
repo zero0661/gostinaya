@@ -78,7 +78,7 @@ app.use(async (req, res, next) => {
 
 app.use('/gostinaya/public', express.static(path.join(__dirname, 'public')));
 
-app.post('/gostinaya/webhooks/ghost/post-published', async (req, res) => {
+async function handleGhostPostWebhook(req, res) {
   const secret =
     req.get('x-ghost-webhook-secret') ||
     req.query.secret;
@@ -91,21 +91,24 @@ app.post('/gostinaya/webhooks/ghost/post-published', async (req, res) => {
   }
 
   try {
-    const result = await GhostWebhookService.handlePublishedPost(req.body);
+    const result = await GhostWebhookService.handlePost(req.body);
 
     return res.status(200).json({
       ok: true,
       ...result
     });
   } catch (error) {
-    console.error('Ghost post.published webhook error:', error);
+    console.error('Ghost post webhook error:', error);
 
     return res.status(500).json({
       ok: false,
       error: 'Webhook processing failed'
     });
   }
-});
+}
+
+app.post('/gostinaya/webhooks/ghost/post-published', handleGhostPostWebhook);
+app.post('/gostinaya/webhooks/ghost/post-updated', handleGhostPostWebhook);
 
 app.get('/health', (req, res) => {
   res.status(200).send('Gostinaya is alive');
