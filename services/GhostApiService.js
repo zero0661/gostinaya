@@ -31,7 +31,16 @@ export default {
     return data.posts?.[0] || null;
   },
   async getPostByUrl(url) {
-    const data = await adminFetch(`/posts/?limit=1&include=tags&filter=${encodeURIComponent(`url:'${escapeNql(url)}'`)}`);
+    let parsedUrl;
+    try {
+      parsedUrl = new URL(url);
+    } catch {
+      throw new Error(`Invalid article URL: ${url}`);
+    }
+    const segments = parsedUrl.pathname.split('/').filter(Boolean);
+    const slug = segments.at(-1);
+    if (!slug) throw new Error(`Article URL has no slug: ${url}`);
+    const data = await adminFetch(`/posts/?limit=1&include=tags&filter=${encodeURIComponent(`slug:'${escapeNql(decodeURIComponent(slug))}'`)}`);
     return data.posts?.[0] || null;
   },
   async findPostsByDiscussionTag(tagName) {
