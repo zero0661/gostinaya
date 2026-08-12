@@ -6,6 +6,7 @@ import ArticleDiscussionRepository from './repositories/ArticleDiscussionReposit
 import ArticleMetadataService from './services/ArticleMetadataService.js';
 import GhostWebhookService from './services/GhostWebhookService.js';
 import NotificationRepository from './repositories/NotificationRepository.js';
+import { createArticleDiscussionRedirectHandler } from './controllers/ArticleDiscussionController.js';
 import express from 'express';
 import expressLayouts from 'express-ejs-layouts';
 import path from 'path';
@@ -21,6 +22,9 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const articleDiscussionRedirect = createArticleDiscussionRedirectHandler(
+    ArticleDiscussionRepository
+);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -321,8 +325,10 @@ app.get('/gostinaya/login', (req, res) => {
     });
 });
 
-
-
+app.get(
+    '/gostinaya/article/:ghostPostId',
+    articleDiscussionRedirect
+);
 
 app.post('/gostinaya/topic/:id/messages', async (req, res, next) => {
     if (!req.session.guest?.id) {
