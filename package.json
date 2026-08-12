@@ -8,7 +8,8 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "migrate:registration": "node database/migrate-registration.js"
+    "migrate:registration": "node database/migrate-registration.js",
+    "import:cusdis": "node scripts/import-cusdis-comments.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
