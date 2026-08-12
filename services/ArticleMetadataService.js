@@ -3,6 +3,7 @@ function decodeHtml(value = '') {
         .replace(/&amp;/g, '&')
         .replace(/&quot;/g, '"')
         .replace(/&#39;/g, "'")
+        .replace(/&#x27;/gi, "'")
         .replace(/&lt;/g, '<')
         .replace(/&gt;/g, '>');
 }
