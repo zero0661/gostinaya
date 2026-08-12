@@ -263,11 +263,10 @@ async function main() {
   const updatedTheme = replaceThemeBlock(themeSource);
 
   const key = mysql(`
-    SELECT CONCAT(k.id, ':', k.secret)
-    FROM api_keys k
-    JOIN integrations i ON i.id = k.integration_id
-    WHERE k.type = 'admin' AND i.deleted_at IS NULL
-    ORDER BY i.created_at DESC
+    SELECT CONCAT(id, ':', secret)
+    FROM api_keys
+    WHERE type = 'admin'
+    ORDER BY created_at DESC
     LIMIT 1
   `);
   globalThis.adminToken = createToken(key);
