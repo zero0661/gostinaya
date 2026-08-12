@@ -7,6 +7,7 @@ import ArticleMetadataService from './services/ArticleMetadataService.js';
 import GhostWebhookService from './services/GhostWebhookService.js';
 import NotificationRepository from './repositories/NotificationRepository.js';
 import { createArticleDiscussionRedirectHandler } from './controllers/ArticleDiscussionController.js';
+import requireGuest from './middleware/requireGuest.js';
 import express from 'express';
 import expressLayouts from 'express-ejs-layouts';
 import path from 'path';
@@ -136,7 +137,15 @@ app.get('/gostinaya', (req, res) => {
     return res.redirect('/gostinaya/hall');
 });
 
-app.get('/gostinaya/hall', async (req, res, next) => {
+app.get('/gostinaya/welcome', requireGuest, (req, res) => {
+    res.render('auth/welcome', {
+        title: 'Дверь открыта / The Door Is Open',
+        layout: 'layouts/public',
+        guest: req.session.guest
+    });
+});
+
+app.get('/gostinaya/hall', requireGuest, async (req, res, next) => {
   try {
     const [recentActivity, roomStats] = await Promise.all([
         DiscussionRepository.getRecentActivity(15),
@@ -664,7 +673,7 @@ app.post('/gostinaya/:room/new', async (req, res, next) => {
     }
 });
 
-app.get('/gostinaya/:room', async (req, res, next) => {
+app.get('/gostinaya/:room', requireGuest, async (req, res, next) => {
     const roomKey = req.params.room;
     const room = rooms[roomKey];
 

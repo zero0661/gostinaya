@@ -2,37 +2,37 @@ import GuestRepository from '../repositories/GuestRepository.js';
 import AuthService from '../services/AuthService.js';
 import crypto from 'crypto';
 import { sendMail } from '../utils/mailer.js';
+import {
+    normalizeRegistrationInput,
+    validateRegistrationInput
+} from '../services/RegistrationService.js';
 
 class GuestController {
     async register(req, res) {
         try {
-            const { name, email, password, location, language } = req.body;
+            const input = normalizeRegistrationInput(req.body);
+            const validationError = validateRegistrationInput(input);
 
-            if (!name || !email || !password) {
+            if (validationError) {
                 return res.status(400).json({
-                    error: 'Name, email and password are required'
+                    error: validationError
                 });
             }
 
-            const existing = await GuestRepository.findByEmail(email);
+            const existing = await GuestRepository.findByEmail(input.email);
 
             if (existing) {
-                return res.json({
-                    success: true,
-                    guest: existing,
-                    message: 'Guest already exists'
+                return res.status(409).json({
+                    error: 'Этот e-mail уже зарегистрирован. / This e-mail is already registered.'
                 });
             }
 
-            const passwordHash = await AuthService.hashPassword(password);
+            const passwordHash = await AuthService.hashPassword(input.password);
 
-            const guest = await GuestRepository.create(
-                name,
-                email,
-                passwordHash,
-		location,
-		language
-            );
+            const guest = await GuestRepository.create({
+                ...input,
+                passwordHash
+            });
 
             req.session.guest = {
                 id: guest.id,
@@ -42,10 +42,13 @@ class GuestController {
                 language: guest.language
             };
 
+            await new Promise((resolve, reject) => {
+                req.session.save((error) => error ? reject(error) : resolve());
+            });
+
             return res.json({
                 success: true,
-                guest,
-                redirect: '/gostinaya/hall'
+                redirect: '/gostinaya/welcome'
             });
         } catch (err) {
             console.error(err);
@@ -58,7 +61,8 @@ class GuestController {
 
     async login(req, res) {
         try {
-            const { email, password } = req.body;
+            const email = String(req.body.email || '').trim().toLowerCase();
+            const password = String(req.body.password || '');
 
             if (!email || !password) {
                 return res.status(400).json({
@@ -92,6 +96,10 @@ class GuestController {
                 role: guest.role,
                 language: guest.language
             };
+
+            await new Promise((resolve, reject) => {
+                req.session.save((error) => error ? reject(error) : resolve());
+            });
 
             return res.json({
                 success: true,

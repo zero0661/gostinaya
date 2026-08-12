@@ -9,13 +9,13 @@
     <p class="auth-kicker">Гостиная / The Lounge</p>
 
     <h1>
-      Регистрация<br>
-      <span>Registration</span>
+      Постучать в дверь<br>
+      <span>Knock on the Door</span>
     </h1>
 
     <p class="auth-intro">
-      Создайте учётную запись, чтобы стать участником сообщества проекта «После логина».<br>
-      Create an account to join the After Login community.
+      Представьтесь и расскажите немного о себе. Доступ откроется сразу после регистрации.<br>
+      Introduce yourself and tell us a little about yourself. Access opens immediately after registration.
     </p>
 
     <form id="register-form" class="auth-form">
@@ -42,19 +42,16 @@
       >
 
       <label for="country">
-        Откуда вы?<br>
-        <span>Where are you from?</span>
+        Страна<br>
+        <span>Country</span>
       </label>
-      <select id="country" name="country" required>
-        <option value="">Выберите / Select</option>
-        <option value="Russia">Россия / Russia</option>
-        <option value="Germany">Германия / Germany</option>
-        <option value="USA">США / USA</option>
-        <option value="France">Франция / France</option>
-        <option value="Netherlands">Нидерланды / Netherlands</option>
-        <option value="Other">Другая страна / Other country</option>
-        <option value="Prefer not to say">Не скажу / Prefer not to say</option>
-      </select>
+      <input id="country" name="country" type="text" autocomplete="country-name" maxlength="80" required>
+
+      <label for="city">
+        Город<br>
+        <span>City</span>
+      </label>
+      <input id="city" name="city" type="text" autocomplete="address-level2" maxlength="80" required>
 
       <label for="language">
         Язык общения<br>
@@ -65,6 +62,18 @@
         <option value="ru">Русский / Russian</option>
         <option value="en">English / Английский</option>
       </select>
+
+      <label for="joinReason">
+        Что привело вас на сайт «После логина»?<br>
+        <span>What brought you to After Login?</span>
+      </label>
+      <textarea id="joinReason" name="joinReason" maxlength="1000" rows="4" required></textarea>
+
+      <label for="currentTopic">
+        Какая тема вам сегодня ближе?<br>
+        <span>Which topic feels closest to you today?</span>
+      </label>
+      <textarea id="currentTopic" name="currentTopic" maxlength="1000" rows="4" required></textarea>
 
       <label for="password">
         Пароль<br>
@@ -90,6 +99,22 @@
   minlength="8"
   required
 >
+      <label class="auth-consent" for="acceptsRules">
+        <input id="acceptsRules" name="acceptsRules" type="checkbox" required>
+        <span>
+          Я принимаю Правила Гостиной.<br>
+          <em>I accept the Lounge Rules.</em>
+        </span>
+      </label>
+
+      <label class="auth-consent" for="acceptsPrivacy">
+        <input id="acceptsPrivacy" name="acceptsPrivacy" type="checkbox" required>
+        <span>
+          Я согласен на обработку указанных данных для создания и работы аккаунта.<br>
+          <em>I consent to the processing of the submitted data to create and operate my account.</em>
+        </span>
+      </label>
+
       <button type="submit">
         Зарегистрироваться<br>
         <span>Register</span>
@@ -138,7 +163,12 @@ if (password !== confirmPassword) {
       email: formData.get('email'),
       password: formData.get('password'),
       country: formData.get('country'),
-      language: formData.get('language')
+      city: formData.get('city'),
+      language: formData.get('language'),
+      joinReason: formData.get('joinReason'),
+      currentTopic: formData.get('currentTopic'),
+      acceptsRules: formData.get('acceptsRules') === 'on',
+      acceptsPrivacy: formData.get('acceptsPrivacy') === 'on'
     };
 
     try {
@@ -159,12 +189,6 @@ if (password !== confirmPassword) {
         return;
       }
 
-      if (data.message === 'Guest already exists') {
-        message.textContent =
-          'Этот e-mail уже зарегистрирован. / This e-mail is already registered.';
-        return;
-      }
-
       message.textContent =
         'Регистрация завершена. Добро пожаловать! / Registration complete. Welcome!';
 
@@ -173,7 +197,7 @@ if (password !== confirmPassword) {
         return;
       }
 
-      window.location.href = '/gostinaya/hall';
+      window.location.href = '/gostinaya/welcome';
 
     } catch (error) {
       message.textContent =

@@ -34,7 +34,7 @@ class GuestRepository {
     findByEmail(email) {
         return new Promise((resolve, reject) => {
             db.get(
-                `SELECT * FROM guests WHERE email = ?`,
+                `SELECT * FROM guests WHERE LOWER(email) = LOWER(?)`,
                 [email],
                 (err, row) => {
                     if (err) {
@@ -47,12 +47,44 @@ class GuestRepository {
         });
     }
 
-    create(name, email, passwordHash, location, language) {
+    create({
+        name,
+        email,
+        passwordHash,
+        location,
+        language,
+        country,
+        city,
+        joinReason,
+        currentTopic
+    }) {
         return new Promise((resolve, reject) => {
             db.run(
-               `INSERT INTO guests (name, email, password_hash, location, language)
-                VALUES (?, ?, ?, ?, ?)`,
-                [name, email, passwordHash, location, language],
+               `INSERT INTO guests (
+                    name,
+                    email,
+                    password_hash,
+                    location,
+                    language,
+                    country,
+                    city,
+                    join_reason,
+                    current_topic,
+                    rules_accepted_at,
+                    privacy_accepted_at
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
+                [
+                    name,
+                    email,
+                    passwordHash,
+                    location,
+                    language,
+                    country,
+                    city,
+                    joinReason,
+                    currentTopic
+                ],
                 function (err) {
                     if (err) {
                         return reject(err);
@@ -61,7 +93,9 @@ class GuestRepository {
                     resolve({
                         id: this.lastID,
                         name,
-                        email
+                        email,
+                        role: 'guest',
+                        language
                     });
                 }
             );
