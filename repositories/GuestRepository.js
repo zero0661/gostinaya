@@ -193,7 +193,8 @@ class GuestRepository {
                         WHERE m.author_id = g.id
                     ) AS messages_count
                  FROM guests g
-                 WHERE g.id = ?`,
+                 WHERE g.id = ?
+                   AND g.role = 'guest'`,
                 [id],
                 (error, row) => {
                     if (error) {
@@ -280,6 +281,7 @@ class GuestRepository {
                         WHERE m.author_id = g.id
                     ) AS messages_count
                  FROM guests g
+                 WHERE g.role = 'guest'
                  ORDER BY g.created_at ASC, g.id ASC`,
                 [],
                 (error, rows) => {
