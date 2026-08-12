@@ -11,21 +11,26 @@ function createAdminToken() {
   return `${unsigned}.${signature}`;
 }
 
-async function adminFetch(path, options = {}) {
-  const response = await fetch(`https://milenin.pro/ghost/api/admin${path}`, {
-    ...options,
-    headers: { Authorization: `Ghost ${createAdminToken()}`, 'Accept-Version': 'v6.0', ...(options.headers || {}) }
-  });
-  if (!response.ok) {
-    const body = await response.text();
-    throw new Error(`Ghost Admin API ${response.status}: ${body.slice(0, 300)}`);
-  }
-  return response.json();
-}
-
 function escapeNql(value) { return String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
 
-export default {
+function discussionTags(post) {
+  return (post.tags || []).map(tag => tag.name).filter(name => /^#discussion-/i.test(name));
+}
+
+export function createGhostApiService({ fetchImpl = fetch, adminBaseUrl = 'https://milenin.pro/ghost/api/admin' } = {}) {
+  async function adminFetch(path, options = {}) {
+    const response = await fetchImpl(`${adminBaseUrl}${path}`, {
+      ...options,
+      headers: { Authorization: `Ghost ${createAdminToken()}`, 'Accept-Version': 'v6.0', ...(options.headers || {}) }
+    });
+    if (!response.ok) {
+      const body = await response.text();
+      throw new Error(`Ghost Admin API ${response.status}: ${body.slice(0, 300)}`);
+    }
+    return response.json();
+  }
+
+  return {
   async getPostById(postId) {
     const data = await adminFetch(`/posts/${encodeURIComponent(postId)}/?include=tags`);
     return data.posts?.[0] || null;
@@ -49,11 +54,31 @@ export default {
     return data.posts || [];
   },
   async addDiscussionTag(post, tagName) {
-    const tags = (post.tags || []).map(tag => ({ name: tag.name }));
-    if (!tags.some(tag => tag.name === tagName)) tags.push({ name: tagName });
-    const data = await adminFetch(`/posts/${encodeURIComponent(post.id)}/`, {
-      method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ posts: [{ id: post.id, tags }] })
+    // Ghost uses updated_at for collision detection and replaces all tag relations.
+    // Always fetch the latest post immediately before writing.
+    const latest = await this.getPostById(post.id);
+    if (!latest) throw new Error(`Ghost post ${post.id} was not found before update`);
+
+    const existingDiscussionTags = discussionTags(latest);
+    if (existingDiscussionTags.includes(tagName)) return latest;
+    if (existingDiscussionTags.length) {
+      throw new Error(`Ghost post ${post.id} already has a different discussion tag: ${existingDiscussionTags.join(', ')}`);
+    }
+
+    const tags = (latest.tags || []).map(tag => {
+      if (typeof tag.name !== 'string' || !tag.name.trim()) throw new Error(`Ghost post ${post.id} has a tag without a valid name`);
+      return { name: tag.name };
+    });
+    tags.push({ name: tagName });
+    const data = await adminFetch(`/posts/${encodeURIComponent(latest.id)}/`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ posts: [{ id: latest.id, updated_at: latest.updated_at, tags }] })
     });
     return data.posts?.[0] || null;
   }
-};
+  };
+}
+
+const GhostApiService = createGhostApiService();
+export default GhostApiService;
