@@ -108,7 +108,7 @@ const NEW_TEMPLATE = String.raw`            <section class="after-login-invitati
                     }
 
                     .after-login-invitation__button--primary {
-                        color: #161219;
+                        color: #161219 !important;
                         background: linear-gradient(135deg, #f2d9a7, #c8a5ff);
                         border: 1px solid transparent;
                     }
