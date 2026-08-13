@@ -138,6 +138,36 @@
   </div>
 </section>
 
+<style>
+  /* Registration readability: keep the form geometry, enlarge only its text and consent controls. */
+  #register-form input:not([type="checkbox"]),
+  #register-form select,
+  #register-form textarea {
+    font-size: 18px !important;
+  }
+
+  #register-form .auth-consent {
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+  }
+
+  #register-form .auth-consent input[type="checkbox"] {
+    width: 18px !important;
+    height: 18px !important;
+    margin-top: 3px !important;
+  }
+
+  #register-form .auth-consent span {
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+  }
+
+  #register-form .auth-consent em {
+    font-size: 15px !important;
+    line-height: 1.45 !important;
+  }
+</style>
+
 <script>
   const form = document.getElementById('register-form');
   const message = document.getElementById('register-message');
