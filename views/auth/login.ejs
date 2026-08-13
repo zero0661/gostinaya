@@ -54,7 +54,7 @@
 
       <p>
         Нет аккаунта? / <span>No account yet?</span>
-        <a href="/gostinaya/register">
+        <a href="/gostinaya/register<%= returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : '' %>">
           Зарегистрироваться / <span>Register</span>
         </a>
       </p>
@@ -65,6 +65,7 @@
 <script>
     const form = document.getElementById('login-form');
     const message = document.getElementById('login-message');
+    const returnTo = <%- JSON.stringify(returnTo || '') %>;
 
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -82,7 +83,8 @@
                 },
                 body: JSON.stringify({
                     email,
-                    password
+                    password,
+                    returnTo
                 })
             });
 

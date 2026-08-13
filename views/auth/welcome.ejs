@@ -26,9 +26,9 @@
     </p>
 
     <div class="welcome-actions">
-      <a class="welcome-primary" href="/gostinaya/hall">
-        Войти в Холл<br>
-        <span>Enter the Hall</span>
+      <a class="welcome-primary" href="<%= returnTo || '/gostinaya/hall' %>">
+        <%= returnTo ? 'Перейти к обсуждению' : 'Войти в Холл' %><br>
+        <span><%= returnTo ? 'Go to the Discussion' : 'Enter the Hall' %></span>
       </a>
     </div>
   </div>

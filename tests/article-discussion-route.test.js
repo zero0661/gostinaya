@@ -57,7 +57,10 @@ test('article route requires login before looking up the discussion', async () =
         assert.fail
     );
 
-    assert.equal(response.redirectUrl, '/gostinaya/login');
+    assert.equal(
+        response.redirectUrl,
+        '/gostinaya/login?returnTo=%2Fgostinaya%2Farticle%2Fru-post'
+    );
     assert.equal(lookupCalled, false);
 });
 

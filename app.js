@@ -18,6 +18,7 @@ import rooms from './config/rooms.js';
 import db from './database/db.js';
 import session from 'express-session';
 import sessionFileStore from 'session-file-store';
+import { normalizeAuthReturnTo } from './utils/authRedirect.js';
 
 dotenv.config();
 
@@ -120,9 +121,12 @@ app.get('/health', (req, res) => {
 });
 
 app.get('/gostinaya/register', (req, res) => {
+    const returnTo = normalizeAuthReturnTo(req.query.returnTo);
+
     res.render('auth/register', {
         title: 'Регистрация / Registration',
-        layout: 'layouts/public'
+        layout: 'layouts/public',
+        returnTo
     });
 });
 
@@ -138,10 +142,13 @@ app.get('/gostinaya', (req, res) => {
 });
 
 app.get('/gostinaya/welcome', requireGuest, (req, res) => {
+    const returnTo = normalizeAuthReturnTo(req.query.returnTo);
+
     res.render('auth/welcome', {
         title: 'Дверь открыта / The Door Is Open',
         layout: 'layouts/public',
-        guest: req.session.guest
+        guest: req.session.guest,
+        returnTo
     });
 });
 
@@ -328,9 +335,12 @@ app.get('/gostinaya/reset-password', (req, res) => {
 });
 
 app.get('/gostinaya/login', (req, res) => {
+    const returnTo = normalizeAuthReturnTo(req.query.returnTo);
+
     res.render('auth/login', {
         title: 'Вход / Login',
-        layout: 'layouts/public'
+        layout: 'layouts/public',
+        returnTo
     });
 });
 

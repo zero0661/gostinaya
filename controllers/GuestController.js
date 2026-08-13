@@ -6,6 +6,7 @@ import {
     normalizeRegistrationInput,
     validateRegistrationInput
 } from '../services/RegistrationService.js';
+import { addReturnTo, normalizeAuthReturnTo } from '../utils/authRedirect.js';
 
 class GuestController {
     async register(req, res) {
@@ -46,9 +47,11 @@ class GuestController {
                 req.session.save((error) => error ? reject(error) : resolve());
             });
 
+            const returnTo = normalizeAuthReturnTo(req.body.returnTo);
+
             return res.json({
                 success: true,
-                redirect: '/gostinaya/welcome'
+                redirect: addReturnTo('/gostinaya/welcome', returnTo)
             });
         } catch (err) {
             console.error(err);
@@ -101,9 +104,11 @@ class GuestController {
                 req.session.save((error) => error ? reject(error) : resolve());
             });
 
+            const returnTo = normalizeAuthReturnTo(req.body.returnTo);
+
             return res.json({
                 success: true,
-                redirect: '/gostinaya/hall'
+                redirect: returnTo || '/gostinaya/hall'
             });
         } catch (err) {
             console.error(err);

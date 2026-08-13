@@ -1,3 +1,5 @@
+import { addReturnTo } from '../utils/authRedirect.js';
+
 export function createArticleDiscussionRedirectHandler(repository) {
     if (!repository?.getByGhostPostId) {
         throw new TypeError(
@@ -7,7 +9,12 @@ export function createArticleDiscussionRedirectHandler(repository) {
 
     return async function articleDiscussionRedirect(req, res, next) {
         if (!req.session?.guest?.id) {
-            return res.redirect('/gostinaya/login');
+            return res.redirect(
+                addReturnTo(
+                    '/gostinaya/login',
+                    `/gostinaya/article/${req.params.ghostPostId}`
+                )
+            );
         }
 
         try {

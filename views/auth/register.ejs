@@ -129,7 +129,7 @@
         Already have an account?
       </span>
 
-      <a href="/gostinaya/login">
+      <a href="/gostinaya/login<%= returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : '' %>">
         Войти<br>
         Sign in
       </a>
@@ -141,6 +141,7 @@
 <script>
   const form = document.getElementById('register-form');
   const message = document.getElementById('register-message');
+  const returnTo = <%- JSON.stringify(returnTo || '') %>;
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -167,6 +168,7 @@ if (password !== confirmPassword) {
       language: formData.get('language'),
       joinReason: formData.get('joinReason'),
       currentTopic: formData.get('currentTopic'),
+      returnTo,
       acceptsRules: formData.get('acceptsRules') === 'on',
       acceptsPrivacy: formData.get('acceptsPrivacy') === 'on'
     };
