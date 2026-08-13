@@ -57,6 +57,19 @@ export default {
       VALUES (?, ?, ?, ?, ?, ?)`, [topicId, ghostPostIdRu, ghostPostIdEn, urlRu, urlEn, publishedAt]);
   },
 
+  async createWithTopic({ title, authorId, ghostPostIdRu = null, ghostPostIdEn = null, urlRu = null, urlEn = null, publishedAt = null }) {
+    return transaction(async () => {
+      const topic = await run(`INSERT INTO discussion_topics (room, title, author_id)
+        VALUES ('articles', ?, ?)`, [title, authorId]);
+      await run(`INSERT INTO article_discussions
+        (topic_id, ghost_post_id_ru, ghost_post_id_en, url_ru, url_en, published_at)
+        VALUES (?, ?, ?, ?, ?, ?)`, [
+        topic.lastID, ghostPostIdRu, ghostPostIdEn, urlRu, urlEn, publishedAt
+      ]);
+      return { topicId: Number(topic.lastID) };
+    });
+  },
+
   async mergeTopics({ primaryTopicId, duplicateTopicId, languageVersion }) {
     if (Number(primaryTopicId) === Number(duplicateTopicId)) return { topicId: Number(primaryTopicId), merged: false };
 

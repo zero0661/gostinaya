@@ -13,17 +13,23 @@ const run = (sql, params = []) => new Promise((resolve, reject) => db.run(sql, p
 const all = (sql, params = []) => new Promise((resolve, reject) => db.all(sql, params, (error, rows) => error ? reject(error) : resolve(rows)));
 
 try {
-  await run('CREATE TABLE discussion_topics (id INTEGER PRIMARY KEY, created_at TEXT)');
+  await run('CREATE TABLE discussion_topics (id INTEGER PRIMARY KEY, room TEXT, title TEXT, author_id INTEGER, created_at TEXT)');
   await run('CREATE TABLE article_discussions (id INTEGER PRIMARY KEY, topic_id INTEGER UNIQUE, ghost_post_id_ru TEXT, ghost_post_id_en TEXT, url_ru TEXT, url_en TEXT, published_at TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT)');
   await run('CREATE TABLE discussion_messages (id INTEGER PRIMARY KEY, topic_id INTEGER, parent_message_id INTEGER, body TEXT)');
   await run('CREATE TABLE notifications (id INTEGER PRIMARY KEY, topic_id INTEGER, message_id INTEGER)');
   await run('CREATE TABLE discussion_topic_reads (id INTEGER PRIMARY KEY, guest_id INTEGER, topic_id INTEGER, last_read_message_id INTEGER, last_read_at TEXT, UNIQUE(guest_id, topic_id))');
-  await run("INSERT INTO discussion_topics VALUES (10, '2026-01-01'), (20, '2026-02-01')");
+  await run("INSERT INTO discussion_topics VALUES (10, 'articles', 'RU', 2, '2026-01-01'), (20, 'articles', 'EN', 2, '2026-02-01')");
   await run("INSERT INTO article_discussions (topic_id, ghost_post_id_ru, url_ru) VALUES (10, 'ru', 'https://example/ru')");
   await run("INSERT INTO article_discussions (topic_id, ghost_post_id_en, url_en) VALUES (20, 'en', 'https://example/en')");
   await run("INSERT INTO discussion_messages VALUES (101, 20, NULL, 'first'), (102, 20, 101, 'reply')");
   await run('INSERT INTO notifications VALUES (1, 20, 102)');
   await run("INSERT INTO discussion_topic_reads (guest_id, topic_id, last_read_message_id, last_read_at) VALUES (7, 10, 90, '2026-01-01'), (7, 20, 102, '2026-02-01')");
+
+  const created = await ArticleDiscussionRepository.createWithTopic({
+    title: 'Atomic topic', authorId: 2, ghostPostIdRu: 'atomic-ru'
+  });
+  assert.equal((await all('SELECT title FROM discussion_topics WHERE id = ?', [created.topicId]))[0].title, 'Atomic topic');
+  assert.equal((await all('SELECT topic_id FROM article_discussions WHERE ghost_post_id_ru = ?', ['atomic-ru']))[0].topic_id, created.topicId);
 
   await ArticleDiscussionRepository.mergeTopics({
     primaryTopicId: 10, duplicateTopicId: 20,

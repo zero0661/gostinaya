@@ -1,6 +1,7 @@
 import DiscussionRepository from '../repositories/DiscussionRepository.js';
 import ArticleDiscussionRepository from '../repositories/ArticleDiscussionRepository.js';
 import GhostApiService from './GhostApiService.js';
+import { createWebhookQueue } from './WebhookQueue.js';
 
 const AUTHOR_ID = 2;
 const DISCUSSION_TAG = /^#discussion-[a-z0-9][a-z0-9-]*$/i;
@@ -35,8 +36,7 @@ async function selectPrimary(discussions) {
   return rows[0].discussion;
 }
 
-export default {
-  async handlePost(payload) {
+async function handlePost(payload) {
     const post = normalizePost(payload);
     if (!post?.id || !post?.url || !post?.title) throw new Error('Invalid Ghost post payload');
 
@@ -48,13 +48,12 @@ export default {
     if (!tags.length) {
       const existing = await ArticleDiscussionRepository.getByGhostPostId(post.id);
       if (existing) return { created: false, topicId: existing.topic_id };
-      const topic = await DiscussionRepository.createTopic('articles', post.title, AUTHOR_ID);
-      await ArticleDiscussionRepository.create({ topicId: topic.lastID, ...(isEnglish(post)
+      const topic = await ArticleDiscussionRepository.createWithTopic({ title: post.title, authorId: AUTHOR_ID, ...(isEnglish(post)
         ? { ghostPostIdEn: post.id, urlEn: post.url }
         : { ghostPostIdRu: post.id, urlRu: post.url }), publishedAt: post.published_at || null });
       return {
         created: true,
-        topicId: topic.lastID,
+        topicId: topic.topicId,
         publication: {
           title: post.title,
           urlRu: isEnglish(post) ? null : post.url,
@@ -75,12 +74,11 @@ export default {
     const uniqueDiscussions = [...new Map(discussions.map(item => [item.topic_id, item])).values()];
 
     if (!uniqueDiscussions.length) {
-      const topic = await DiscussionRepository.createTopic('articles', version.title, AUTHOR_ID);
-      await ArticleDiscussionRepository.create({ topicId: topic.lastID, ...version });
+      const topic = await ArticleDiscussionRepository.createWithTopic({ title: version.title, authorId: AUTHOR_ID, ...version });
       return {
         created: true,
         linked: true,
-        topicId: topic.lastID,
+        topicId: topic.topicId,
         publication: {
           title: version.title,
           titleRu: version.titleRu,
@@ -103,6 +101,11 @@ export default {
       primaryTopicId: primary.topic_id, duplicateTopicId: duplicate.topic_id, languageVersion: version
     });
     return { created: false, linked: true, merged: result.merged, topicId: result.topicId };
-  },
-  handlePublishedPost(payload) { return this.handlePost(payload); }
+}
+
+const enqueuePost = createWebhookQueue(handlePost);
+
+export default {
+  handlePost: enqueuePost,
+  handlePublishedPost: enqueuePost
 };

@@ -27,6 +27,34 @@ db.serialize(() => {
             updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
         )
     `);
+
+    db.run(`
+        CREATE UNIQUE INDEX IF NOT EXISTS
+        idx_article_discussions_ghost_post_id_ru
+        ON article_discussions(ghost_post_id_ru)
+        WHERE ghost_post_id_ru IS NOT NULL
+    `);
+
+    db.run(`
+        CREATE UNIQUE INDEX IF NOT EXISTS
+        idx_article_discussions_ghost_post_id_en
+        ON article_discussions(ghost_post_id_en)
+        WHERE ghost_post_id_en IS NOT NULL
+    `);
+
+    db.run(`
+        CREATE UNIQUE INDEX IF NOT EXISTS
+        idx_article_discussions_url_ru
+        ON article_discussions(url_ru)
+        WHERE url_ru IS NOT NULL
+    `);
+
+    db.run(`
+        CREATE UNIQUE INDEX IF NOT EXISTS
+        idx_article_discussions_url_en
+        ON article_discussions(url_en)
+        WHERE url_en IS NOT NULL
+    `);
 });
 
 db.close(() => {
