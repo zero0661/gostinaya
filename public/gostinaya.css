@@ -5119,3 +5119,132 @@ body {
         object-position: center 52% !important;
     }
 }
+
+/* ===== LOUNGE BANNER V5 — UNDISTORTED CENTER SCENE WITH TYPOGRAPHIC WINGS ===== */
+
+.lounge-banner {
+    isolation: isolate;
+    height: clamp(300px, 22vw, 430px) !important;
+    min-height: 0 !important;
+    background:
+        radial-gradient(circle at 14% 48%, rgba(104, 57, 24, .30), transparent 34%),
+        radial-gradient(circle at 86% 45%, rgba(20, 53, 87, .34), transparent 36%),
+        linear-gradient(90deg, #090806 0%, #07090d 45%, #050a12 100%),
+        #05080d !important;
+}
+
+.lounge-banner-image {
+    position: absolute !important;
+    z-index: 0;
+    top: 0;
+    left: 50%;
+    width: auto !important;
+    max-width: none !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    transform: translateX(-50%);
+    filter: none !important;
+}
+
+.lounge-banner::before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+        90deg,
+        rgba(5, 8, 13, .18) 0%,
+        rgba(5, 8, 13, .04) 25%,
+        transparent 39%,
+        transparent 61%,
+        rgba(5, 8, 13, .04) 75%,
+        rgba(5, 8, 13, .18) 100%
+    );
+}
+
+.lounge-banner-title,
+.lounge-banner-quote {
+    display: flex !important;
+    position: absolute;
+    z-index: 4;
+    top: 50%;
+    width: min(22vw, 350px);
+    margin: 0;
+    transform: translateY(-50%);
+    color: #f4eee5;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, .9);
+}
+
+.lounge-banner-title {
+    left: clamp(28px, 4vw, 78px);
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.lounge-banner-mark {
+    color: #d3a467;
+    font: 700 clamp(22px, 2vw, 36px)/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: -.08em;
+}
+
+.lounge-banner-title strong {
+    margin-top: 12px;
+    font-size: clamp(20px, 1.65vw, 31px);
+    line-height: 1.08;
+    letter-spacing: .08em;
+}
+
+.lounge-banner-name {
+    margin-top: 18px;
+    color: #f6e7d1;
+    font: italic 600 clamp(30px, 2.45vw, 47px)/.95 "Iowan Old Style", Baskerville, Georgia, "Times New Roman", serif;
+    letter-spacing: .015em;
+}
+
+.lounge-banner-title small {
+    margin-top: 8px;
+    color: rgba(235, 239, 247, .64);
+    font: italic clamp(12px, .9vw, 16px)/1.2 "Iowan Old Style", Baskerville, Georgia, serif;
+    font-style: italic;
+    letter-spacing: .08em;
+}
+
+.lounge-banner-quote {
+    right: clamp(28px, 4vw, 78px);
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+}
+
+.lounge-banner-quote p {
+    margin: 0;
+    font: italic clamp(16px, 1.18vw, 22px)/1.48 "Iowan Old Style", Baskerville, Georgia, "Times New Roman", serif;
+}
+
+.lounge-banner-quote cite {
+    margin-top: 12px;
+    color: #d3a467;
+    font-size: clamp(11px, .78vw, 14px);
+    font-style: normal;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+@media (max-width: 1080px) {
+    .lounge-banner-title,
+    .lounge-banner-quote {
+        display: none !important;
+    }
+
+    .lounge-banner::before {
+        background: linear-gradient(90deg, rgba(5, 8, 13, .35), transparent 24%, transparent 76%, rgba(5, 8, 13, .35));
+    }
+}
+
+@media (max-width: 700px) {
+    .lounge-banner {
+        height: clamp(210px, 42vw, 300px) !important;
+    }
+}
