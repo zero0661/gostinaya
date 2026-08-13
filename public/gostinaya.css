@@ -5071,7 +5071,51 @@ flex-direction:column;
 }
 
 @media (max-width: 700px) {
-    .topic-replies-panel .thread-replies {
+.topic-replies-panel .thread-replies {
         margin-left: 18px !important;
+    }
+}
+
+/* ===== LOUNGE BANNER V2 — RESPONSIVE, WITHOUT DISTORTION ===== */
+
+html,
+body {
+    width: 100%;
+    max-width: 100%;
+}
+
+body {
+    overflow-x: hidden !important;
+}
+
+.lounge-banner {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: clamp(300px, 22vw, 430px) !important;
+    min-height: 0 !important;
+    aspect-ratio: auto !important;
+    overflow: hidden !important;
+    contain: paint;
+}
+
+.lounge-banner-image {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center 55% !important;
+    filter: brightness(0.9) !important;
+}
+
+@media (max-width: 900px) {
+    .lounge-banner {
+        height: clamp(210px, 42vw, 300px) !important;
+    }
+
+    .lounge-banner-image {
+        object-position: center 52% !important;
     }
 }
