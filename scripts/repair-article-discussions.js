@@ -36,14 +36,12 @@ function sqlString(value) {
   return `'${String(value).replace(/'/g, "''")}'`;
 }
 
-function articleKey(row) {
-  return JSON.stringify([
-    normalized(row.ghost_post_id_ru),
-    normalized(row.ghost_post_id_en),
-    normalized(row.url_ru),
-    normalized(row.url_en)
-  ]);
-}
+const identityColumns = [
+  'ghost_post_id_ru',
+  'ghost_post_id_en',
+  'url_ru',
+  'url_en'
+];
 
 function hasArticleIdentity(row) {
   return Boolean(
@@ -59,6 +57,20 @@ async function tableExists(db, table) {
     "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?",
     [table]
   ));
+}
+
+function mergedIdentity(group) {
+  return Object.fromEntries(identityColumns.map(column => [
+    column,
+    group.map(row => normalized(row[column])).find(Boolean) || null
+  ]));
+}
+
+function identityConflicts(group) {
+  return identityColumns.flatMap(column => {
+    const values = [...new Set(group.map(row => normalized(row[column])).filter(Boolean))];
+    return values.length > 1 ? [{ column, values }] : [];
+  });
 }
 
 async function moveTopicReferences(db, primaryTopicId, duplicateTopicId, tables) {
@@ -101,6 +113,27 @@ async function moveTopicReferences(db, primaryTopicId, duplicateTopicId, tables)
   await db.run('DELETE FROM discussion_topics WHERE id = ?', [duplicateTopicId]);
 }
 
+async function mergeDuplicateGroup(db, group, tables) {
+  const [primary, ...duplicates] = group;
+  const identity = mergedIdentity(group);
+
+  for (const duplicate of duplicates) {
+    await moveTopicReferences(db, primary.topic_id, duplicate.topic_id, tables);
+  }
+
+  await db.run(`UPDATE article_discussions SET
+    ghost_post_id_ru = ?, ghost_post_id_en = ?, url_ru = ?, url_en = ?,
+    published_at = COALESCE(published_at, ?), updated_at = CURRENT_TIMESTAMP
+    WHERE topic_id = ?`, [
+    identity.ghost_post_id_ru,
+    identity.ghost_post_id_en,
+    identity.url_ru,
+    identity.url_en,
+    group.map(row => normalized(row.published_at)).find(Boolean) || null,
+    primary.topic_id
+  ]);
+}
+
 async function removeEmptyDiscussion(db, topicId, tables) {
   if (tables.notifications) {
     await db.run('DELETE FROM notifications WHERE topic_id = ?', [topicId]);
@@ -137,10 +170,7 @@ export async function applyArticleDiscussionRepair(db, report) {
   await db.run('BEGIN IMMEDIATE');
   try {
     for (const group of report.duplicates) {
-      const [primary, ...duplicates] = group;
-      for (const duplicate of duplicates) {
-        await moveTopicReferences(db, primary.topic_id, duplicate.topic_id, tables);
-      }
+      await mergeDuplicateGroup(db, group, tables);
     }
 
     for (const row of report.empty) {
@@ -163,14 +193,36 @@ export async function inspectArticleDiscussions(db) {
     ORDER BY ad.topic_id`);
 
   const empty = rows.filter(row => !hasArticleIdentity(row));
-  const groups = new Map();
+  const identifiedRows = rows.filter(hasArticleIdentity);
+  const parents = identifiedRows.map((_, index) => index);
+  const owners = new Map();
+  const find = index => parents[index] === index ? index : (parents[index] = find(parents[index]));
+  const join = (left, right) => {
+    const leftRoot = find(left);
+    const rightRoot = find(right);
+    if (leftRoot !== rightRoot) parents[rightRoot] = leftRoot;
+  };
 
-  for (const row of rows.filter(hasArticleIdentity)) {
-    const key = articleKey(row);
-    const group = groups.get(key) || [];
+  // A collision in any non-empty identity column means the rows describe the
+  // same article. Joining transitively also handles a RU-only row, an EN-only
+  // row and a later combined row as one discussion instead of three.
+  identifiedRows.forEach((row, index) => {
+    for (const column of identityColumns) {
+      const value = normalized(row[column]);
+      if (!value) continue;
+      const key = `${column}\u0000${value}`;
+      if (owners.has(key)) join(index, owners.get(key));
+      else owners.set(key, index);
+    }
+  });
+
+  const groups = new Map();
+  identifiedRows.forEach((row, index) => {
+    const root = find(index);
+    const group = groups.get(root) || [];
     group.push(row);
-    groups.set(key, group);
-  }
+    groups.set(root, group);
+  });
 
   const duplicates = [...groups.values()]
     .filter(group => group.length > 1)
@@ -180,7 +232,14 @@ export async function inspectArticleDiscussions(db) {
       Number(left.topic_id) - Number(right.topic_id)
     ));
 
-  return { rows, empty, duplicates };
+  const conflicts = duplicates.flatMap(group =>
+    identityConflicts(group).map(conflict => ({
+      topicIds: group.map(row => row.topic_id),
+      ...conflict
+    }))
+  );
+
+  return { rows, empty, duplicates, conflicts };
 }
 
 export async function repairArticleDiscussions({ databasePath, apply = false, log = console.log }) {
@@ -193,12 +252,19 @@ export async function repairArticleDiscussions({ databasePath, apply = false, lo
     log(`Article discussions: ${report.rows.length}`);
     log(`Duplicate article pairs: ${report.duplicates.length}`);
     log(`Empty article links: ${report.empty.length}`);
+    log(`Identity conflicts: ${report.conflicts.length}`);
 
     for (const group of report.duplicates) {
       log(`Duplicate topics: ${group.map(row => row.topic_id).join(', ')} (keep ${group[0].topic_id})`);
     }
     for (const row of report.empty) {
       log(`Empty topic: ${row.topic_id}; messages: ${row.messages_count}`);
+    }
+
+    if (report.conflicts.length) {
+      throw new Error(`Refusing to merge conflicting article identities: ${report.conflicts.map(conflict =>
+        `topics ${conflict.topicIds.join(', ')}; ${conflict.column} = ${conflict.values.join(' | ')}`
+      ).join('; ')}`);
     }
 
     if (unsafeEmpty.length) {
@@ -223,7 +289,7 @@ export async function repairArticleDiscussions({ databasePath, apply = false, lo
     await applyArticleDiscussionRepair(db, report);
 
     const after = await inspectArticleDiscussions(db);
-    if (after.duplicates.length || after.empty.length) {
+    if (after.duplicates.length || after.empty.length || after.conflicts.length) {
       throw new Error('Post-repair verification failed');
     }
 
