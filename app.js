@@ -6,6 +6,7 @@ import ArticleDiscussionRepository from './repositories/ArticleDiscussionReposit
 import ArticleMetadataService from './services/ArticleMetadataService.js';
 import GhostWebhookService from './services/GhostWebhookService.js';
 import NotificationRepository from './repositories/NotificationRepository.js';
+import NotificationService from './services/NotificationService.js';
 import { createArticleDiscussionRedirectHandler } from './controllers/ArticleDiscussionController.js';
 import requireGuest from './middleware/requireGuest.js';
 import express from 'express';
@@ -98,6 +99,18 @@ async function handleGhostPostWebhook(req, res) {
 
   try {
     const result = await GhostWebhookService.handlePost(req.body);
+
+    if (result.created && result.publication) {
+      try {
+        await NotificationService.notifyPublication({
+          topicId: result.topicId,
+          actorId: 2,
+          ...result.publication
+        });
+      } catch (notificationError) {
+        console.error('Publication notification error:', notificationError);
+      }
+    }
 
     return res.status(200).json({
       ok: true,
@@ -313,6 +326,39 @@ app.post(
     }
 );
 
+app.get('/gostinaya/notifications/:id/open', async (req, res, next) => {
+    if (!req.session?.guest?.id) {
+        return res.redirect('/gostinaya/login');
+    }
+
+    try {
+        const notification = await NotificationRepository.getForRecipient(
+            req.params.id,
+            req.session.guest.id
+        );
+
+        if (!notification) {
+            return res.status(404).send('Уведомление не найдено / Notification not found');
+        }
+
+        await NotificationRepository.markRead(
+            notification.id,
+            req.session.guest.id
+        );
+
+        if (!notification.topic_id) {
+            return res.redirect('/gostinaya/notifications');
+        }
+
+        return res.redirect(
+            `/gostinaya/topic/${notification.topic_id}` +
+            (notification.message_id ? `#message-${notification.message_id}` : '')
+        );
+    } catch (error) {
+        next(error);
+    }
+});
+
 
 app.post('/gostinaya/logout', (req, res, next) => {
     req.session.destroy((error) => {
@@ -398,32 +444,16 @@ app.post('/gostinaya/topic/:id/messages', async (req, res, next) => {
                 parentMessageId
             );
 
-        if (parentMessage) {
-            if (
-                Number(parentMessage.author_id) !==
-                    Number(req.session.guest.id)
-            ) {
-                await NotificationRepository.create({
-                    recipientId: parentMessage.author_id,
-                    actorId: req.session.guest.id,
-                    type: 'reply',
-                    topicId: topic.id,
-                    messageId: createdMessage.lastID,
-                    text: 'ответил на ваше сообщение'
-                });
-            }
-        } else if (
-            Number(topic.author_id) !==
-                Number(req.session.guest.id)
-        ) {
-            await NotificationRepository.create({
-                recipientId: topic.author_id,
-                actorId: req.session.guest.id,
-                type: 'topic_reply',
-                topicId: topic.id,
+        try {
+            await NotificationService.notifyMessage({
+                topic,
                 messageId: createdMessage.lastID,
-                text: 'оставил новое сообщение в вашей теме'
+                body,
+                actor: req.session.guest,
+                parentAuthorId: parentMessage?.author_id || null
             });
+        } catch (notificationError) {
+            console.error('Message notification error:', notificationError);
         }
 
         res.redirect(
@@ -676,6 +706,16 @@ app.post('/gostinaya/:room/new', async (req, res, next) => {
             req.session.guest.id,
             body
         );
+
+        try {
+            await NotificationService.notifyNewTopic({
+                topicId: result.lastID,
+                actor: req.session.guest,
+                title
+            });
+        } catch (notificationError) {
+            console.error('New topic notification error:', notificationError);
+        }
 
         res.redirect(`/gostinaya/topic/${result.lastID}`);
     } catch (error) {

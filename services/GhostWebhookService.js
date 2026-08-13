@@ -15,7 +15,9 @@ function languageVersion(posts) {
     ghostPostIdRu: ru.id, ghostPostIdEn: en.id,
     urlRu: ru.url, urlEn: en.url,
     publishedAt: ru.published_at || en.published_at || null,
-    title: ru.title || en.title
+    title: ru.title || en.title,
+    titleRu: ru.title,
+    titleEn: en.title
   };
 }
 
@@ -50,7 +52,15 @@ export default {
       await ArticleDiscussionRepository.create({ topicId: topic.lastID, ...(isEnglish(post)
         ? { ghostPostIdEn: post.id, urlEn: post.url }
         : { ghostPostIdRu: post.id, urlRu: post.url }), publishedAt: post.published_at || null });
-      return { created: true, topicId: topic.lastID };
+      return {
+        created: true,
+        topicId: topic.lastID,
+        publication: {
+          title: post.title,
+          urlRu: isEnglish(post) ? null : post.url,
+          urlEn: isEnglish(post) ? post.url : null
+        }
+      };
     }
 
     const tag = tags[0];
@@ -67,7 +77,18 @@ export default {
     if (!uniqueDiscussions.length) {
       const topic = await DiscussionRepository.createTopic('articles', version.title, AUTHOR_ID);
       await ArticleDiscussionRepository.create({ topicId: topic.lastID, ...version });
-      return { created: true, linked: true, topicId: topic.lastID };
+      return {
+        created: true,
+        linked: true,
+        topicId: topic.lastID,
+        publication: {
+          title: version.title,
+          titleRu: version.titleRu,
+          titleEn: version.titleEn,
+          urlRu: version.urlRu,
+          urlEn: version.urlEn
+        }
+      };
     }
 
     const primary = await selectPrimary(uniqueDiscussions);

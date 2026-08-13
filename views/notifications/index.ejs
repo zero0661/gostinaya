@@ -44,7 +44,7 @@
                             </p>
 
                             <% if (item.topic_id) { %>
-                                <a href="/gostinaya/topic/<%= item.topic_id %><%= item.message_id ? '#message-' + item.message_id : '' %>">
+                                <a href="/gostinaya/notifications/<%= item.id %>/open">
                                     Открыть обсуждение
                                 </a>
                             <% } %>

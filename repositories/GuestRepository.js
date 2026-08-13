@@ -295,6 +295,59 @@ class GuestRepository {
         });
     }
 
+    listDiscussionParticipants(topicId) {
+        return new Promise((resolve, reject) => {
+            db.all(
+                `SELECT DISTINCT
+                    g.id,
+                    g.email,
+                    g.name,
+                    g.language,
+                    g.notify_replies,
+                    g.notify_followed_discussions,
+                    g.notify_publications,
+                    g.notify_new_topics
+                 FROM guests g
+                 WHERE g.id IN (
+                    SELECT author_id
+                    FROM discussion_topics
+                    WHERE id = ?
+                    UNION
+                    SELECT author_id
+                    FROM discussion_messages
+                    WHERE topic_id = ?
+                 )`,
+                [topicId, topicId],
+                (error, rows) => {
+                    if (error) return reject(error);
+                    resolve(rows);
+                }
+            );
+        });
+    }
+
+    listNotificationRecipients() {
+        return new Promise((resolve, reject) => {
+            db.all(
+                `SELECT
+                    id,
+                    email,
+                    name,
+                    language,
+                    notify_replies,
+                    notify_followed_discussions,
+                    notify_publications,
+                    notify_new_topics
+                 FROM guests`,
+                [],
+                (error, rows) => {
+                    if (error) return reject(error);
+                    resolve(rows);
+                }
+            );
+        });
+    }
+
 
   saveResetToken(email, token, expiresAt) {
     return new Promise((resolve, reject) => {

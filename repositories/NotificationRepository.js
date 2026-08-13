@@ -123,6 +123,16 @@ export default {
         );
     },
 
+    async getForRecipient(notificationId, recipientId) {
+        return get(
+            `SELECT *
+             FROM notifications
+             WHERE id = ?
+               AND recipient_id = ?`,
+            [notificationId, recipientId]
+        );
+    },
+
     async markAllRead(recipientId) {
         return run(
             `
