@@ -785,7 +785,11 @@ app.get('/gostinaya/:room', requireGuest, async (req, res, next) => {
                     })
                 );
 
-                enrichedArticleDiscussions.push(...enrichedBatch);
+                // Do not render a discussion button without an article. Such
+                // rows can remain from old test webhooks or deleted Ghost posts.
+                enrichedArticleDiscussions.push(...enrichedBatch.filter(
+                    discussion => discussion.article_ru || discussion.article_en
+                ));
             }
         }
 

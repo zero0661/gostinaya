@@ -79,11 +79,17 @@ async function fetchArticle(url) {
 
 export default {
     async getPair(urlRu, urlEn) {
-        const [ru, en] = await Promise.all([
+        const [ruResult, enResult] = await Promise.allSettled([
             fetchArticle(urlRu),
             fetchArticle(urlEn)
         ]);
 
-        return { ru, en };
+        return {
+            ru: ruResult.status === 'fulfilled' ? ruResult.value : null,
+            en: enResult.status === 'fulfilled' ? enResult.value : null,
+            errors: [ruResult, enResult]
+                .filter(result => result.status === 'rejected')
+                .map(result => result.reason)
+        };
     }
 };
