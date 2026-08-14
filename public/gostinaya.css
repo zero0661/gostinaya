@@ -4494,6 +4494,208 @@ flex-direction:column;
   font-weight: 400;
 }
 
+/* ===== Notifications — dark cards and explicit read state ===== */
+
+.notifications-page .notifications-card {
+  padding: clamp(18px, 3vw, 28px) !important;
+}
+
+.notifications-page .notifications-heading h2 > span {
+  display: inline !important;
+  margin: 0 !important;
+}
+
+.notifications-page .notifications-heading form {
+  flex: 0 0 auto;
+}
+
+.notifications-page .notifications-heading form > button[type="submit"] {
+  width: auto !important;
+  padding: 9px 13px !important;
+  color: #b8caff !important;
+  background: rgba(65, 105, 225, 0.12) !important;
+  border: 1px solid rgba(111, 143, 255, 0.34) !important;
+  box-shadow: none !important;
+}
+
+.notifications-page .notifications-list {
+  gap: 12px;
+}
+
+.notifications-page .notification-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 14px;
+  padding: 18px;
+  overflow: hidden;
+  color: #f8fafc;
+  background: linear-gradient(135deg, rgba(15, 29, 48, 0.98), rgba(12, 23, 39, 0.98));
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 14px;
+  box-shadow: 0 12px 28px rgba(2, 6, 23, 0.18);
+}
+
+.notifications-page .notification-item::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: transparent;
+}
+
+.notifications-page .notification-item.is-unread {
+  background: linear-gradient(135deg, rgba(24, 44, 73, 0.99), rgba(13, 27, 47, 0.99));
+  border-color: rgba(104, 137, 255, 0.5);
+}
+
+.notifications-page .notification-item.is-unread::before {
+  background: linear-gradient(180deg, #80a2ff, #4f6de2);
+  box-shadow: 0 0 18px rgba(96, 133, 255, 0.68);
+}
+
+.notifications-page .notification-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  color: #c7d5ff;
+  background: rgba(81, 111, 211, 0.16);
+  border: 1px solid rgba(126, 151, 239, 0.26);
+  border-radius: 12px;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.notifications-page .notification-content {
+  min-width: 0;
+  gap: 9px;
+}
+
+.notifications-page .notification-meta,
+.notifications-page .notification-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.notifications-page .notification-kind,
+.notifications-page .notification-state {
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.notifications-page .notification-kind {
+  color: #aebfff;
+}
+
+.notifications-page .notification-state {
+  color: rgba(203, 213, 225, 0.62);
+}
+
+.notifications-page .is-unread .notification-state {
+  color: #9eb5ff;
+}
+
+.notifications-page .notification-message {
+  display: flex;
+  gap: 0.35em;
+  flex-wrap: wrap;
+  margin: 0;
+  color: rgba(226, 232, 240, 0.84) !important;
+  line-height: 1.5;
+}
+
+.notifications-page .notification-message strong {
+  color: #fff;
+}
+
+.notifications-page .notification-topic {
+  margin: 0;
+  color: rgba(203, 213, 225, 0.66) !important;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.notifications-page .notification-topic em {
+  font-style: italic;
+}
+
+.notifications-page .notification-topic strong {
+  color: rgba(241, 245, 249, 0.92);
+  font-weight: 600;
+}
+
+.notifications-page .notification-footer {
+  margin-top: 2px;
+}
+
+.notifications-page .notification-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 8px 12px;
+  color: #e9efff !important;
+  background: linear-gradient(180deg, rgba(75, 114, 255, 0.88), rgba(53, 98, 238, 0.88));
+  border: 1px solid rgba(130, 156, 255, 0.42);
+  border-radius: 9px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition: transform 150ms ease, filter 150ms ease;
+}
+
+.notifications-page .notification-open:hover,
+.notifications-page .notification-open:focus-visible {
+  color: #fff !important;
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.notifications-page .notification-open:visited {
+  color: #e9efff !important;
+}
+
+.notifications-page .notification-content time {
+  color: rgba(203, 213, 225, 0.56);
+  font-variant-numeric: tabular-nums;
+}
+
+.auth-form button:disabled {
+  opacity: 0.58;
+  cursor: wait;
+  filter: saturate(0.65);
+}
+
+@media (max-width: 700px) {
+  .notifications-page .notifications-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .notifications-page .notification-item {
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 11px;
+    padding: 15px 13px;
+  }
+
+  .notifications-page .notification-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+
+  .notifications-page .notification-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
 /* ===== MEMBER PROFILE — unified dark design ===== */
 
 .member-profile-page {

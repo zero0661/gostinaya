@@ -30,26 +30,50 @@
             <div class="notifications-list">
                 <% notifications.forEach(item => { %>
                     <article
-                        class="notification-item <%= item.read_at ? '' : 'is-unread' %>"
+                        class="notification-item <%= item.read_at ? 'is-read' : 'is-unread' %>"
                     >
-                        <div class="notification-icon">🔔</div>
+                        <div class="notification-icon" aria-hidden="true">
+                            <%= item.type === 'reply' ? '↩' : item.type === 'publication' ? '✦' : item.type === 'new_topic' ? '✎' : '◌' %>
+                        </div>
 
                         <div class="notification-content">
-                            <p>
-                                <strong>
-                                    <%= item.actor_name || 'Участник' %>
-                                </strong>
+                            <div class="notification-meta">
+                                <span class="notification-kind">
+                                    <%= item.type === 'reply'
+                                        ? 'Ответ / Reply'
+                                        : item.type === 'publication'
+                                            ? 'Публикация / Publication'
+                                            : item.type === 'new_topic'
+                                                ? 'Новая тема / New topic'
+                                                : 'Обсуждение / Discussion' %>
+                                </span>
+                                <span class="notification-state">
+                                    <%= item.read_at ? '✓ Прочитано / Read' : '● Новое / New' %>
+                                </span>
+                            </div>
 
-                                <%= item.text %>
+                            <p class="notification-message">
+                                <strong><%= item.actor_name || 'Участник / Member' %></strong>
+                                <span><%= item.text %></span>
                             </p>
 
-                            <% if (item.topic_id) { %>
-                                <a href="/gostinaya/notifications/<%= item.id %>/open">
-                                    Открыть обсуждение
-                                </a>
+                            <% if (item.topic_title) { %>
+                                <p class="notification-topic">
+                                    В теме / <em>In topic</em>:
+                                    <strong><%= item.topic_title %></strong>
+                                </p>
                             <% } %>
 
-                            <time><%= item.created_at %></time>
+                            <div class="notification-footer">
+                                <% if (item.topic_id) { %>
+                                    <a class="notification-open" href="/gostinaya/notifications/<%= item.id %>/open">
+                                        <%= item.message_id ? 'Перейти к сообщению / Go to message' : 'Открыть обсуждение / Open discussion' %>
+                                        <span aria-hidden="true">→</span>
+                                    </a>
+                                <% } %>
+
+                                <time datetime="<%= String(item.created_at).replace(' ', 'T') %>Z" data-notification-time><%= item.created_at %></time>
+                            </div>
                         </div>
                     </article>
                 <% }) %>
@@ -57,3 +81,20 @@
         <% } %>
     </section>
 </section>
+
+<script>
+document.querySelectorAll('[data-notification-time]').forEach((element) => {
+    const raw = element.getAttribute('datetime');
+    const date = new Date(raw);
+
+    if (!Number.isNaN(date.getTime())) {
+        element.textContent = new Intl.DateTimeFormat('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }).format(date);
+    }
+});
+</script>
