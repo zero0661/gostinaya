@@ -10,6 +10,7 @@
     "dev": "nodemon app.js",
     "migrate:registration": "node database/migrate-registration.js",
     "migrate:email-verification": "node database/migrate-email-verification.js",
+    "migrate:notification-preferences": "node database/migrate-notification-preferences.js",
     "import:cusdis": "node scripts/import-cusdis-comments.js"
   },
   "dependencies": {

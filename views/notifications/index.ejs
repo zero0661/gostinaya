@@ -45,7 +45,9 @@
                                             ? 'Публикация / Publication'
                                             : item.type === 'new_topic'
                                                 ? 'Новая тема / New topic'
-                                                : 'Обсуждение / Discussion' %>
+                                                : item.type === 'article_discussion'
+                                                    ? 'Обсуждение статьи / Article discussion'
+                                                    : 'Обсуждение / Discussion' %>
                                 </span>
                                 <span class="notification-state">
                                     <%= item.read_at ? '✓ Прочитано / Read' : '● Новое / New' %>

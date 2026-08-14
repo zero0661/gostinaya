@@ -5485,3 +5485,50 @@ body {
         height: clamp(210px, 42vw, 300px) !important;
     }
 }
+
+/* Notification preferences: event categories and a separate delivery channel. */
+.profile-page .notification-preferences-intro {
+    margin: -4px 0 20px;
+    color: rgba(235, 239, 247, .82);
+    line-height: 1.55;
+}
+
+.profile-page .notification-preferences-intro span,
+.profile-page .notification-delivery p span,
+.profile-page .notification-delivery h3 span {
+    color: rgba(196, 207, 224, .62);
+    font-style: italic;
+    font-weight: 400;
+}
+
+.profile-page .notification-delivery {
+    margin: 26px 0 24px;
+    padding: 22px 24px;
+    border: 1px solid rgba(105, 181, 236, .24);
+    border-radius: 16px;
+    background: rgba(8, 23, 42, .42);
+}
+
+.profile-page .notification-delivery h3 {
+    margin: 0 0 8px;
+    color: #f3f6fb;
+    font-size: 1rem;
+    letter-spacing: .025em;
+}
+
+.profile-page .notification-delivery p {
+    margin: 0 0 17px;
+    color: rgba(235, 239, 247, .78);
+    line-height: 1.5;
+}
+
+.profile-page .notification-delivery label:has(input[type="checkbox"]) {
+    margin: 0;
+}
+
+@media (max-width: 700px) {
+    .profile-page .notification-delivery {
+        margin-inline: -4px;
+        padding: 18px;
+    }
+}

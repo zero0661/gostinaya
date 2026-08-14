@@ -35,11 +35,13 @@ export class NotificationService {
     return `${APP_URL}/gostinaya/topic/${topicId}${messageId ? `#message-${messageId}` : ''}`;
   }
 
-  replyEmail({ recipient, actorName, topicTitle, body, url, direct }) {
+  replyEmail({ recipient, actorName, topicTitle, body, url, reason }) {
     const en = recipient.language === 'en';
-    const action = direct
+    const action = reason === 'reply'
       ? (en ? 'replied to your message' : 'ответил на ваше сообщение')
-      : (en ? 'posted in a discussion you follow' : 'написал в обсуждении, за которым вы следите');
+      : reason === 'article_discussion'
+        ? (en ? 'posted in an article discussion' : 'написал в обсуждении статьи')
+        : (en ? 'posted in a discussion you follow' : 'написал в обсуждении, за которым вы следите');
     const subject = en
       ? `${actorName} ${action} — After Login`
       : `${actorName} ${action} — После логина`;
@@ -56,42 +58,67 @@ export class NotificationService {
 
   async notifyMessage({ topic, messageId, body, actor, parentAuthorId = null }) {
     const participants = await this.guests.listDiscussionParticipants(topic.id);
+    const participantIds = new Set(participants.map(item => Number(item.id)));
     const recipients = new Map(participants.map(item => [Number(item.id), item]));
     const actorId = Number(actor.id);
-    recipients.delete(actorId);
     const directId = parentAuthorId && Number(parentAuthorId) !== actorId
       ? Number(parentAuthorId)
       : null;
+
+    if (topic.room === 'articles') {
+      const allRecipients = await this.guests.listNotificationRecipients();
+      for (const recipient of allRecipients) {
+        if (Number(recipient.notify_all_article_discussions) === 1) {
+          recipients.set(Number(recipient.id), recipient);
+        }
+      }
+    }
 
     if (directId && !recipients.has(directId)) {
       const directRecipient = await this.guests.findById(directId);
       if (directRecipient) recipients.set(directId, directRecipient);
     }
 
+    recipients.delete(actorId);
+
     const url = this.topicUrl(topic.id, messageId);
     for (const recipient of recipients.values()) {
-      const direct = Number(recipient.id) === directId;
+      const recipientId = Number(recipient.id);
+      const wantsReply = recipientId === directId && Number(recipient.notify_replies) === 1;
+      const wantsFollowed = participantIds.has(recipientId) &&
+        Number(recipient.notify_followed_discussions) === 1;
+      const wantsAllArticles = topic.room === 'articles' &&
+        Number(recipient.notify_all_article_discussions) === 1;
+      const reason = wantsReply
+        ? 'reply'
+        : wantsFollowed
+          ? 'followed_discussion'
+          : wantsAllArticles
+            ? 'article_discussion'
+            : null;
+
+      if (!reason) continue;
+
       await this.notifications.create({
         recipientId: recipient.id,
         actorId,
-        type: direct ? 'reply' : 'followed_discussion',
+        type: reason,
         topicId: topic.id,
         messageId,
-        text: direct
+        text: reason === 'reply'
           ? 'ответил на ваше сообщение / replied to your message'
-          : 'написал в обсуждении, за которым вы следите / posted in a discussion you follow'
+          : reason === 'article_discussion'
+            ? 'написал в обсуждении статьи / posted in an article discussion'
+            : 'написал в обсуждении, за которым вы следите / posted in a discussion you follow'
       });
-      const emailEnabled = direct
-        ? Number(recipient.notify_replies) === 1
-        : Number(recipient.notify_followed_discussions) === 1;
-      if (emailEnabled) {
+      if (Number(recipient.notify_email) === 1) {
         void this.deliverEmail(recipient, this.replyEmail({
           recipient,
           actorName: actor.name,
           topicTitle: topic.title,
           body,
           url,
-          direct
+          reason
         }));
       }
     }
@@ -117,6 +144,7 @@ export class NotificationService {
     const recipients = await this.guests.listNotificationRecipients();
     for (const recipient of recipients) {
       if (Number(recipient.id) === Number(actorId)) continue;
+      if (Number(recipient.notify_publications) !== 1) continue;
       const articleUrl = recipient.language === 'en' ? (urlEn || urlRu) : (urlRu || urlEn);
       const localizedTitle = recipient.language === 'en' ? (titleEn || title) : (titleRu || title);
       await this.notifications.create({
@@ -126,7 +154,7 @@ export class NotificationService {
         topicId,
         text: 'опубликовал новую статью / published a new article'
       });
-      if (Number(recipient.notify_publications) === 1) {
+      if (Number(recipient.notify_email) === 1) {
         void this.deliverEmail(recipient, this.publicationEmail({
           recipient,
           title: localizedTitle,
@@ -155,6 +183,7 @@ export class NotificationService {
     const url = this.topicUrl(topicId);
     for (const recipient of recipients) {
       if (Number(recipient.id) === Number(actor.id)) continue;
+      if (Number(recipient.notify_new_topics) !== 1) continue;
       await this.notifications.create({
         recipientId: recipient.id,
         actorId: actor.id,
@@ -162,7 +191,7 @@ export class NotificationService {
         topicId,
         text: 'создал новую тему / started a new topic'
       });
-      if (Number(recipient.notify_new_topics) === 1) {
+      if (Number(recipient.notify_email) === 1) {
         void this.deliverEmail(recipient, this.newTopicEmail({
           recipient,
           actorName: actor.name,

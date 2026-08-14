@@ -6,10 +6,17 @@ function createHarness({ participants = [], recipients = [], directRecipient = n
   const created = [];
   const emails = [];
   const errors = [];
+  const calls = { participants: 0, recipients: 0 };
   const service = new NotificationService({
     guests: {
-      async listDiscussionParticipants() { return participants; },
-      async listNotificationRecipients() { return recipients; },
+      async listDiscussionParticipants() {
+        calls.participants += 1;
+        return participants;
+      },
+      async listNotificationRecipients() {
+        calls.recipients += 1;
+        return recipients;
+      },
       async findById() { return directRecipient; }
     },
     notifications: {
@@ -23,7 +30,7 @@ function createHarness({ participants = [], recipients = [], directRecipient = n
       error(...args) { errors.push(args); }
     }
   });
-  return { service, created, emails, errors };
+  return { service, created, emails, errors, calls };
 }
 
 const guest = (id, overrides = {}) => ({
@@ -35,21 +42,34 @@ const guest = (id, overrides = {}) => ({
   notify_followed_discussions: 0,
   notify_publications: 0,
   notify_new_topics: 0,
+  notify_all_article_discussions: 0,
+  notify_email: 0,
   ...overrides
 });
 
-test('a direct reply overrides the followed-discussion notification without duplication', async () => {
+test('direct reply has priority and creates at most one internal notification and one e-mail', async () => {
   const actor = guest(3, { name: 'Анна' });
   const harness = createHarness({
     participants: [
-      guest(1, { notify_followed_discussions: 1 }),
-      guest(2, { notify_replies: 1 }),
+      guest(1, { notify_followed_discussions: 1, notify_email: 1 }),
+      guest(2, {
+        notify_replies: 1,
+        notify_followed_discussions: 1,
+        notify_all_article_discussions: 1,
+        notify_email: 1
+      }),
       actor
-    ]
+    ],
+    recipients: [guest(2, {
+      notify_replies: 1,
+      notify_followed_discussions: 1,
+      notify_all_article_discussions: 1,
+      notify_email: 1
+    })]
   });
 
   await harness.service.notifyMessage({
-    topic: { id: 40, title: 'Разговор' },
+    topic: { id: 40, title: 'Разговор', room: 'articles' },
     messageId: 90,
     body: 'Это новый ответ.',
     actor,
@@ -60,32 +80,102 @@ test('a direct reply overrides the followed-discussion notification without dupl
     [1, 'followed_discussion'],
     [2, 'reply']
   ]);
-  assert.equal(harness.emails.length, 2);
-  assert.ok(harness.emails.some(item => item.to === 'guest2@example.com' && item.subject.includes('ответил')));
+  assert.deepEqual(harness.emails.map(item => item.to).sort(), [
+    'guest1@example.com',
+    'guest2@example.com'
+  ]);
+  assert.ok(harness.emails.find(item => item.to === 'guest2@example.com').subject.includes('ответил'));
   assert.ok(harness.created.every(item => item.recipientId !== actor.id));
 });
 
-test('internal discussion notifications remain enabled when email preferences are off', async () => {
-  const harness = createHarness({ participants: [guest(1), guest(2)] });
+test('master e-mail preference off keeps the selected internal notification only', async () => {
+  const harness = createHarness({
+    participants: [
+      guest(1, { notify_followed_discussions: 1, notify_email: 0 }),
+      guest(2)
+    ]
+  });
 
   await harness.service.notifyMessage({
-    topic: { id: 41, title: 'Тема' },
+    topic: { id: 41, title: 'Тема', room: 'community' },
     messageId: 91,
     body: 'Комментарий',
     actor: guest(2)
   });
 
-  assert.equal(harness.created.length, 1);
-  assert.equal(harness.created[0].recipientId, 1);
+  assert.deepEqual(harness.created.map(item => item.recipientId), [1]);
   assert.equal(harness.emails.length, 0);
 });
 
-test('new publication notifies everyone internally and emails only subscribers in their language', async () => {
+test('disabled event category creates neither an internal notification nor e-mail', async () => {
+  const harness = createHarness({
+    participants: [guest(1, { notify_email: 1 }), guest(2)]
+  });
+
+  await harness.service.notifyMessage({
+    topic: { id: 42, title: 'Тема', room: 'community' },
+    messageId: 92,
+    body: 'Комментарий',
+    actor: guest(2)
+  });
+
+  assert.equal(harness.created.length, 0);
+  assert.equal(harness.emails.length, 0);
+});
+
+test('all-article subscription reaches a non-participant and does not duplicate a participant', async () => {
+  const participant = guest(1, {
+    notify_followed_discussions: 1,
+    notify_all_article_discussions: 1
+  });
+  const globalSubscriber = guest(4, {
+    notify_all_article_discussions: 1,
+    notify_email: 1
+  });
+  const harness = createHarness({
+    participants: [participant, guest(2)],
+    recipients: [participant, globalSubscriber]
+  });
+
+  await harness.service.notifyMessage({
+    topic: { id: 43, title: 'Статья', room: 'articles' },
+    messageId: 93,
+    body: 'Комментарий к статье',
+    actor: guest(2)
+  });
+
+  assert.deepEqual(harness.created.map(item => [item.recipientId, item.type]), [
+    [1, 'followed_discussion'],
+    [4, 'article_discussion']
+  ]);
+  assert.deepEqual(harness.emails.map(item => item.to), ['guest4@example.com']);
+});
+
+test('all-article subscription does not apply to community topics', async () => {
+  const harness = createHarness({
+    participants: [guest(2)],
+    recipients: [guest(4, { notify_all_article_discussions: 1, notify_email: 1 })]
+  });
+
+  await harness.service.notifyMessage({
+    topic: { id: 44, title: 'Тема сообщества', room: 'community' },
+    messageId: 94,
+    body: 'Сообщение',
+    actor: guest(2)
+  });
+
+  assert.equal(harness.calls.recipients, 0);
+  assert.equal(harness.created.length, 0);
+  assert.equal(harness.emails.length, 0);
+});
+
+test('publication category controls the internal notification and master preference controls e-mail', async () => {
   const harness = createHarness({
     recipients: [
-      guest(1, { language: 'ru', notify_publications: 1 }),
-      guest(2),
-      guest(3, { language: 'en', notify_publications: 1 })
+      guest(1, { language: 'ru', notify_publications: 1, notify_email: 0 }),
+      guest(2, { notify_publications: 1, notify_email: 1 }),
+      guest(3, { language: 'en', notify_publications: 1, notify_email: 1 }),
+      guest(4, { notify_publications: 0, notify_email: 1 })
     ]
   });
 
@@ -100,17 +190,18 @@ test('new publication notifies everyone internally and emails only subscribers i
   });
 
   assert.deepEqual(harness.created.map(item => item.recipientId), [1, 3]);
-  assert.equal(harness.emails.length, 2);
-  assert.ok(harness.emails.some(item => item.to === 'guest1@example.com' && item.subject.includes('Русский заголовок')));
-  assert.ok(harness.emails.some(item => item.to === 'guest3@example.com' && item.subject.includes('English title') && item.text.includes('/en/english/')));
+  assert.deepEqual(harness.emails.map(item => item.to), ['guest3@example.com']);
+  assert.ok(harness.emails[0].subject.includes('English title'));
+  assert.ok(harness.emails[0].text.includes('/en/english/'));
 });
 
-test('new community topic skips its author and respects the email preference', async () => {
+test('new-topic category controls the internal notification and master preference controls e-mail', async () => {
   const harness = createHarness({
     recipients: [
-      guest(1, { notify_new_topics: 1 }),
-      guest(2),
-      guest(3, { notify_new_topics: 0 })
+      guest(1, { notify_new_topics: 1, notify_email: 1 }),
+      guest(2, { notify_new_topics: 1, notify_email: 1 }),
+      guest(3, { notify_new_topics: 1, notify_email: 0 }),
+      guest(4, { notify_new_topics: 0, notify_email: 1 })
     ]
   });
 
@@ -121,18 +212,20 @@ test('new community topic skips its author and respects the email preference', a
   });
 
   assert.deepEqual(harness.created.map(item => item.recipientId), [1, 3]);
-  assert.equal(harness.emails.length, 1);
-  assert.equal(harness.emails[0].to, 'guest1@example.com');
+  assert.deepEqual(harness.emails.map(item => item.to), ['guest1@example.com']);
 });
 
-test('SMTP failure is logged and does not reject notification delivery', async () => {
+test('SMTP failure is logged and does not reject internal notification delivery', async () => {
   const harness = createHarness({
-    participants: [guest(1, { notify_followed_discussions: 1 }), guest(2)],
+    participants: [
+      guest(1, { notify_followed_discussions: 1, notify_email: 1 }),
+      guest(2)
+    ],
     mailError: new Error('SMTP unavailable')
   });
 
   await harness.service.notifyMessage({
-    topic: { id: 70, title: 'Тема' },
+    topic: { id: 70, title: 'Тема', room: 'community' },
     messageId: 100,
     body: 'Текст',
     actor: guest(2)

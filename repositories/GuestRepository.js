@@ -17,6 +17,8 @@ class GuestRepository {
                     notify_followed_discussions,
                     notify_publications,
                     notify_new_topics,
+                    notify_all_article_discussions,
+                    notify_email,
                     email_verified_at
                  FROM guests
                  WHERE id = ?`,
@@ -113,7 +115,9 @@ class GuestRepository {
                     notify_followed_discussions = ?,
                     notify_publications = ?,
                     notify_new_topics = ?,
-            profile_completed = ?
+                    notify_all_article_discussions = ?,
+                    notify_email = ?,
+                    profile_completed = ?
                  WHERE id = ?`,
                 [
                     settings.language,
@@ -121,6 +125,9 @@ class GuestRepository {
                     settings.notifyFollowedDiscussions,
                     settings.notifyPublications,
                     settings.notifyNewTopics,
+                    settings.notifyAllArticleDiscussions,
+                    settings.notifyEmail,
+                    settings.profileCompleted,
                     id
                 ],
                 function (error) {
@@ -222,6 +229,8 @@ class GuestRepository {
            notify_followed_discussions = ?,
            notify_publications = ?,
            notify_new_topics = ?,
+           notify_all_article_discussions = ?,
+           notify_email = ?,
            profile_completed = ?
          WHERE id = ?`,
         [
@@ -233,6 +242,8 @@ class GuestRepository {
           profile.notifyFollowedDiscussions,
           profile.notifyPublications,
           profile.notifyNewTopics,
+          profile.notifyAllArticleDiscussions,
+          profile.notifyEmail,
           profile.profileCompleted,
           id
         ],
@@ -384,7 +395,9 @@ class GuestRepository {
                     g.notify_replies,
                     g.notify_followed_discussions,
                     g.notify_publications,
-                    g.notify_new_topics
+                    g.notify_new_topics,
+                    g.notify_all_article_discussions,
+                    g.notify_email
                  FROM guests g
                  WHERE g.id IN (
                     SELECT author_id
@@ -416,7 +429,9 @@ class GuestRepository {
                     notify_replies,
                     notify_followed_discussions,
                     notify_publications,
-                    notify_new_topics
+                    notify_new_topics,
+                    notify_all_article_discussions,
+                    notify_email
                  FROM guests
                  WHERE email_verified_at IS NOT NULL`,
                 [],

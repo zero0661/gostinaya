@@ -113,7 +113,12 @@
         </section>
 
         <section class="profile-card">
-            <h2>E-mail-уведомления<br><span>E-mail notifications</span></h2>
+            <h2>Уведомления<br><span>Notifications</span></h2>
+
+            <p class="notification-preferences-intro">
+                Выберите события, которые будут появляться в вашем личном кабинете.<br>
+                <span>Choose which events will appear in your personal account.</span>
+            </p>
 
             <label>
                 <input
@@ -136,6 +141,15 @@
             <label>
                 <input
                     type="checkbox"
+                    name="notify_all_article_discussions"
+                    <%= guest.notify_all_article_discussions ? 'checked' : '' %>
+                >
+                Все новые сообщения во всех обсуждениях статей <span>/ All new messages in every article discussion</span>
+            </label>
+
+            <label>
+                <input
+                    type="checkbox"
                     name="notify_publications"
                     <%= guest.notify_publications ? 'checked' : '' %>
                 >
@@ -150,6 +164,23 @@
                 >
                 Новые темы в Гостиной <span>/ New topics in the Lounge</span>
             </label>
+
+            <div class="notification-delivery">
+                <h3>Доставка на почту <span>/ E-mail delivery</span></h3>
+                <p>
+                    Дополнительно дублировать выбранные уведомления на e-mail.<br>
+                    <span>Also send the selected notifications by e-mail.</span>
+                </p>
+
+                <label>
+                    <input
+                        type="checkbox"
+                        name="notify_email"
+                        <%= guest.notify_email ? 'checked' : '' %>
+                    >
+                    Получать уведомления также на e-mail <span>/ Also receive notifications by e-mail</span>
+                </label>
+            </div>
 
             <button type="submit">
                 Сохранить изменения / <span class="en-secondary">Save Changes</span>

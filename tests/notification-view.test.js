@@ -15,6 +15,7 @@ test('notification view exposes event, topic, exact-message action and read stat
   assert.match(source, /✓ Прочитано \/ Read/);
   assert.match(source, /item\.topic_title/);
   assert.match(source, /Перейти к сообщению \/ Go to message/);
+  assert.match(source, /Обсуждение статьи \/ Article discussion/);
   assert.match(source, /\/gostinaya\/notifications\/<%= item\.id %>\/open/);
   assert.match(source, /data-notification-time/);
 });
