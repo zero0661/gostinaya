@@ -1,0 +1,74 @@
+<section class="auth-page">
+  <nav class="public-nav" aria-label="Навигация / Navigation">
+    <a href="/gostinaya">← Добро пожаловать / <span>Welcome</span></a>
+    <a href="https://milenin.pro/">⌂ На сайт проекта / <span>Main website</span></a>
+  </nav>
+
+  <div class="auth-card public-welcome registration-welcome">
+    <p class="auth-kicker">Гостиная / The Lounge</p>
+    <h1>
+      Проверьте почту<br>
+      <span>Check your inbox</span>
+    </h1>
+
+    <p class="auth-intro">
+      Мы отправили ссылку для подтверждения<%= email ? ` на ${email}` : '' %>.<br>
+      <span>We sent an e-mail confirmation link<%= email ? ` to ${email}` : '' %>.</span>
+    </p>
+
+    <p>
+      Перейдите по ссылке в письме в течение 24 часов. Только после этого откроется вход в Гостиную.<br>
+      <span>Follow the link within 24 hours. The Lounge will open only after confirmation.</span>
+    </p>
+
+    <p class="auth-hint">
+      Если письма нет несколько минут, проверьте папку «Спам» и правильность адреса.<br>
+      <span>If the message does not arrive within a few minutes, check Spam and the address you entered.</span>
+    </p>
+
+    <% if (email) { %>
+      <form id="resend-verification-form" class="auth-form auth-resend-form">
+        <input type="hidden" name="email" value="<%= email %>">
+        <button type="submit">
+          Отправить письмо ещё раз<br>
+          <span>Send the message again</span>
+        </button>
+        <p id="resend-verification-message" class="auth-message" aria-live="polite"></p>
+      </form>
+    <% } %>
+
+    <div class="welcome-actions">
+      <a class="welcome-secondary" href="/gostinaya/login">
+        Перейти ко входу<br>
+        <span>Go to sign in</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<% if (email) { %>
+<script>
+document.getElementById('resend-verification-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const button = form.querySelector('button');
+  const message = document.getElementById('resend-verification-message');
+  button.disabled = true;
+  message.textContent = 'Отправляем… / Sending…';
+
+  try {
+    const response = await fetch('/gostinaya/api/guests/resend-verification', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: form.elements.email.value })
+    });
+    const data = await response.json();
+    message.textContent = data.message;
+  } catch {
+    message.textContent = 'Ошибка соединения. / Connection error.';
+  } finally {
+    window.setTimeout(() => { button.disabled = false; }, 60000);
+  }
+});
+</script>
+<% } %>

@@ -16,7 +16,8 @@ class GuestRepository {
                     notify_replies,
                     notify_followed_discussions,
                     notify_publications,
-                    notify_new_topics
+                    notify_new_topics,
+                    email_verified_at
                  FROM guests
                  WHERE id = ?`,
                 [id],
@@ -133,6 +134,81 @@ class GuestRepository {
         });
     }
 
+    saveEmailVerificationToken(id, tokenHash, expiresAt, sentAt, resendBefore) {
+        return new Promise((resolve, reject) => {
+            db.run(
+                `UPDATE guests
+                 SET email_verification_token_hash = ?,
+                     email_verification_expires_at = ?,
+                     email_verification_sent_at = ?
+                 WHERE id = ?
+                   AND email_verified_at IS NULL
+                   AND (
+                     email_verification_sent_at IS NULL
+                     OR email_verification_sent_at <= ?
+                   )`,
+                [tokenHash, expiresAt, sentAt, id, resendBefore],
+                function (error) {
+                    if (error) return reject(error);
+                    resolve(this.changes > 0);
+                }
+            );
+        });
+    }
+
+    clearEmailVerificationToken(id, tokenHash) {
+        return new Promise((resolve, reject) => {
+            db.run(
+                `UPDATE guests
+                 SET email_verification_token_hash = NULL,
+                     email_verification_expires_at = NULL,
+                     email_verification_sent_at = NULL
+                 WHERE id = ?
+                   AND email_verification_token_hash = ?
+                   AND email_verified_at IS NULL`,
+                [id, tokenHash],
+                function (error) {
+                    if (error) return reject(error);
+                    resolve(this.changes > 0);
+                }
+            );
+        });
+    }
+
+    consumeEmailVerificationToken(tokenHash, now) {
+        return new Promise((resolve, reject) => {
+            db.get(
+                `SELECT id
+                 FROM guests
+                 WHERE email_verification_token_hash = ?
+                   AND email_verification_expires_at > ?
+                   AND email_verified_at IS NULL`,
+                [tokenHash, now],
+                (findError, row) => {
+                    if (findError) return reject(findError);
+                    if (!row) return resolve(null);
+
+                    const repository = this;
+                    db.run(
+                        `UPDATE guests
+                         SET email_verified_at = CURRENT_TIMESTAMP,
+                             email_verification_token_hash = NULL,
+                             email_verification_expires_at = NULL
+                         WHERE id = ?
+                           AND email_verification_token_hash = ?
+                           AND email_verified_at IS NULL`,
+                        [row.id, tokenHash],
+                        function (updateError) {
+                            if (updateError) return reject(updateError);
+                            if (!this.changes) return resolve(null);
+                            repository.findById(row.id).then(resolve, reject);
+                        }
+                    );
+                }
+            );
+        });
+    }
+
     updateProfile(id, profile) {
     return new Promise((resolve, reject) => {
       db.run(
@@ -194,7 +270,8 @@ class GuestRepository {
                     ) AS messages_count
                  FROM guests g
                  WHERE g.id = ?
-                   AND g.role = 'guest'`,
+                   AND g.role = 'guest'
+                   AND g.email_verified_at IS NOT NULL`,
                 [id],
                 (error, row) => {
                     if (error) {
@@ -282,6 +359,7 @@ class GuestRepository {
                     ) AS messages_count
                  FROM guests g
                  WHERE g.role = 'guest'
+                   AND g.email_verified_at IS NOT NULL
                  ORDER BY g.created_at ASC, g.id ASC`,
                 [],
                 (error, rows) => {
@@ -316,7 +394,8 @@ class GuestRepository {
                     SELECT author_id
                     FROM discussion_messages
                     WHERE topic_id = ?
-                 )`,
+                 )
+                   AND g.email_verified_at IS NOT NULL`,
                 [topicId, topicId],
                 (error, rows) => {
                     if (error) return reject(error);
@@ -338,7 +417,8 @@ class GuestRepository {
                     notify_followed_discussions,
                     notify_publications,
                     notify_new_topics
-                 FROM guests`,
+                 FROM guests
+                 WHERE email_verified_at IS NOT NULL`,
                 [],
                 (error, rows) => {
                     if (error) return reject(error);

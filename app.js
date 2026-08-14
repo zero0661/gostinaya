@@ -7,6 +7,7 @@ import ArticleMetadataService from './services/ArticleMetadataService.js';
 import GhostWebhookService from './services/GhostWebhookService.js';
 import NotificationRepository from './repositories/NotificationRepository.js';
 import NotificationService from './services/NotificationService.js';
+import EmailVerificationService from './services/EmailVerificationService.js';
 import { createArticleDiscussionRedirectHandler } from './controllers/ArticleDiscussionController.js';
 import requireGuest from './middleware/requireGuest.js';
 import express from 'express';
@@ -19,7 +20,7 @@ import rooms from './config/rooms.js';
 import db from './database/db.js';
 import session from 'express-session';
 import sessionFileStore from 'session-file-store';
-import { normalizeAuthReturnTo } from './utils/authRedirect.js';
+import { addReturnTo, normalizeAuthReturnTo } from './utils/authRedirect.js';
 
 dotenv.config();
 
@@ -141,6 +142,45 @@ app.get('/gostinaya/register', (req, res) => {
         layout: 'layouts/public',
         returnTo
     });
+});
+
+app.get('/gostinaya/check-email', (req, res) => {
+    res.render('auth/check-email', {
+        title: 'Проверьте почту / Check your inbox',
+        layout: 'layouts/public',
+        email: String(req.query.email || '').trim().slice(0, 254)
+    });
+});
+
+app.get('/gostinaya/verify-email', async (req, res, next) => {
+    try {
+        const guest = await EmailVerificationService.verify(req.query.token);
+
+        if (!guest) {
+            return res.status(400).render('auth/verify-email', {
+                title: 'Ссылка недействительна / Invalid link',
+                layout: 'layouts/public',
+                verified: false
+            });
+        }
+
+        req.session.guest = {
+            id: guest.id,
+            name: guest.name,
+            email: guest.email,
+            role: guest.role,
+            language: guest.language
+        };
+
+        await new Promise((resolve, reject) => {
+            req.session.save((error) => error ? reject(error) : resolve());
+        });
+
+        const returnTo = normalizeAuthReturnTo(req.query.returnTo);
+        return res.redirect(addReturnTo('/gostinaya/welcome', returnTo));
+    } catch (error) {
+        next(error);
+    }
 });
 
 app.get('/gostinaya', (req, res) => {
@@ -807,6 +847,10 @@ app.get('/gostinaya/:room', requireGuest, async (req, res, next) => {
 
 app.post('/gostinaya/api/guests/register', (req, res) => {
     GuestController.register(req, res);
+});
+
+app.post('/gostinaya/api/guests/resend-verification', (req, res) => {
+    GuestController.resendVerification(req, res);
 });
 
 app.post('/gostinaya/api/guests/login', (req, res) => {

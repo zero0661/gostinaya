@@ -9,6 +9,7 @@
     "start": "node app.js",
     "dev": "nodemon app.js",
     "migrate:registration": "node database/migrate-registration.js",
+    "migrate:email-verification": "node database/migrate-email-verification.js",
     "import:cusdis": "node scripts/import-cusdis-comments.js"
   },
   "dependencies": {

@@ -14,8 +14,8 @@
     </h1>
 
     <p class="auth-intro">
-      Представьтесь и расскажите немного о себе. Доступ откроется сразу после регистрации.<br>
-      Introduce yourself and tell us a little about yourself. Access opens immediately after registration.
+      Представьтесь и расскажите немного о себе. После регистрации мы пришлём ссылку для подтверждения e-mail.<br>
+      Introduce yourself and tell us a little about yourself. We will send an e-mail confirmation link after registration.
     </p>
 
     <form id="register-form" class="auth-form">
@@ -176,6 +176,9 @@
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
+    const submitButton = form.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+
     message.textContent = 'Создаём учётную запись... / Creating your account...';
 
     const formData = new FormData(form);
@@ -186,6 +189,7 @@ const confirmPassword = formData.get('confirmPassword');
 if (password !== confirmPassword) {
   message.textContent =
     'Пароли не совпадают. / Passwords do not match.';
+  submitButton.disabled = false;
   return;
 }
 
@@ -218,11 +222,12 @@ if (password !== confirmPassword) {
         message.textContent =
           data.error ||
           'Не удалось зарегистрироваться. / Registration failed.';
+        submitButton.disabled = false;
         return;
       }
 
       message.textContent =
-        'Регистрация завершена. Добро пожаловать! / Registration complete. Welcome!';
+        'Отправляем письмо для подтверждения… / Sending the confirmation e-mail…';
 
       if (data.redirect) {
         window.location.href = data.redirect;
@@ -234,6 +239,7 @@ if (password !== confirmPassword) {
     } catch (error) {
       message.textContent =
         'Не удалось связаться с сервером. / Could not connect to the server.';
+      submitButton.disabled = false;
     }
   });
 </script>

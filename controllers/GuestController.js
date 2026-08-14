@@ -6,7 +6,8 @@ import {
     normalizeRegistrationInput,
     validateRegistrationInput
 } from '../services/RegistrationService.js';
-import { addReturnTo, normalizeAuthReturnTo } from '../utils/authRedirect.js';
+import { normalizeAuthReturnTo } from '../utils/authRedirect.js';
+import EmailVerificationService from '../services/EmailVerificationService.js';
 
 class GuestController {
     async register(req, res) {
@@ -22,9 +23,19 @@ class GuestController {
 
             const existing = await GuestRepository.findByEmail(input.email);
 
-            if (existing) {
+            const returnTo = normalizeAuthReturnTo(req.body.returnTo);
+
+            if (existing?.email_verified_at) {
                 return res.status(409).json({
                     error: 'Этот e-mail уже зарегистрирован. / This e-mail is already registered.'
+                });
+            }
+
+            if (existing) {
+                await EmailVerificationService.issue(existing, returnTo);
+                return res.json({
+                    success: true,
+                    redirect: `/gostinaya/check-email?email=${encodeURIComponent(existing.email)}`
                 });
             }
 
@@ -35,29 +46,17 @@ class GuestController {
                 passwordHash
             });
 
-            req.session.guest = {
-                id: guest.id,
-                name: guest.name,
-                email: guest.email,
-                role: guest.role,
-                language: guest.language
-            };
-
-            await new Promise((resolve, reject) => {
-                req.session.save((error) => error ? reject(error) : resolve());
-            });
-
-            const returnTo = normalizeAuthReturnTo(req.body.returnTo);
+            await EmailVerificationService.issue(guest, returnTo);
 
             return res.json({
                 success: true,
-                redirect: addReturnTo('/gostinaya/welcome', returnTo)
+                redirect: `/gostinaya/check-email?email=${encodeURIComponent(guest.email)}`
             });
         } catch (err) {
             console.error(err);
 
             return res.status(500).json({
-                error: 'Internal server error'
+                error: 'Не удалось завершить регистрацию или отправить письмо. Повторите попытку. / Could not complete registration or send the message. Please try again.'
             });
         }
     }
@@ -92,6 +91,12 @@ class GuestController {
                 });
             }
 
+            if (!guest.email_verified_at) {
+                return res.status(403).json({
+                    message: 'Сначала подтвердите e-mail по ссылке из письма. / Confirm your e-mail using the link in the message first.'
+                });
+            }
+
             req.session.guest = {
                 id: guest.id,
                 name: guest.name,
@@ -115,6 +120,27 @@ class GuestController {
 
             return res.status(500).json({
                 message: 'Внутренняя ошибка сервера'
+            });
+        }
+    }
+
+    async resendVerification(req, res) {
+        try {
+            const email = String(req.body.email || '').trim().toLowerCase();
+            const guest = email ? await GuestRepository.findByEmail(email) : null;
+
+            if (guest && !guest.email_verified_at) {
+                await EmailVerificationService.issue(guest);
+            }
+
+            return res.json({
+                success: true,
+                message: 'Если адрес ожидает подтверждения, письмо отправлено. / If the address is awaiting confirmation, the message has been sent.'
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(503).json({
+                message: 'Не удалось отправить письмо. Попробуйте позже. / Could not send the message. Try again later.'
             });
         }
     }

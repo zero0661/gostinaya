@@ -29,7 +29,11 @@ db.serialize(() => {
             join_reason TEXT DEFAULT '',
             current_topic TEXT DEFAULT '',
             rules_accepted_at TEXT,
-            privacy_accepted_at TEXT
+            privacy_accepted_at TEXT,
+            email_verified_at TEXT,
+            email_verification_token_hash TEXT,
+            email_verification_expires_at INTEGER,
+            email_verification_sent_at INTEGER
         )
     `);
 });
