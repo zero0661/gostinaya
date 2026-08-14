@@ -5557,7 +5557,10 @@ body {
 }
 
 .moderation-button-row {
+    display: grid;
+    grid-template-columns: max-content max-content minmax(360px, 1fr);
     align-items: center;
+    justify-content: start;
 }
 
 .moderation-tabs {
@@ -5702,6 +5705,27 @@ body {
     gap: 8px;
 }
 
+.content .profile-page .moderation-button-row > form {
+    flex-wrap: nowrap;
+    margin: 0;
+}
+
+.content .profile-page .moderation-button-row .moderation-hide-action {
+    display: grid;
+    grid-template-columns: minmax(220px, 320px) max-content;
+    align-items: center;
+    justify-content: start;
+}
+
+.content .profile-page .moderation-button-row .moderation-hide-action input {
+    width: 100%;
+}
+
+.content .profile-page .moderation-button-row form > button[type="submit"] {
+    width: auto !important;
+    white-space: nowrap;
+}
+
 .moderation-actions {
     min-width: min(420px, 48%);
     flex-direction: column;
@@ -5800,5 +5824,15 @@ body {
     .moderation-actions {
         width: 100%;
         min-width: 0;
+    }
+
+    .moderation-button-row {
+        grid-template-columns: max-content max-content;
+    }
+
+    .content .profile-page .moderation-button-row .moderation-hide-action {
+        grid-column: 1 / -1;
+        grid-template-columns: minmax(0, 1fr) max-content;
+        width: 100%;
     }
 }
