@@ -1,35 +1,42 @@
 <section class="profile-page moderation-page">
+  <% const actionLabels = {
+    account_blocked: 'Заблокирован аккаунт', account_unblocked: 'Разблокирован аккаунт', account_role_changed: 'Изменена роль',
+    topic_pinned: 'Закреплена тема', topic_unpinned: 'Откреплена тема', topic_closed: 'Закрыта тема', topic_reopened: 'Открыта тема',
+    topic_hidden: 'Скрыта тема', topic_restored: 'Восстановлена тема', message_hidden: 'Скрыто сообщение', message_restored: 'Восстановлено сообщение',
+    report_resolved: 'Жалоба решена', report_dismissed: 'Жалоба отклонена'
+  }; %>
+  <% const targetLabels = { account: 'аккаунт', topic: 'тема', message: 'сообщение', report: 'жалоба' }; %>
   <header class="profile-header">
-    <p class="profile-eyebrow">Служебный раздел / <span>Staff area</span></p>
-    <h1>Модерация <span>/ Moderation</span></h1>
-    <p>Управление порядком в Гостиной и прозрачный журнал действий.<br><span>Community controls with a transparent action log.</span></p>
+    <p class="profile-eyebrow">Служебный раздел</p>
+    <h1>Модерация</h1>
+    <p>Управление порядком в Гостиной и прозрачный журнал действий.</p>
   </header>
 
   <nav class="moderation-tabs">
-    <a href="/gostinaya/moderation/accounts">Аккаунты / Accounts</a>
-    <a href="/gostinaya/moderation/discussions">Обсуждения / Discussions</a>
-    <a href="/gostinaya/moderation/reports">Жалобы / Reports</a>
-    <a href="/gostinaya/moderation/log">Журнал / Log</a>
+    <a href="/gostinaya/moderation/accounts">Аккаунты</a>
+    <a href="/gostinaya/moderation/discussions">Обсуждения</a>
+    <a href="/gostinaya/moderation/reports">Жалобы</a>
+    <a href="/gostinaya/moderation/log">Журнал</a>
   </nav>
 
   <div class="moderation-stats">
-    <article><strong><%= dashboard.accounts %></strong><span>Аккаунты / Accounts</span></article>
-    <article><strong><%= dashboard.blocked %></strong><span>Заблокированы / Blocked</span></article>
-    <article><strong><%= dashboard.topics %></strong><span>Темы / Topics</span></article>
-    <article><strong><%= dashboard.openReports %></strong><span>Открытые жалобы / Open reports</span></article>
-    <article><strong><%= dashboard.hiddenTopics + dashboard.hiddenMessages %></strong><span>Скрытые материалы / Hidden items</span></article>
+    <article><strong><%= dashboard.accounts %></strong><span>Аккаунты</span></article>
+    <article><strong><%= dashboard.blocked %></strong><span>Заблокированы</span></article>
+    <article><strong><%= dashboard.topics %></strong><span>Темы</span></article>
+    <article><strong><%= dashboard.openReports %></strong><span>Открытые жалобы</span></article>
+    <article><strong><%= dashboard.hiddenTopics + dashboard.hiddenMessages %></strong><span>Скрытые материалы</span></article>
   </div>
 
   <section class="profile-card moderation-panel">
-    <h2>Последние действия<br><span>Recent actions</span></h2>
+    <h2>Последние действия</h2>
     <% if (!dashboard.actions.length) { %>
-      <p>Журнал пока пуст. <span>/ The log is empty.</span></p>
+      <p>Журнал пока пуст.</p>
     <% } else { %>
       <div class="moderation-log-list">
         <% dashboard.actions.forEach(item => { %>
           <article>
             <strong><%= item.actor_name %></strong>
-            <span><%= item.action %> · <%= item.target_type %> #<%= item.target_id %></span>
+            <span><%= actionLabels[item.action] || item.action %> · <%= targetLabels[item.target_type] || item.target_type %> №<%= item.target_id %></span>
             <small><%= item.created_at %><%= item.details ? ` · ${item.details}` : '' %></small>
           </article>
         <% }) %>

@@ -18,7 +18,7 @@ router.get('/', async (req, res, next) => {
   try {
     const dashboard = await ModerationRepository.dashboard();
     res.render('moderation/dashboard', {
-      title: 'Модерация / Moderation',
+      title: 'Модерация',
       dashboard,
       saved: req.query.saved || ''
     });
@@ -32,7 +32,7 @@ router.get('/accounts', async (req, res, next) => {
     const search = String(req.query.q || '').trim().slice(0, 120);
     const accounts = await ModerationRepository.listAccounts(search);
     res.render('moderation/accounts', {
-      title: 'Аккаунты / Accounts',
+      title: 'Аккаунты',
       accounts,
       search,
       assignableRoles,
@@ -46,12 +46,12 @@ router.get('/accounts', async (req, res, next) => {
 router.post('/accounts/:id/block', async (req, res, next) => {
   try {
     const target = await ModerationRepository.getAccount(req.params.id);
-    if (!target) return res.status(404).send('Аккаунт не найден / Account not found');
+    if (!target) return res.status(404).send('Аккаунт не найден');
     if (!canManageAccount(req.session.guest, target)) {
-      return res.status(403).send('Этим аккаунтом управлять нельзя / This account is protected');
+      return res.status(403).send('Этим аккаунтом управлять нельзя');
     }
     const reason = normalizeModerationReason(req.body.reason);
-    if (!reason) return res.status(400).send('Укажите причину блокировки / Give a blocking reason');
+    if (!reason) return res.status(400).send('Укажите причину блокировки');
     await ModerationRepository.setAccountBlocked(target.id, true, req.session.guest.id, reason);
     await ModerationRepository.recordAction({
       actor: req.session.guest,
@@ -69,9 +69,9 @@ router.post('/accounts/:id/block', async (req, res, next) => {
 router.post('/accounts/:id/unblock', async (req, res, next) => {
   try {
     const target = await ModerationRepository.getAccount(req.params.id);
-    if (!target) return res.status(404).send('Аккаунт не найден / Account not found');
+    if (!target) return res.status(404).send('Аккаунт не найден');
     if (!canManageAccount(req.session.guest, target)) {
-      return res.status(403).send('Этим аккаунтом управлять нельзя / This account is protected');
+      return res.status(403).send('Этим аккаунтом управлять нельзя');
     }
     await ModerationRepository.setAccountBlocked(target.id, false, req.session.guest.id);
     await ModerationRepository.recordAction({
@@ -91,9 +91,9 @@ router.post('/accounts/:id/role', async (req, res, next) => {
   try {
     const role = String(req.body.role || '').trim().toLowerCase();
     const target = await ModerationRepository.getAccount(req.params.id);
-    if (!target) return res.status(404).send('Аккаунт не найден / Account not found');
+    if (!target) return res.status(404).send('Аккаунт не найден');
     if (!canAssignRole(req.session.guest, target, role)) {
-      return res.status(403).send('Недостаточно прав для изменения роли / Role change denied');
+      return res.status(403).send('Недостаточно прав для изменения роли');
     }
     await ModerationRepository.setAccountRole(target.id, role);
     await ModerationRepository.recordAction({
@@ -116,7 +116,7 @@ router.get('/discussions', async (req, res, next) => {
     const room = roomKeys.has(requestedRoom) ? requestedRoom : '';
     const topics = await ModerationRepository.listTopics({ search, room });
     res.render('moderation/discussions', {
-      title: 'Обсуждения / Discussions',
+      title: 'Обсуждения',
       topics,
       search,
       room,
@@ -130,10 +130,10 @@ router.get('/discussions', async (req, res, next) => {
 router.get('/discussions/:id', async (req, res, next) => {
   try {
     const topic = await ModerationRepository.getTopic(req.params.id);
-    if (!topic) return res.status(404).send('Тема не найдена / Topic not found');
+    if (!topic) return res.status(404).send('Тема не найдена');
     const messages = await ModerationRepository.listTopicMessages(topic.id);
     res.render('moderation/discussion', {
-      title: 'Управление обсуждением / Manage discussion',
+      title: 'Управление обсуждением',
       topic,
       messages,
       saved: req.query.saved || ''
@@ -146,7 +146,7 @@ router.get('/discussions/:id', async (req, res, next) => {
 router.post('/topics/:id/:action', async (req, res, next) => {
   try {
     const topic = await ModerationRepository.getTopic(req.params.id);
-    if (!topic) return res.status(404).send('Тема не найдена / Topic not found');
+    if (!topic) return res.status(404).send('Тема не найдена');
     const actions = {
       pin: ['pinned', true, 'topic_pinned'],
       unpin: ['pinned', false, 'topic_unpinned'],
@@ -156,11 +156,11 @@ router.post('/topics/:id/:action', async (req, res, next) => {
       restore: ['hidden', false, 'topic_restored']
     };
     const selected = actions[req.params.action];
-    if (!selected) return res.status(404).send('Неизвестное действие / Unknown action');
+    if (!selected) return res.status(404).send('Неизвестное действие');
     const [field, enabled, action] = selected;
     const reason = normalizeModerationReason(req.body.reason);
     if (field === 'hidden' && enabled && !reason) {
-      return res.status(400).send('Укажите причину скрытия / Give a hiding reason');
+      return res.status(400).send('Укажите причину скрытия');
     }
     await ModerationRepository.setTopicFlag(topic.id, field, enabled, req.session.guest.id, reason);
     await ModerationRepository.recordAction({
@@ -179,13 +179,13 @@ router.post('/topics/:id/:action', async (req, res, next) => {
 router.post('/messages/:id/:action', async (req, res, next) => {
   try {
     const message = await ModerationRepository.getMessage(req.params.id);
-    if (!message) return res.status(404).send('Сообщение не найдено / Message not found');
+    if (!message) return res.status(404).send('Сообщение не найдено');
     const hidden = req.params.action === 'hide';
     if (!hidden && req.params.action !== 'restore') {
-      return res.status(404).send('Неизвестное действие / Unknown action');
+      return res.status(404).send('Неизвестное действие');
     }
     const reason = normalizeModerationReason(req.body.reason);
-    if (hidden && !reason) return res.status(400).send('Укажите причину скрытия / Give a hiding reason');
+    if (hidden && !reason) return res.status(400).send('Укажите причину скрытия');
     await ModerationRepository.setMessageHidden(message.id, hidden, req.session.guest.id, reason);
     await ModerationRepository.recordAction({
       actor: req.session.guest,
@@ -208,7 +208,7 @@ router.get('/reports', async (req, res, next) => {
       : 'open';
     const reports = await ModerationRepository.listReports(status);
     res.render('moderation/reports', {
-      title: 'Жалобы / Reports',
+      title: 'Жалобы',
       reports,
       status,
       saved: req.query.saved || ''
@@ -222,10 +222,10 @@ router.post('/reports/:id/status', async (req, res, next) => {
   try {
     const status = String(req.body.status || '');
     if (!reportStatuses.has(status) || status === 'open') {
-      return res.status(400).send('Некорректный статус / Invalid status');
+      return res.status(400).send('Некорректный статус');
     }
     const report = await ModerationRepository.getReport(req.params.id);
-    if (!report) return res.status(404).send('Жалоба не найдена / Report not found');
+    if (!report) return res.status(404).send('Жалоба не найдена');
     const note = normalizeModerationReason(req.body.note);
     await ModerationRepository.updateReport(report.id, status, req.session.guest.id, note);
     await ModerationRepository.recordAction({
@@ -245,7 +245,7 @@ router.get('/log', async (req, res, next) => {
   try {
     const actions = await ModerationRepository.listActions(200);
     res.render('moderation/log', {
-      title: 'Журнал модерации / Moderation log',
+      title: 'Журнал модерации',
       actions
     });
   } catch (error) {

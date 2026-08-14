@@ -1,32 +1,49 @@
 <section class="profile-page moderation-page">
   <header class="profile-header">
-    <p class="profile-eyebrow"><a href="/gostinaya/moderation">Модерация / Moderation</a></p>
-    <h1>Обсуждения <span>/ Discussions</span></h1>
+    <p class="profile-eyebrow"><a href="/gostinaya/moderation">Модерация</a></p>
+    <h1>Обсуждения</h1>
   </header>
 
   <form class="moderation-filter" method="get">
-    <input type="search" name="q" value="<%= search %>" placeholder="Тема или автор / Topic or author">
+    <input type="search" name="q" value="<%= search %>" placeholder="Тема или автор">
     <select name="room">
-      <option value="" <%= !room ? 'selected' : '' %>>Все разделы / All rooms</option>
-      <option value="articles" <%= room === 'articles' ? 'selected' : '' %>>Статьи / Articles</option>
-      <option value="discussions" <%= room === 'discussions' ? 'selected' : '' %>>Сообщество / Community</option>
+      <option value="" <%= !room ? 'selected' : '' %>>Все разделы</option>
+      <option value="articles" <%= room === 'articles' ? 'selected' : '' %>>Обсуждения статей</option>
+      <option value="discussions" <%= room === 'discussions' ? 'selected' : '' %>>Темы сообщества</option>
     </select>
-    <button type="submit">Фильтр / Filter</button>
+    <button type="submit">Фильтр</button>
   </form>
+
+  <%
+    function plural(number, one, few, many) {
+      const value = Math.abs(Number(number));
+      const lastTwo = value % 100;
+      const last = value % 10;
+      if (lastTwo >= 11 && lastTwo <= 14) return many;
+      if (last === 1) return one;
+      if (last >= 2 && last <= 4) return few;
+      return many;
+    }
+  %>
 
   <div class="moderation-list">
     <% topics.forEach(topic => { %>
       <a class="profile-card moderation-item moderation-topic-link <%= topic.hidden_at ? 'is-danger' : '' %>" href="/gostinaya/moderation/discussions/<%= topic.id %>">
         <div>
           <h2><%= topic.title %></h2>
-          <p>#<%= topic.id %> · <%= topic.room %> · <%= topic.author %></p>
+          <p>
+            №<%= topic.id %> ·
+            <%= topic.room === 'articles'
+              ? 'Обсуждение статьи · создано автоматически'
+              : `Тема сообщества · Автор: ${topic.author}` %>
+          </p>
         </div>
         <div class="moderation-flags">
-          <span><%= topic.messages_count %> сообщений</span>
+          <span><%= topic.messages_count %> <%= plural(topic.messages_count, 'сообщение', 'сообщения', 'сообщений') %></span>
           <% if (topic.pinned) { %><strong>Закреплена</strong><% } %>
           <% if (topic.closed) { %><strong>Закрыта</strong><% } %>
           <% if (topic.hidden_at) { %><strong>Скрыта</strong><% } %>
-          <% if (topic.open_reports) { %><strong><%= topic.open_reports %> жалоб</strong><% } %>
+          <% if (topic.open_reports) { %><strong><%= topic.open_reports %> <%= plural(topic.open_reports, 'жалоба', 'жалобы', 'жалоб') %></strong><% } %>
         </div>
       </a>
     <% }) %>

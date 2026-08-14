@@ -24,13 +24,13 @@ async function transaction(work) {
 
 export default {
   async list() {
-    return all(`SELECT ad.*, t.title,
-      (SELECT COUNT(*) FROM discussion_messages m WHERE m.topic_id = ad.topic_id) AS messages_count,
-      (SELECT MAX(m.created_at) FROM discussion_messages m WHERE m.topic_id = ad.topic_id) AS last_message_at,
-      (SELECT g.name FROM discussion_messages m JOIN guests g ON g.id = m.author_id WHERE m.topic_id = ad.topic_id ORDER BY m.created_at DESC, m.id DESC LIMIT 1) AS last_message_author
+    return all(`SELECT ad.*, t.title, t.pinned,
+      (SELECT COUNT(*) FROM discussion_messages m WHERE m.topic_id = ad.topic_id AND m.hidden_at IS NULL) AS messages_count,
+      (SELECT MAX(m.created_at) FROM discussion_messages m WHERE m.topic_id = ad.topic_id AND m.hidden_at IS NULL) AS last_message_at,
+      (SELECT g.name FROM discussion_messages m JOIN guests g ON g.id = m.author_id WHERE m.topic_id = ad.topic_id AND m.hidden_at IS NULL ORDER BY m.created_at DESC, m.id DESC LIMIT 1) AS last_message_author
       FROM article_discussions ad JOIN discussion_topics t ON t.id = ad.topic_id
       WHERE t.hidden_at IS NULL
-      ORDER BY COALESCE(ad.published_at, ad.created_at) DESC`);
+      ORDER BY t.pinned DESC, COALESCE(ad.published_at, ad.created_at) DESC`);
   },
 
   async getByTopicId(topicId) { return get('SELECT * FROM article_discussions WHERE topic_id = ?', [topicId]); },

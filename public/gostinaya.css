@@ -5539,11 +5539,25 @@ body {
     max-width: 1120px !important;
 }
 
+.moderation-page .profile-header h1 {
+    max-width: 980px;
+    font-size: clamp(1.9rem, 3vw, 2.8rem);
+    line-height: 1.08;
+}
+
+.moderation-panel h2 {
+    font-size: 1.2rem;
+}
+
 .moderation-tabs,
 .moderation-button-row {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+}
+
+.moderation-button-row {
+    align-items: center;
 }
 
 .moderation-tabs {
@@ -5619,6 +5633,31 @@ body {
 
 .moderation-page button.danger {
     background: linear-gradient(180deg, #be4557, #963243);
+}
+
+.moderation-button-row form,
+.moderation-message form {
+    align-items: center;
+}
+
+.moderation-button-row button,
+.moderation-message form button,
+.moderation-actions button,
+.moderation-resolution button {
+    width: auto !important;
+    min-height: 36px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    box-shadow: none !important;
+    font-size: .82rem !important;
+}
+
+.moderation-hide-action input,
+.moderation-message form input {
+    width: min(260px, 100%);
+    min-height: 36px;
+    padding: 8px 10px;
+    font-size: .86rem;
 }
 
 .moderation-list {

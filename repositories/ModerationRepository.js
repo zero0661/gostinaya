@@ -93,7 +93,7 @@ export default {
       JOIN guests g ON g.id = t.author_id
       WHERE (? = '' OR t.room = ?)
         AND (? = '' OR LOWER(t.title) LIKE LOWER(?) OR LOWER(g.name) LIKE LOWER(?))
-      ORDER BY t.hidden_at IS NOT NULL DESC, t.created_at DESC, t.id DESC
+      ORDER BY t.hidden_at IS NOT NULL DESC, t.pinned DESC, t.created_at DESC, t.id DESC
       LIMIT 200
     `, [room, room, search, query, query]);
   },

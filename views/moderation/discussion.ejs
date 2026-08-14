@@ -1,27 +1,32 @@
 <section class="profile-page moderation-page">
   <header class="profile-header">
-    <p class="profile-eyebrow"><a href="/gostinaya/moderation/discussions">← Обсуждения / Discussions</a></p>
+    <p class="profile-eyebrow"><a href="/gostinaya/moderation/discussions">← Обсуждения</a></p>
     <h1><%= topic.title %></h1>
-    <p>#<%= topic.id %> · <%= topic.room %> · <%= topic.author %></p>
+    <p>
+      №<%= topic.id %> ·
+      <%= topic.room === 'articles'
+        ? 'Обсуждение статьи · создано автоматически'
+        : `Тема сообщества · Автор: ${topic.author}` %>
+    </p>
   </header>
 
   <section class="profile-card moderation-panel">
-    <h2>Управление темой<br><span>Topic controls</span></h2>
+    <h2>Управление темой</h2>
     <div class="moderation-button-row">
       <form method="post" action="/gostinaya/moderation/topics/<%= topic.id %>/<%= topic.pinned ? 'unpin' : 'pin' %>">
-        <button type="submit"><%= topic.pinned ? 'Открепить / Unpin' : 'Закрепить / Pin' %></button>
+        <button type="submit"><%= topic.pinned ? 'Открепить' : 'Закрепить' %></button>
       </form>
       <form method="post" action="/gostinaya/moderation/topics/<%= topic.id %>/<%= topic.closed ? 'reopen' : 'close' %>">
-        <button type="submit"><%= topic.closed ? 'Открыть / Reopen' : 'Закрыть / Close' %></button>
+        <button type="submit"><%= topic.closed ? 'Открыть' : 'Закрыть' %></button>
       </form>
       <% if (topic.hidden_at) { %>
         <form method="post" action="/gostinaya/moderation/topics/<%= topic.id %>/restore">
-          <button type="submit">Восстановить / Restore</button>
+          <button type="submit">Восстановить</button>
         </form>
       <% } else { %>
-        <form method="post" action="/gostinaya/moderation/topics/<%= topic.id %>/hide">
-          <input name="reason" maxlength="500" placeholder="Причина скрытия / Reason" required>
-          <button class="danger" type="submit">Скрыть / Hide</button>
+        <form class="moderation-hide-action" method="post" action="/gostinaya/moderation/topics/<%= topic.id %>/hide">
+          <input name="reason" maxlength="500" placeholder="Причина скрытия" required>
+          <button class="danger" type="submit">Скрыть</button>
         </form>
       <% } %>
     </div>
@@ -29,7 +34,7 @@
   </section>
 
   <section class="profile-card moderation-panel">
-    <h2>Сообщения<br><span>Messages</span></h2>
+    <h2>Сообщения</h2>
     <div class="moderation-message-list">
       <% messages.forEach(message => { %>
         <article class="moderation-message <%= message.hidden_at ? 'is-danger' : '' %>">
@@ -38,12 +43,12 @@
           <% if (message.hidden_at) { %>
             <p class="moderation-warning">Скрыто: <%= message.hidden_reason %></p>
             <form method="post" action="/gostinaya/moderation/messages/<%= message.id %>/restore">
-              <button type="submit">Восстановить / Restore</button>
+              <button type="submit">Восстановить</button>
             </form>
           <% } else { %>
             <form method="post" action="/gostinaya/moderation/messages/<%= message.id %>/hide">
-              <input name="reason" maxlength="500" placeholder="Причина скрытия / Reason" required>
-              <button class="danger" type="submit">Скрыть / Hide</button>
+              <input name="reason" maxlength="500" placeholder="Причина скрытия" required>
+              <button class="danger" type="submit">Скрыть</button>
             </form>
           <% } %>
         </article>
