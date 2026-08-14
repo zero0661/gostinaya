@@ -97,6 +97,12 @@ class GuestController {
                 });
             }
 
+            if (Number(guest.is_blocked) === 1) {
+                return res.status(403).json({
+                    message: 'Доступ к аккаунту приостановлен модератором. / Account access is suspended.'
+                });
+            }
+
             req.session.guest = {
                 id: guest.id,
                 name: guest.name,

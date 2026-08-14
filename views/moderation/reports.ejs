@@ -1,0 +1,35 @@
+<section class="profile-page moderation-page">
+  <header class="profile-header">
+    <p class="profile-eyebrow"><a href="/gostinaya/moderation">Модерация / Moderation</a></p>
+    <h1>Жалобы <span>/ Reports</span></h1>
+  </header>
+
+  <nav class="moderation-tabs">
+    <a href="?status=open">Открытые / Open</a>
+    <a href="?status=resolved">Решённые / Resolved</a>
+    <a href="?status=dismissed">Отклонённые / Dismissed</a>
+    <a href="?status=all">Все / All</a>
+  </nav>
+
+  <div class="moderation-list">
+    <% reports.forEach(report => { %>
+      <article class="profile-card moderation-item <%= report.status === 'open' ? 'is-warning' : '' %>">
+        <div>
+          <h2>Жалоба #<%= report.id %> <span><%= report.status %></span></h2>
+          <p><strong>От / From:</strong> <%= report.reporter_name %></p>
+          <p><strong>Тема / Topic:</strong> <a href="/gostinaya/moderation/discussions/<%= report.target_topic_id %>"><%= report.topic_title || '—' %></a></p>
+          <% if (report.message_id) { %><p><strong>Сообщение #<%= report.message_id %>:</strong> <%= report.message_body %></p><% } %>
+          <p class="moderation-warning"><%= report.reason %></p>
+        </div>
+        <% if (report.status === 'open') { %>
+          <form class="moderation-resolution" method="post" action="/gostinaya/moderation/reports/<%= report.id %>/status">
+            <input name="note" maxlength="500" placeholder="Решение / Resolution note">
+            <button name="status" value="resolved" type="submit">Решено / Resolve</button>
+            <button name="status" value="dismissed" type="submit">Отклонить / Dismiss</button>
+          </form>
+        <% } %>
+      </article>
+    <% }) %>
+    <% if (!reports.length) { %><p>Здесь пусто. <span>/ Nothing here.</span></p><% } %>
+  </div>
+</section>

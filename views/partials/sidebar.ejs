@@ -22,6 +22,16 @@
     <% } %>
 </a>
 
+    <% if (currentGuest && ['admin', 'moderator'].includes(currentGuest.role)) { %>
+        <hr>
+        <a href="/gostinaya/moderation">
+            🛡 Модерация / Moderation
+            <% if (moderationOpenReportCount > 0) { %>
+                <span class="notification-badge"><%= moderationOpenReportCount %></span>
+            <% } %>
+        </a>
+    <% } %>
+
     </nav>
 
 </aside>

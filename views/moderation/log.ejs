@@ -1,0 +1,17 @@
+<section class="profile-page moderation-page">
+  <header class="profile-header">
+    <p class="profile-eyebrow"><a href="/gostinaya/moderation">Модерация / Moderation</a></p>
+    <h1>Журнал действий <span>/ Action log</span></h1>
+    <p>История не редактируется через интерфейс.<br><span>The history cannot be edited through the interface.</span></p>
+  </header>
+  <section class="profile-card moderation-panel moderation-log-list">
+    <% actions.forEach(item => { %>
+      <article>
+        <strong><%= item.actor_name %></strong>
+        <span><%= item.action %> · <%= item.target_type %> #<%= item.target_id %></span>
+        <small><%= item.created_at %><%= item.details ? ` · ${item.details}` : '' %></small>
+      </article>
+    <% }) %>
+    <% if (!actions.length) { %><p>Журнал пуст. <span>/ The log is empty.</span></p><% } %>
+  </section>
+</section>

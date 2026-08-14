@@ -5532,3 +5532,234 @@ body {
         padding: 18px;
     }
 }
+
+/* Moderator workspace */
+.moderation-page {
+    width: min(1120px, calc(100% - 40px)) !important;
+    max-width: 1120px !important;
+}
+
+.moderation-tabs,
+.moderation-button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.moderation-tabs {
+    margin: 18px 0;
+}
+
+.moderation-tabs a {
+    padding: 10px 14px;
+    color: #c7d7ff;
+    border: 1px solid rgba(105, 181, 236, .28);
+    border-radius: 10px;
+    background: rgba(8, 23, 42, .62);
+    text-decoration: none;
+}
+
+.moderation-stats {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+    margin: 18px 0;
+}
+
+.moderation-stats article {
+    padding: 18px;
+    border: 1px solid rgba(148, 163, 184, .22);
+    border-radius: 14px;
+    background: rgba(23, 35, 53, .94);
+}
+
+.moderation-stats strong,
+.moderation-stats span {
+    display: block;
+}
+
+.moderation-stats strong {
+    margin-bottom: 6px;
+    color: #8fb0ff;
+    font-size: 2rem;
+}
+
+.moderation-stats span {
+    color: rgba(226, 232, 240, .72);
+    font-size: .86rem;
+}
+
+.moderation-filter {
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) auto auto;
+    gap: 10px;
+    margin: 18px 0;
+}
+
+.moderation-filter input,
+.moderation-filter select,
+.moderation-actions input,
+.moderation-actions select,
+.moderation-button-row input,
+.moderation-message input,
+.moderation-resolution input {
+    min-width: 0;
+    padding: 11px 13px;
+    color: #f8fafc;
+    border: 1px solid rgba(100, 116, 139, .5);
+    border-radius: 9px;
+    background: rgba(8, 18, 32, .96);
+    font: inherit;
+}
+
+.moderation-page button {
+    color: #fff;
+    background: linear-gradient(180deg, #4b72ff, #3562ee);
+}
+
+.moderation-page button.danger {
+    background: linear-gradient(180deg, #be4557, #963243);
+}
+
+.moderation-list {
+    display: grid;
+    gap: 14px;
+}
+
+.moderation-item {
+    display: flex;
+    gap: 22px;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin: 0 !important;
+}
+
+.moderation-item h2,
+.moderation-item p {
+    margin-top: 0;
+}
+
+.moderation-item.is-danger,
+.moderation-message.is-danger {
+    border-color: rgba(248, 113, 113, .45) !important;
+    background: linear-gradient(180deg, rgba(69, 30, 42, .95), rgba(40, 27, 38, .95)) !important;
+}
+
+.moderation-item.is-warning {
+    border-color: rgba(251, 191, 36, .42) !important;
+}
+
+.moderation-warning {
+    color: #fda4af !important;
+}
+
+.moderation-actions,
+.moderation-actions form,
+.moderation-resolution,
+.moderation-button-row form,
+.moderation-message form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.moderation-actions {
+    min-width: min(420px, 48%);
+    flex-direction: column;
+}
+
+.moderation-topic-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.moderation-flags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.moderation-flags span,
+.moderation-flags strong {
+    padding: 5px 8px;
+    border-radius: 7px;
+    background: rgba(8, 18, 32, .72);
+    font-size: .82rem;
+}
+
+.moderation-message-list,
+.moderation-log-list {
+    display: grid;
+    gap: 12px;
+}
+
+.moderation-message,
+.moderation-log-list article {
+    padding: 16px;
+    border: 1px solid rgba(148, 163, 184, .18);
+    border-radius: 12px;
+    background: rgba(8, 18, 32, .54);
+}
+
+.moderation-message header,
+.moderation-log-list article {
+    display: grid;
+    gap: 5px;
+}
+
+.moderation-message header {
+    grid-template-columns: 1fr auto;
+}
+
+.moderation-log-list small {
+    color: rgba(226, 232, 240, .58);
+}
+
+.report-control {
+    margin-top: 12px;
+    color: rgba(226, 232, 240, .62);
+    font-size: .86rem;
+}
+
+.report-control summary {
+    cursor: pointer;
+}
+
+.report-control form {
+    display: grid;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.report-control textarea {
+    min-height: 72px !important;
+}
+
+.moderated-placeholder,
+.topic-message-card.is-moderated-hidden .topic-message-body {
+    color: rgba(226, 232, 240, .58);
+    font-style: italic;
+}
+
+.topic-message-card.is-moderated-hidden {
+    border-style: dashed;
+    opacity: .82;
+}
+
+@media (max-width: 860px) {
+    .moderation-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .moderation-filter,
+    .moderation-item {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+    }
+
+    .moderation-actions {
+        width: 100%;
+        min-width: 0;
+    }
+}

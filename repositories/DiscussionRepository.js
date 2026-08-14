@@ -48,6 +48,7 @@ export default {
           SELECT COUNT(*)
           FROM discussion_messages unread_m
           WHERE unread_m.topic_id = t.id
+            AND unread_m.hidden_at IS NULL
             AND unread_m.author_id != ?
             AND unread_m.id > COALESCE(
               (
@@ -63,17 +64,20 @@ export default {
                     SELECT COUNT(*)
                     FROM discussion_messages m
                     WHERE m.topic_id = t.id
+                      AND m.hidden_at IS NULL
                 ) AS replies,
                 (
                     SELECT MAX(created_at)
                     FROM discussion_messages m
                     WHERE m.topic_id = t.id
+                      AND m.hidden_at IS NULL
                 ) AS last_reply_at,
                 (
                     SELECT g2.name
                     FROM discussion_messages m2
                     JOIN guests g2 ON g2.id = m2.author_id
                     WHERE m2.topic_id = t.id
+                      AND m2.hidden_at IS NULL
                     ORDER BY m2.created_at DESC, m2.id DESC
                     LIMIT 1
                 ) AS last_reply_author,
@@ -82,12 +86,14 @@ export default {
                     SELECT substr(body,1,140)
                     FROM discussion_messages m3
                     WHERE m3.topic_id=t.id
+                      AND m3.hidden_at IS NULL
                     ORDER BY m3.created_at ASC
                     LIMIT 1
                 ) AS preview
             FROM discussion_topics t
             JOIN guests g ON g.id = t.author_id
-            WHERE room = ?
+            WHERE t.room = ?
+              AND t.hidden_at IS NULL
             ORDER BY pinned DESC,
                      COALESCE(last_reply_at, t.created_at) DESC
             `,
@@ -104,6 +110,7 @@ export default {
             FROM discussion_topics t
             JOIN guests g ON g.id = t.author_id
             WHERE t.id = ?
+              AND t.hidden_at IS NULL
             `,
             [id]
         );
@@ -114,6 +121,10 @@ export default {
             `
             SELECT
                 m.*,
+                CASE WHEN m.hidden_at IS NULL
+                  THEN m.body
+                  ELSE 'Сообщение скрыто модератором / Message hidden by a moderator'
+                END AS body,
                 g.name AS author
             FROM discussion_messages m
             JOIN guests g ON g.id = m.author_id
@@ -134,6 +145,8 @@ export default {
           COUNT(m.id) AS messages
         FROM discussion_topics t
         LEFT JOIN discussion_messages m ON m.topic_id = t.id
+          AND m.hidden_at IS NULL
+        WHERE t.hidden_at IS NULL
         GROUP BY t.room
         `
       ),
@@ -189,6 +202,7 @@ export default {
         t.created_at AS activity_at
       FROM discussion_topics t
       JOIN guests g ON g.id = t.author_id
+      WHERE t.hidden_at IS NULL
 
       UNION ALL
 
@@ -203,10 +217,13 @@ export default {
       FROM discussion_messages m
       JOIN discussion_topics t ON t.id = m.topic_id
       JOIN guests g ON g.id = m.author_id
-      WHERE m.id != (
+      WHERE t.hidden_at IS NULL
+        AND m.hidden_at IS NULL
+        AND m.id != (
         SELECT MIN(first_message.id)
         FROM discussion_messages first_message
         WHERE first_message.topic_id = m.topic_id
+          AND first_message.hidden_at IS NULL
       )
 
       ORDER BY activity_at DESC
@@ -288,6 +305,7 @@ async getMessage(id) {
         FROM discussion_messages m
         JOIN guests g ON g.id = m.author_id
         WHERE m.id = ?
+          AND m.hidden_at IS NULL
       `,
       [id]
     );

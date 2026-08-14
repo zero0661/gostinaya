@@ -1,0 +1,34 @@
+<section class="profile-page moderation-page">
+  <header class="profile-header">
+    <p class="profile-eyebrow"><a href="/gostinaya/moderation">Модерация / Moderation</a></p>
+    <h1>Обсуждения <span>/ Discussions</span></h1>
+  </header>
+
+  <form class="moderation-filter" method="get">
+    <input type="search" name="q" value="<%= search %>" placeholder="Тема или автор / Topic or author">
+    <select name="room">
+      <option value="" <%= !room ? 'selected' : '' %>>Все разделы / All rooms</option>
+      <option value="articles" <%= room === 'articles' ? 'selected' : '' %>>Статьи / Articles</option>
+      <option value="discussions" <%= room === 'discussions' ? 'selected' : '' %>>Сообщество / Community</option>
+    </select>
+    <button type="submit">Фильтр / Filter</button>
+  </form>
+
+  <div class="moderation-list">
+    <% topics.forEach(topic => { %>
+      <a class="profile-card moderation-item moderation-topic-link <%= topic.hidden_at ? 'is-danger' : '' %>" href="/gostinaya/moderation/discussions/<%= topic.id %>">
+        <div>
+          <h2><%= topic.title %></h2>
+          <p>#<%= topic.id %> · <%= topic.room %> · <%= topic.author %></p>
+        </div>
+        <div class="moderation-flags">
+          <span><%= topic.messages_count %> сообщений</span>
+          <% if (topic.pinned) { %><strong>Закреплена</strong><% } %>
+          <% if (topic.closed) { %><strong>Закрыта</strong><% } %>
+          <% if (topic.hidden_at) { %><strong>Скрыта</strong><% } %>
+          <% if (topic.open_reports) { %><strong><%= topic.open_reports %> жалоб</strong><% } %>
+        </div>
+      </a>
+    <% }) %>
+  </div>
+</section>

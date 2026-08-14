@@ -18,7 +18,10 @@ CREATE TABLE IF NOT EXISTS discussion_topics (
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
     pinned INTEGER DEFAULT 0,
-    closed INTEGER DEFAULT 0
+    closed INTEGER DEFAULT 0,
+    hidden_at TEXT,
+    hidden_by INTEGER,
+    hidden_reason TEXT NOT NULL DEFAULT ''
 )
 `);
 
@@ -30,7 +33,10 @@ CREATE TABLE IF NOT EXISTS discussion_messages (
     parent_message_id INTEGER,
     body TEXT NOT NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    hidden_at TEXT,
+    hidden_by INTEGER,
+    hidden_reason TEXT NOT NULL DEFAULT ''
 )
 `);
 

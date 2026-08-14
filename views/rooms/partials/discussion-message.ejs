@@ -28,7 +28,7 @@ const englishReplyWord =
 %>
 
 <article
-    class="message-item topic-message-card <%= parentAuthor ? 'thread-reply' : 'thread-root' %>"
+    class="message-item topic-message-card <%= parentAuthor ? 'thread-reply' : 'thread-root' %> <%= message.hidden_at ? 'is-moderated-hidden' : '' %>"
     id="message-<%= message.id %>"
 >
     <header class="topic-message-header">
@@ -47,6 +47,7 @@ const englishReplyWord =
         <p><%= message.body %></p>
     </div>
 
+    <% if (!message.hidden_at) { %>
     <div class="message-actions topic-message-actions">
         <button
             type="button"
@@ -69,6 +70,17 @@ const englishReplyWord =
         <% } %>
     </div>
 
+    <details class="report-control">
+        <summary>Пожаловаться / Report</summary>
+        <form method="post" action="/gostinaya/reports">
+            <input type="hidden" name="topic_id" value="<%= topicId %>">
+            <input type="hidden" name="message_id" value="<%= message.id %>">
+            <textarea name="reason" maxlength="500" rows="3" placeholder="Что произошло? / What happened?" required></textarea>
+            <button type="submit">Отправить / Send</button>
+        </form>
+    </details>
+    <% } %>
+
     <div
         class="reply-form-slot"
         data-message-id="<%= message.id %>"
@@ -82,7 +94,8 @@ const englishReplyWord =
                     parentAuthor: message.author,
                     repliesByParent,
                     countThreadReplies,
-                    currentUserId
+                    currentUserId,
+                    topicId
                 }) %>
             <% }) %>
         </div>

@@ -19,6 +19,9 @@ class GuestRepository {
                     notify_new_topics,
                     notify_all_article_discussions,
                     notify_email,
+                    is_blocked,
+                    blocked_at,
+                    blocked_reason,
                     email_verified_at
                  FROM guests
                  WHERE id = ?`,
@@ -272,16 +275,17 @@ class GuestRepository {
                     (
                         SELECT COUNT(*)
                         FROM discussion_topics t
-                        WHERE t.author_id = g.id
+                        WHERE t.author_id = g.id AND t.hidden_at IS NULL
                     ) AS topics_count,
                     (
                         SELECT COUNT(*)
                         FROM discussion_messages m
-                        WHERE m.author_id = g.id
+                        WHERE m.author_id = g.id AND m.hidden_at IS NULL
                     ) AS messages_count
                  FROM guests g
                  WHERE g.id = ?
-                   AND g.role = 'guest'
+                   AND g.role IN ('guest', 'author', 'moderator')
+                   AND COALESCE(g.is_blocked, 0) = 0
                    AND g.email_verified_at IS NOT NULL`,
                 [id],
                 (error, row) => {
@@ -305,6 +309,7 @@ class GuestRepository {
                     created_at
                  FROM discussion_topics
                  WHERE author_id = ?
+                   AND hidden_at IS NULL
                  ORDER BY created_at DESC
                  LIMIT 10`,
                 [id],
@@ -330,6 +335,8 @@ class GuestRepository {
                  JOIN discussion_topics t
                       ON t.id = m.topic_id
                  WHERE m.author_id = ?
+                   AND m.hidden_at IS NULL
+                   AND t.hidden_at IS NULL
                  ORDER BY m.created_at DESC
                  LIMIT 10`,
                 [id],
@@ -361,15 +368,16 @@ class GuestRepository {
                     (
                         SELECT COUNT(*)
                         FROM discussion_topics t
-                        WHERE t.author_id = g.id
+                        WHERE t.author_id = g.id AND t.hidden_at IS NULL
                     ) AS topics_count,
                     (
                         SELECT COUNT(*)
                         FROM discussion_messages m
-                        WHERE m.author_id = g.id
+                        WHERE m.author_id = g.id AND m.hidden_at IS NULL
                     ) AS messages_count
                  FROM guests g
-                 WHERE g.role = 'guest'
+                 WHERE g.role IN ('guest', 'author', 'moderator')
+                   AND COALESCE(g.is_blocked, 0) = 0
                    AND g.email_verified_at IS NOT NULL
                  ORDER BY g.created_at ASC, g.id ASC`,
                 [],
@@ -408,7 +416,8 @@ class GuestRepository {
                     FROM discussion_messages
                     WHERE topic_id = ?
                  )
-                   AND g.email_verified_at IS NOT NULL`,
+                   AND g.email_verified_at IS NOT NULL
+                   AND COALESCE(g.is_blocked, 0) = 0`,
                 [topicId, topicId],
                 (error, rows) => {
                     if (error) return reject(error);
@@ -433,7 +442,8 @@ class GuestRepository {
                     notify_all_article_discussions,
                     notify_email
                  FROM guests
-                 WHERE email_verified_at IS NOT NULL`,
+                 WHERE email_verified_at IS NOT NULL
+                   AND COALESCE(is_blocked, 0) = 0`,
                 [],
                 (error, rows) => {
                     if (error) return reject(error);

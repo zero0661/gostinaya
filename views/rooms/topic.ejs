@@ -1,6 +1,10 @@
 
 <section class="profile-page room-page topic-page">
 
+    <% if (reported) { %>
+        <p class="profile-success">Жалоба передана модератору. <span>/ Your report was sent to a moderator.</span></p>
+    <% } %>
+
     <header class="profile-header room-page-header topic-page-header">
 
         <% if (topic.room === 'articles') { %>
@@ -105,9 +109,9 @@
                     <span><%= messages[0].created_at %></span>
                 </header>
 
-                <p><%= messages[0].body %></p>
+                <p class="<%= messages[0].hidden_at ? 'moderated-placeholder' : '' %>"><%= messages[0].body %></p>
 
-                <% if (Number(currentUserId) === Number(topic.author_id)) { %>
+                <% if (!messages[0].hidden_at && Number(currentUserId) === Number(topic.author_id)) { %>
                     <div class="message-actions">
                         <a href="/gostinaya/topic/<%= topic.id %>/edit">
                             Изменить название темы /
@@ -119,6 +123,18 @@
                             <span class="en-secondary">Edit Opening Message</span>
                         </a>
                     </div>
+                <% } %>
+
+                <% if (!messages[0].hidden_at) { %>
+                <details class="report-control">
+                    <summary>Пожаловаться / Report</summary>
+                    <form method="post" action="/gostinaya/reports">
+                        <input type="hidden" name="topic_id" value="<%= topic.id %>">
+                        <input type="hidden" name="message_id" value="<%= messages[0].id %>">
+                        <textarea name="reason" maxlength="500" rows="3" placeholder="Что произошло? / What happened?" required></textarea>
+                        <button type="submit">Отправить / Send</button>
+                    </form>
+                </details>
                 <% } %>
             </article>
         <% } %>
@@ -216,7 +232,8 @@
                         parentAuthor: null,
                         repliesByParent,
                         countThreadReplies,
-                        currentUserId
+                        currentUserId,
+                        topicId: topic.id
                     }) %>
                 <% }) %>
             </div>

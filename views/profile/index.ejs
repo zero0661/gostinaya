@@ -200,11 +200,15 @@
             ? 'Соавтор'
             : guest.role === 'admin'
               ? 'Администратор'
+              : guest.role === 'moderator'
+                ? 'Модератор'
               : 'Участник' %> /
           <span class="en-secondary"><%= guest.role === 'author'
             ? 'Co-author'
             : guest.role === 'admin'
               ? 'Administrator'
+              : guest.role === 'moderator'
+                ? 'Moderator'
               : 'Member' %></span>
         </dd>
             </div>

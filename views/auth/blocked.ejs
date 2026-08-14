@@ -1,0 +1,16 @@
+<section class="auth-page">
+  <div class="auth-card public-welcome">
+    <p class="auth-kicker">Гостиная / The Lounge</p>
+    <h1>Доступ приостановлен<br><span>Access suspended</span></h1>
+    <p class="auth-intro">
+      Модератор временно приостановил доступ к этому аккаунту.<br>
+      <span>A moderator has temporarily suspended access to this account.</span>
+    </p>
+    <% if (reason) { %>
+      <p><strong>Причина / Reason:</strong> <%= reason %></p>
+    <% } %>
+    <a class="welcome-secondary" href="https://milenin.pro/">
+      Вернуться на сайт / <span>Return to the website</span>
+    </a>
+  </div>
+</section>

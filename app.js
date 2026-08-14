@@ -7,9 +7,12 @@ import ArticleMetadataService from './services/ArticleMetadataService.js';
 import GhostWebhookService from './services/GhostWebhookService.js';
 import NotificationRepository from './repositories/NotificationRepository.js';
 import NotificationService from './services/NotificationService.js';
+import ModerationRepository from './repositories/ModerationRepository.js';
 import EmailVerificationService from './services/EmailVerificationService.js';
 import { createArticleDiscussionRedirectHandler } from './controllers/ArticleDiscussionController.js';
 import requireGuest from './middleware/requireGuest.js';
+import moderationRouter from './routes/moderation.js';
+import reportsRouter from './routes/reports.js';
 import express from 'express';
 import expressLayouts from 'express-ejs-layouts';
 import path from 'path';
@@ -66,7 +69,45 @@ app.use(session({
 }));
 
 app.use(async (req, res, next) => {
+    res.locals.currentGuest = null;
+
+    if (!req.session?.guest?.id) {
+        return next();
+    }
+
+    try {
+        const guest = await GuestRepository.findById(req.session.guest.id);
+
+        if (!guest) {
+            return req.session.destroy(() => res.redirect('/gostinaya/login'));
+        }
+
+        if (Number(guest.is_blocked) === 1) {
+            const reason = guest.blocked_reason;
+            return req.session.destroy(() => res.status(403).render('auth/blocked', {
+                title: 'Доступ приостановлен / Access suspended',
+                layout: 'layouts/public',
+                reason
+            }));
+        }
+
+        req.session.guest = {
+            ...req.session.guest,
+            name: guest.name,
+            email: guest.email,
+            role: guest.role,
+            language: guest.language
+        };
+        res.locals.currentGuest = req.session.guest;
+        return next();
+    } catch (error) {
+        return next(error);
+    }
+});
+
+app.use(async (req, res, next) => {
     res.locals.notificationUnreadCount = 0;
+    res.locals.moderationOpenReportCount = 0;
 
     if (!req.session?.guest?.id) {
         return next();
@@ -77,6 +118,11 @@ app.use(async (req, res, next) => {
             await NotificationRepository.countUnread(
                 req.session.guest.id
             );
+
+        if (['admin', 'moderator'].includes(req.session.guest.role)) {
+            res.locals.moderationOpenReportCount =
+                await ModerationRepository.countOpenReports();
+        }
 
         next();
     } catch (error) {
@@ -402,6 +448,9 @@ app.get('/gostinaya/notifications/:id/open', async (req, res, next) => {
     }
 });
 
+app.use('/gostinaya/moderation', moderationRouter);
+app.use('/gostinaya/reports', reportsRouter);
+
 
 app.post('/gostinaya/logout', (req, res, next) => {
     req.session.destroy((error) => {
@@ -563,7 +612,8 @@ app.get('/gostinaya/topic/:id', async (req, res, next) => {
             topic,
             messages,
             articleDiscussion,
-            currentUserId: req.session.guest.id
+            currentUserId: req.session.guest.id,
+            reported: req.query.reported === '1'
         });
     } catch (error) {
         next(error);

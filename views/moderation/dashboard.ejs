@@ -1,0 +1,39 @@
+<section class="profile-page moderation-page">
+  <header class="profile-header">
+    <p class="profile-eyebrow">Служебный раздел / <span>Staff area</span></p>
+    <h1>Модерация <span>/ Moderation</span></h1>
+    <p>Управление порядком в Гостиной и прозрачный журнал действий.<br><span>Community controls with a transparent action log.</span></p>
+  </header>
+
+  <nav class="moderation-tabs">
+    <a href="/gostinaya/moderation/accounts">Аккаунты / Accounts</a>
+    <a href="/gostinaya/moderation/discussions">Обсуждения / Discussions</a>
+    <a href="/gostinaya/moderation/reports">Жалобы / Reports</a>
+    <a href="/gostinaya/moderation/log">Журнал / Log</a>
+  </nav>
+
+  <div class="moderation-stats">
+    <article><strong><%= dashboard.accounts %></strong><span>Аккаунты / Accounts</span></article>
+    <article><strong><%= dashboard.blocked %></strong><span>Заблокированы / Blocked</span></article>
+    <article><strong><%= dashboard.topics %></strong><span>Темы / Topics</span></article>
+    <article><strong><%= dashboard.openReports %></strong><span>Открытые жалобы / Open reports</span></article>
+    <article><strong><%= dashboard.hiddenTopics + dashboard.hiddenMessages %></strong><span>Скрытые материалы / Hidden items</span></article>
+  </div>
+
+  <section class="profile-card moderation-panel">
+    <h2>Последние действия<br><span>Recent actions</span></h2>
+    <% if (!dashboard.actions.length) { %>
+      <p>Журнал пока пуст. <span>/ The log is empty.</span></p>
+    <% } else { %>
+      <div class="moderation-log-list">
+        <% dashboard.actions.forEach(item => { %>
+          <article>
+            <strong><%= item.actor_name %></strong>
+            <span><%= item.action %> · <%= item.target_type %> #<%= item.target_id %></span>
+            <small><%= item.created_at %><%= item.details ? ` · ${item.details}` : '' %></small>
+          </article>
+        <% }) %>
+      </div>
+    <% } %>
+  </section>
+</section>

@@ -1,0 +1,53 @@
+<section class="profile-page moderation-page">
+  <header class="profile-header">
+    <p class="profile-eyebrow"><a href="/gostinaya/moderation">Модерация / Moderation</a></p>
+    <h1>Аккаунты <span>/ Accounts</span></h1>
+    <p>Блокировка прекращает доступ немедленно. Удаление выполняется только отдельным безопасным скриптом.<br><span>Blocking takes effect immediately. Permanent deletion remains a separate safeguarded operation.</span></p>
+  </header>
+
+  <form class="moderation-filter" method="get">
+    <input type="search" name="q" value="<%= search %>" placeholder="Имя или e-mail / Name or e-mail">
+    <button type="submit">Найти / Search</button>
+  </form>
+
+  <div class="moderation-list">
+    <% accounts.forEach(account => { %>
+      <article class="profile-card moderation-item <%= account.is_blocked ? 'is-danger' : '' %>">
+        <div class="moderation-item-main">
+          <h2><%= account.name %> <span>#<%= account.id %></span></h2>
+          <p><%= account.email %></p>
+          <p><strong><%= account.role %></strong> · <%= account.email_verified_at ? 'e-mail ✓' : 'e-mail —' %></p>
+          <% if (account.is_blocked) { %>
+            <p class="moderation-warning">Заблокирован: <%= account.blocked_reason %></p>
+          <% } %>
+        </div>
+
+        <% if (Number(account.id) !== Number(currentGuest.id)) { %>
+          <div class="moderation-actions">
+            <% if (account.is_blocked) { %>
+              <form method="post" action="/gostinaya/moderation/accounts/<%= account.id %>/unblock">
+                <button type="submit">Разблокировать / Unblock</button>
+              </form>
+            <% } else if (!['admin', 'moderator', 'system', 'legacy'].includes(account.role) || currentGuest.role === 'admin') { %>
+              <form method="post" action="/gostinaya/moderation/accounts/<%= account.id %>/block">
+                <input name="reason" maxlength="500" placeholder="Причина / Reason" required>
+                <button class="danger" type="submit">Заблокировать / Block</button>
+              </form>
+            <% } %>
+
+            <% if (currentGuest.role === 'admin' && !['system', 'legacy'].includes(account.role)) { %>
+              <form method="post" action="/gostinaya/moderation/accounts/<%= account.id %>/role">
+                <select name="role">
+                  <% assignableRoles.forEach(role => { %>
+                    <option value="<%= role %>" <%= role === account.role ? 'selected' : '' %>><%= role %></option>
+                  <% }) %>
+                </select>
+                <button type="submit">Изменить роль / Change role</button>
+              </form>
+            <% } %>
+          </div>
+        <% } %>
+      </article>
+    <% }) %>
+  </div>
+</section>

@@ -116,6 +116,13 @@ function inspect(database, emails) {
       ? count(database,
           `SELECT COUNT(*) AS total FROM discussion_topic_reads WHERE guest_id IN (${ids})`,
           targetIds)
+      : 0,
+    reports: tableExists(database, 'moderation_reports')
+      ? count(database, `
+          SELECT COUNT(*) AS total FROM moderation_reports
+          WHERE reporter_id IN (${ids})
+             OR message_id IN (SELECT id FROM discussion_messages WHERE author_id IN (${ids}))
+        `, [...targetIds, ...targetIds])
       : 0
   };
 
@@ -145,6 +152,7 @@ function printReport(report) {
   console.log(`Replies by other users to preserve: ${report.counts.repliesToMessages}`);
   console.log(`Notifications to delete: ${report.counts.notifications}`);
   console.log(`Read markers to delete: ${report.counts.reads}`);
+  console.log(`Moderation reports to delete: ${report.counts.reports}`);
   console.log(`Authored topics: ${report.topics.length}`);
   console.log(`  Topics to delete: ${report.deletedTopics.length}`);
   console.log(`  Topics to preserve: ${report.preservedTopics.length}`);
@@ -198,6 +206,34 @@ function applyDeletion(database, report) {
 
   database.exec('BEGIN IMMEDIATE');
   try {
+    if (tableExists(database, 'moderation_reports')) {
+      database.prepare(`
+        DELETE FROM moderation_reports
+        WHERE reporter_id IN (${ids})
+           OR message_id IN (SELECT id FROM discussion_messages WHERE author_id IN (${ids}))
+      `).run(...report.targetIds, ...report.targetIds);
+      database.prepare(`
+        UPDATE moderation_reports SET reviewed_by = NULL
+        WHERE reviewed_by IN (${ids})
+      `).run(...report.targetIds);
+    }
+
+    const guestColumns = new Set(database.prepare('PRAGMA table_info(guests)').all().map(row => row.name));
+    if (guestColumns.has('blocked_by')) {
+      database.prepare(`UPDATE guests SET blocked_by = NULL WHERE blocked_by IN (${ids})`)
+        .run(...report.targetIds);
+    }
+    const topicColumns = new Set(database.prepare('PRAGMA table_info(discussion_topics)').all().map(row => row.name));
+    if (topicColumns.has('hidden_by')) {
+      database.prepare(`UPDATE discussion_topics SET hidden_by = NULL WHERE hidden_by IN (${ids})`)
+        .run(...report.targetIds);
+    }
+    const messageColumns = new Set(database.prepare('PRAGMA table_info(discussion_messages)').all().map(row => row.name));
+    if (messageColumns.has('hidden_by')) {
+      database.prepare(`UPDATE discussion_messages SET hidden_by = NULL WHERE hidden_by IN (${ids})`)
+        .run(...report.targetIds);
+    }
+
     if (tableExists(database, 'notifications')) {
       database.prepare(`
         DELETE FROM notifications
@@ -273,6 +309,9 @@ function verify(database, emails, targetIds) {
       : 0,
     tableExists(database, 'discussion_topic_reads')
       ? count(database, `SELECT COUNT(*) AS total FROM discussion_topic_reads WHERE guest_id IN (${ids})`, targetIds)
+      : 0,
+    tableExists(database, 'moderation_reports')
+      ? count(database, `SELECT COUNT(*) AS total FROM moderation_reports WHERE reporter_id IN (${ids})`, targetIds)
       : 0
   ].reduce((sum, value) => sum + value, 0);
 
