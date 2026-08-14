@@ -902,6 +902,11 @@ app.post('/gostinaya/api/guests/register', (req, res) => {
     GuestController.register(req, res);
 });
 
+app.get('/gostinaya/api/session-status', (req, res) => {
+    res.set('Cache-Control', 'no-store');
+    res.json({ authenticated: Boolean(req.session?.guest?.id) });
+});
+
 app.post('/gostinaya/api/guests/resend-verification', (req, res) => {
     GuestController.resendVerification(req, res);
 });
