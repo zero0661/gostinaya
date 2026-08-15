@@ -33,6 +33,9 @@ test('moderation discussion pages use compact Russian controls and honest articl
   assert.match(css, /\.moderation-button-row \{[\s\S]*?grid-template-columns: max-content max-content minmax\(360px, 1fr\)/);
   assert.match(css, /\.moderation-hide-action \{[\s\S]*?grid-template-columns: minmax\(220px, 320px\) max-content/);
   assert.match(css, /\.moderation-button-row form > button\[type="submit"\][\s\S]*?width: auto !important/);
+  assert.match(topic, /class="moderation-message-action"/);
+  assert.match(css, /\.moderation-message-action \{[\s\S]*?grid-template-columns: minmax\(220px, 320px\) max-content/);
+  assert.match(css, /\.moderation-message-action > button\[type="submit"\][\s\S]*?width: auto !important/);
   assert.match(css, /\.moderation-page \.profile-header h1[\s\S]*?font-size: clamp\(1\.9rem, 3vw, 2\.8rem\)/);
 });
 

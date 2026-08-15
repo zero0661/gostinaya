@@ -46,7 +46,7 @@
               <button type="submit">Восстановить</button>
             </form>
           <% } else { %>
-            <form method="post" action="/gostinaya/moderation/messages/<%= message.id %>/hide">
+            <form class="moderation-message-action" method="post" action="/gostinaya/moderation/messages/<%= message.id %>/hide">
               <input name="reason" maxlength="500" placeholder="Причина скрытия" required>
               <button class="danger" type="submit">Скрыть</button>
             </form>

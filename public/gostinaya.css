@@ -5726,6 +5726,25 @@ body {
     white-space: nowrap;
 }
 
+.content .profile-page .moderation-message-action {
+    display: grid;
+    grid-template-columns: minmax(220px, 320px) max-content;
+    align-items: center;
+    justify-content: start;
+    width: fit-content;
+    max-width: 100%;
+    margin: 12px 0 0;
+}
+
+.content .profile-page .moderation-message-action input {
+    width: 100%;
+}
+
+.content .profile-page .moderation-message-action > button[type="submit"] {
+    width: auto !important;
+    white-space: nowrap;
+}
+
 .moderation-actions {
     min-width: min(420px, 48%);
     flex-direction: column;
@@ -5832,6 +5851,11 @@ body {
 
     .content .profile-page .moderation-button-row .moderation-hide-action {
         grid-column: 1 / -1;
+        grid-template-columns: minmax(0, 1fr) max-content;
+        width: 100%;
+    }
+
+    .content .profile-page .moderation-message-action {
         grid-template-columns: minmax(0, 1fr) max-content;
         width: 100%;
     }
