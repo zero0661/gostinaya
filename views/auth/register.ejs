@@ -99,21 +99,21 @@
   minlength="8"
   required
 >
-      <label class="auth-consent" for="acceptsRules">
+      <div class="auth-consent">
         <input id="acceptsRules" name="acceptsRules" type="checkbox" required>
-        <span>
-          Я принимаю Правила Гостиной.<br>
-          <em>I accept the Lounge Rules.</em>
-        </span>
-      </label>
+        <label for="acceptsRules">
+          Я принимаю <a href="/gostinaya/rules" target="_blank" rel="noopener">Правила Гостиной</a>.<br>
+          <em>I accept the <a href="/gostinaya/rules" target="_blank" rel="noopener">Lounge Rules</a>.</em>
+        </label>
+      </div>
 
-      <label class="auth-consent" for="acceptsPrivacy">
+      <div class="auth-consent">
         <input id="acceptsPrivacy" name="acceptsPrivacy" type="checkbox" required>
-        <span>
-          Я согласен на обработку указанных данных для создания и работы аккаунта.<br>
-          <em>I consent to the processing of the submitted data to create and operate my account.</em>
-        </span>
-      </label>
+        <label for="acceptsPrivacy">
+          Я согласен с <a href="/gostinaya/privacy" target="_blank" rel="noopener">условиями обработки данных</a> для создания и работы аккаунта.<br>
+          <em>I accept the <a href="/gostinaya/privacy" target="_blank" rel="noopener">data processing terms</a> required to create and operate my account.</em>
+        </label>
+      </div>
 
       <button type="submit">
         Зарегистрироваться<br>
@@ -157,7 +157,7 @@
     margin-top: 3px !important;
   }
 
-  #register-form .auth-consent span {
+  #register-form .auth-consent label {
     font-size: 16px !important;
     line-height: 1.5 !important;
   }

@@ -12,6 +12,8 @@
     "migrate:email-verification": "node database/migrate-email-verification.js",
     "migrate:notification-preferences": "node database/migrate-notification-preferences.js",
     "migrate:moderation": "node database/migrate-moderation.js",
+    "backup:create": "node scripts/backup-gostinaya.js",
+    "backup:verify": "node scripts/verify-gostinaya-backup.js",
     "role:set": "node scripts/set-guest-role.js",
     "import:cusdis": "node scripts/import-cusdis-comments.js"
   },

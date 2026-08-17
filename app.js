@@ -491,6 +491,20 @@ app.get('/gostinaya/reset-password', (req, res) => {
   });
 });
 
+app.get('/gostinaya/rules', (req, res) => {
+    res.render('legal/rules', {
+        layout: 'layouts/public',
+        title: 'Правила Гостиной / Lounge Rules'
+    });
+});
+
+app.get('/gostinaya/privacy', (req, res) => {
+    res.render('legal/privacy', {
+        layout: 'layouts/public',
+        title: 'Обработка данных / Data Processing'
+    });
+});
+
 app.get('/gostinaya/login', (req, res) => {
     const returnTo = normalizeAuthReturnTo(req.query.returnTo);
 
