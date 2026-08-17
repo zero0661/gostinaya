@@ -9,6 +9,7 @@ import NotificationRepository from './repositories/NotificationRepository.js';
 import NotificationService from './services/NotificationService.js';
 import ModerationRepository from './repositories/ModerationRepository.js';
 import EmailVerificationService from './services/EmailVerificationService.js';
+import PasswordResetService from './services/PasswordResetService.js';
 import { createArticleDiscussionRedirectHandler } from './controllers/ArticleDiscussionController.js';
 import requireGuest from './middleware/requireGuest.js';
 import moderationRouter from './routes/moderation.js';
@@ -953,16 +954,13 @@ app.post('/gostinaya/api/guests/reset-password', passwordResetCompletionRateLimi
             });
         }
 
-        const guest = await GuestRepository.findByResetToken(token);
+        const changed = await PasswordResetService.reset(token, password);
 
-        if (!guest) {
+        if (!changed) {
             return res.status(400).json({
                 message: 'Ссылка недействительна или истекла / Link is invalid or expired'
             });
         }
-
-        const passwordHash = await AuthService.hashPassword(password);
-        await GuestRepository.updatePassword(guest.id, passwordHash);
 
         return res.json({
             success: true,

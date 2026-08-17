@@ -1,13 +1,12 @@
 import GuestRepository from '../repositories/GuestRepository.js';
 import AuthService from '../services/AuthService.js';
-import crypto from 'crypto';
-import { sendMail } from '../utils/mailer.js';
 import {
     normalizeRegistrationInput,
     validateRegistrationInput
 } from '../services/RegistrationService.js';
 import { normalizeAuthReturnTo } from '../utils/authRedirect.js';
 import EmailVerificationService from '../services/EmailVerificationService.js';
+import PasswordResetService from '../services/PasswordResetService.js';
 
 class GuestController {
     async register(req, res) {
@@ -161,35 +160,7 @@ class GuestController {
         });
       }
 
-      const guest = await GuestRepository.findByEmail(email);
-
-      if (!guest) {
-        return res.json({
-          success: true,
-          message: 'Если такой e-mail зарегистрирован, письмо будет отправлено'
-        });
-      }
-
-      const token = crypto.randomBytes(32).toString('hex');
-      const expiresAt = Date.now() + 60 * 60 * 1000;
-
-      await GuestRepository.saveResetToken(email, token, expiresAt);
-
-      const resetUrl =
-        `${process.env.APP_URL}/gostinaya/reset-password?token=${token}`;
-
-      await sendMail({
-        to: email,
-        subject: 'Восстановление пароля — После логина',
-        text:
-          `Для создания нового пароля перейдите по ссылке:\n${resetUrl}\n\n` +
-          'Ссылка действует 1 час.',
-        html:
-          `<h2>Восстановление пароля</h2>` +
-          `<p>Для создания нового пароля перейдите по ссылке:</p>` +
-          `<p><a href="${resetUrl}">Создать новый пароль</a></p>` +
-          `<p>Ссылка действует 1 час.</p>`
-      });
+      await PasswordResetService.request(email);
 
       return res.json({
         success: true,

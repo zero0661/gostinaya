@@ -454,13 +454,13 @@ class GuestRepository {
     }
 
 
-  saveResetToken(email, token, expiresAt) {
+  saveResetToken(id, tokenHash, expiresAt) {
     return new Promise((resolve, reject) => {
       db.run(
         `UPDATE guests
          SET reset_token = ?, reset_token_expires_at = ?
-         WHERE email = ?`,
-        [token, expiresAt, email],
+         WHERE id = ?`,
+        [tokenHash, expiresAt, id],
         function (error) {
           if (error) return reject(error);
           resolve(this.changes > 0);
@@ -469,30 +469,31 @@ class GuestRepository {
     });
   }
 
-  findByResetToken(token) {
+  clearResetToken(id, tokenHash) {
     return new Promise((resolve, reject) => {
-      db.get(
-        `SELECT * FROM guests
-         WHERE reset_token = ?
-           AND reset_token_expires_at > ?`,
-        [token, Date.now()],
-        (error, row) => {
+      db.run(
+        `UPDATE guests
+         SET reset_token = NULL, reset_token_expires_at = NULL
+         WHERE id = ? AND reset_token = ?`,
+        [id, tokenHash],
+        function (error) {
           if (error) return reject(error);
-          resolve(row);
+          resolve(this.changes > 0);
         }
       );
     });
   }
 
-  updatePassword(id, passwordHash) {
+  updatePasswordByResetToken(tokenHash, now, passwordHash) {
     return new Promise((resolve, reject) => {
       db.run(
         `UPDATE guests
          SET password_hash = ?,
              reset_token = NULL,
              reset_token_expires_at = NULL
-         WHERE id = ?`,
-        [passwordHash, id],
+         WHERE reset_token = ?
+           AND reset_token_expires_at > ?`,
+        [passwordHash, tokenHash, now],
         function (error) {
           if (error) return reject(error);
           resolve(this.changes > 0);
