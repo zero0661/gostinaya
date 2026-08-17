@@ -25,6 +25,18 @@ import session from 'express-session';
 import sessionFileStore from 'session-file-store';
 import { addReturnTo, normalizeAuthReturnTo } from './utils/authRedirect.js';
 import { formatMoscowDateTime } from './utils/dateTime.js';
+import {
+    loginCredentialRateLimit,
+    loginIpRateLimit,
+    messagePublicationRateLimit,
+    passwordResetCompletionRateLimit,
+    passwordResetRequestEmailRateLimit,
+    passwordResetRequestIpRateLimit,
+    registrationRateLimit,
+    reportPublicationRateLimit,
+    topicPublicationRateLimit,
+    verificationResendRateLimit
+} from './middleware/rateLimit.js';
 
 dotenv.config();
 
@@ -455,7 +467,7 @@ app.get('/gostinaya/notifications/:id/open', async (req, res, next) => {
 });
 
 app.use('/gostinaya/moderation', moderationRouter);
-app.use('/gostinaya/reports', reportsRouter);
+app.use('/gostinaya/reports', reportPublicationRateLimit, reportsRouter);
 
 
 app.post('/gostinaya/logout', (req, res, next) => {
@@ -493,7 +505,7 @@ app.get(
     articleDiscussionRedirect
 );
 
-app.post('/gostinaya/topic/:id/messages', async (req, res, next) => {
+app.post('/gostinaya/topic/:id/messages', messagePublicationRateLimit, async (req, res, next) => {
     if (!req.session.guest?.id) {
         return res.redirect('/gostinaya/login');
     }
@@ -767,7 +779,7 @@ app.get('/gostinaya/:room/new', (req, res) => {
     });
 });
 
-app.post('/gostinaya/:room/new', async (req, res, next) => {
+app.post('/gostinaya/:room/new', topicPublicationRateLimit, async (req, res, next) => {
     if (!req.session.guest?.id) {
         return res.redirect('/gostinaya/login');
     }
@@ -904,7 +916,7 @@ app.get('/gostinaya/:room', requireGuest, async (req, res, next) => {
     }
 });
 
-app.post('/gostinaya/api/guests/register', (req, res) => {
+app.post('/gostinaya/api/guests/register', registrationRateLimit, (req, res) => {
     GuestController.register(req, res);
 });
 
@@ -913,19 +925,24 @@ app.get('/gostinaya/api/session-status', (req, res) => {
     res.json({ authenticated: Boolean(req.session?.guest?.id) });
 });
 
-app.post('/gostinaya/api/guests/resend-verification', (req, res) => {
+app.post('/gostinaya/api/guests/resend-verification', verificationResendRateLimit, (req, res) => {
     GuestController.resendVerification(req, res);
 });
 
-app.post('/gostinaya/api/guests/login', (req, res) => {
+app.post('/gostinaya/api/guests/login', loginIpRateLimit, loginCredentialRateLimit, (req, res) => {
     GuestController.login(req, res);
 });
 
-app.post('/gostinaya/api/guests/request-password-reset', (req, res) => {
-    GuestController.requestPasswordReset(req, res);
-});
+app.post(
+    '/gostinaya/api/guests/request-password-reset',
+    passwordResetRequestIpRateLimit,
+    passwordResetRequestEmailRateLimit,
+    (req, res) => {
+        GuestController.requestPasswordReset(req, res);
+    }
+);
 
-app.post('/gostinaya/api/guests/reset-password', async (req, res) => {
+app.post('/gostinaya/api/guests/reset-password', passwordResetCompletionRateLimit, async (req, res) => {
     try {
         const token = String(req.body.token || '').trim();
         const password = String(req.body.password || '');
