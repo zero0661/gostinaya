@@ -37,7 +37,7 @@
           <article>
             <strong><%= item.actor_name %></strong>
             <span><%= actionLabels[item.action] || item.action %> · <%= targetLabels[item.target_type] || item.target_type %> №<%= item.target_id %></span>
-            <small><%= item.created_at %><%= item.details ? ` · ${item.details}` : '' %></small>
+            <small><%= formatMoscowDateTime(item.created_at) %><%= item.details ? ` · ${item.details}` : '' %></small>
           </article>
         <% }) %>
       </div>

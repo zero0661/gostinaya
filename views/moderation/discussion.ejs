@@ -38,11 +38,11 @@
     <div class="moderation-message-list">
       <% messages.forEach(message => { %>
         <article class="moderation-message <%= message.hidden_at ? 'is-danger' : '' %>">
-          <header><strong>#<%= message.id %> · <%= message.author %></strong><span><%= message.created_at %></span></header>
+          <header><strong>#<%= message.id %> · <%= message.author %></strong><span><%= formatMoscowDateTime(message.created_at) %></span></header>
           <p><%= message.body %></p>
           <% if (message.hidden_at) { %>
             <p class="moderation-warning">Скрыто: <%= message.hidden_reason %></p>
-            <form method="post" action="/gostinaya/moderation/messages/<%= message.id %>/restore">
+            <form class="moderation-message-restore" method="post" action="/gostinaya/moderation/messages/<%= message.id %>/restore">
               <button type="submit">Восстановить</button>
             </form>
           <% } else { %>

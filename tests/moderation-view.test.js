@@ -36,7 +36,27 @@ test('moderation discussion pages use compact Russian controls and honest articl
   assert.match(topic, /class="moderation-message-action"/);
   assert.match(css, /\.moderation-message-action \{[\s\S]*?grid-template-columns: minmax\(220px, 320px\) max-content/);
   assert.match(css, /\.moderation-message-action > button\[type="submit"\][\s\S]*?width: auto !important/);
+  assert.match(topic, /class="moderation-message-restore"/);
+  assert.match(css, /\.moderation-message-restore > button\[type="submit"\][\s\S]*?width: auto !important/);
   assert.match(css, /\.moderation-page \.profile-header h1[\s\S]*?font-size: clamp\(1\.9rem, 3vw, 2\.8rem\)/);
+});
+
+test('closed topics explain why replies are unavailable and show Moscow time', async () => {
+  const topic = await fs.readFile(path.join(dirname, '..', 'views', 'rooms', 'topic.ejs'), 'utf8');
+  const log = await fs.readFile(path.join(dirname, '..', 'views', 'moderation', 'log.ejs'), 'utf8');
+
+  assert.match(topic, /Тема закрыта модератором/);
+  assert.match(topic, /New replies are disabled/);
+  assert.match(topic, /formatMoscowDateTime\(messages\[0\]\.created_at\)/);
+  assert.match(log, /formatMoscowDateTime\(item\.created_at\)/);
+});
+
+test('new moderation log details distinguish reasons from topic context', async () => {
+  const route = await fs.readFile(path.join(dirname, '..', 'routes', 'moderation.js'), 'utf8');
+
+  assert.match(route, /`Причина: \$\{reason\} · Тема: \$\{topic\.title\}`/);
+  assert.match(route, /`Тема: \$\{topic\.title\}`/);
+  assert.match(route, /`Причина: \$\{reason\} · Тема №\$\{message\.topic_id\}`/);
 });
 
 test('article discussions honor pinning and ignore hidden messages in public counters', async () => {

@@ -24,6 +24,7 @@ import db from './database/db.js';
 import session from 'express-session';
 import sessionFileStore from 'session-file-store';
 import { addReturnTo, normalizeAuthReturnTo } from './utils/authRedirect.js';
+import { formatMoscowDateTime } from './utils/dateTime.js';
 
 dotenv.config();
 
@@ -46,6 +47,11 @@ app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json());
+
+app.use((req, res, next) => {
+    res.locals.formatMoscowDateTime = formatMoscowDateTime;
+    next();
+});
 
 app.set('trust proxy', 1);
 

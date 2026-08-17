@@ -26,7 +26,7 @@
 
       <span>📝 <%= member.topics_count %> тем</span>
       <span>💬 <%= member.messages_count %> сообщений</span>
-      <span>📅 <%= member.created_at %></span>
+      <span>📅 <%= formatMoscowDateTime(member.created_at) %></span>
     </div>
   </section>
 
@@ -50,7 +50,7 @@
               <h3><%= topic.title %></h3>
 
               <div class="topic-meta">
-                <span>📅 <%= topic.created_at %></span>
+                <span>📅 <%= formatMoscowDateTime(topic.created_at) %></span>
               </div>
             </article>
           </a>
@@ -81,7 +81,7 @@
               <p class="topic-preview"><%= message.body %></p>
 
               <div class="topic-meta">
-                <span>📅 <%= message.created_at %></span>
+                <span>📅 <%= formatMoscowDateTime(message.created_at) %></span>
               </div>
             </article>
           </a>

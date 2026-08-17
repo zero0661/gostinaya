@@ -171,7 +171,7 @@
                   <% if (discussion.last_message_at) { %>
                     <span>
                       🕘 <%= discussion.last_message_author %>
-                      · <%= discussion.last_message_at %>
+                      · <%= formatMoscowDateTime(discussion.last_message_at) %>
                     </span>
                   <% } %>
                 </div>

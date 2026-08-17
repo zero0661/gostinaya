@@ -168,7 +168,9 @@ router.post('/topics/:id/:action', async (req, res, next) => {
       action,
       targetType: 'topic',
       targetId: topic.id,
-      details: reason || topic.title
+      details: reason
+        ? `Причина: ${reason} · Тема: ${topic.title}`
+        : `Тема: ${topic.title}`
     });
     return res.redirect(`/gostinaya/moderation/discussions/${topic.id}?saved=${req.params.action}`);
   } catch (error) {
@@ -192,7 +194,9 @@ router.post('/messages/:id/:action', async (req, res, next) => {
       action: hidden ? 'message_hidden' : 'message_restored',
       targetType: 'message',
       targetId: message.id,
-      details: reason || `topic #${message.topic_id}`
+      details: reason
+        ? `Причина: ${reason} · Тема №${message.topic_id}`
+        : `Тема №${message.topic_id}`
     });
     return res.redirect(`/gostinaya/moderation/discussions/${message.topic_id}?saved=${req.params.action}`);
   } catch (error) {

@@ -5745,6 +5745,36 @@ body {
     white-space: nowrap;
 }
 
+.content .profile-page .moderation-message-restore {
+    width: fit-content;
+    margin: 12px 0 0;
+}
+
+.content .profile-page .moderation-message-restore > button[type="submit"] {
+    width: auto !important;
+    white-space: nowrap;
+}
+
+.topic-closed-notice {
+    display: grid;
+    gap: 4px;
+    margin: 0 0 22px;
+    padding: 15px 18px;
+    border: 1px solid rgba(251, 191, 36, .38);
+    border-radius: 12px;
+    color: #f8fafc;
+    background: rgba(120, 72, 12, .18);
+}
+
+.topic-closed-notice span,
+.topic-closed-notice em {
+    color: rgba(226, 232, 240, .76);
+}
+
+.topic-closed-notice em {
+    font-size: .9rem;
+}
+
 .moderation-actions {
     min-width: min(420px, 48%);
     flex-direction: column;
