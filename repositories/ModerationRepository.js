@@ -52,6 +52,11 @@ export default {
     const query = `%${search}%`;
     return all(`
       SELECT id, email, name, role, language, created_at, email_verified_at,
+             COALESCE(country, '') AS country,
+             COALESCE(city, '') AS city,
+             COALESCE(location, '') AS location,
+             COALESCE(join_reason, '') AS join_reason,
+             COALESCE(current_topic, '') AS current_topic,
              is_blocked, blocked_at, blocked_reason
       FROM guests
       WHERE role NOT IN ('system', 'legacy')
