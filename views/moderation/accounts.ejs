@@ -3,7 +3,7 @@
   <header class="profile-header">
     <p class="profile-eyebrow"><a href="/gostinaya/moderation">Модерация</a></p>
     <h1>Аккаунты</h1>
-    <p>Блокировка прекращает доступ немедленно. Удаление выполняется только отдельным безопасным скриптом.</p>
+    <p>Здесь доступны служебные данные аккаунтов и ответы, которые участники дали при регистрации. Эти сведения видят только модераторы.</p>
   </header>
 
   <form class="moderation-filter" method="get">
@@ -18,6 +18,19 @@
           <h2><%= account.name %> <span>#<%= account.id %></span></h2>
           <p><%= account.email %></p>
           <p><strong><%= roleLabels[account.role] || account.role %></strong> · <%= account.email_verified_at ? 'e-mail подтверждён' : 'e-mail не подтверждён' %></p>
+          <p><strong>Регистрация:</strong> <%= account.created_at %> · <strong>Язык:</strong> <%= account.language || '—' %></p>
+          <p><strong>Страна:</strong> <%= account.country || '—' %> · <strong>Город:</strong> <%= account.city || account.location || '—' %></p>
+
+          <% if (account.join_reason || account.current_topic) { %>
+            <div class="moderation-registration-answers">
+              <h3>Ответы при регистрации</h3>
+              <p><strong>Почему вам интересен проект «После логина»?</strong><br><%= account.join_reason || 'Ответ не указан.' %></p>
+              <p><strong>Что вас сейчас особенно занимает или о чём хотелось бы поговорить?</strong><br><%= account.current_topic || 'Ответ не указан.' %></p>
+            </div>
+          <% } else { %>
+            <p><em>Ответы регистрационной анкеты не указаны.</em></p>
+          <% } %>
+
           <% if (account.is_blocked) { %>
             <p class="moderation-warning">Заблокирован: <%= account.blocked_reason %></p>
           <% } %>
