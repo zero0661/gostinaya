@@ -44,7 +44,8 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 const articleDiscussionRedirect = createArticleDiscussionRedirectHandler(
-    ArticleDiscussionRepository
+    ArticleDiscussionRepository,
+    GhostWebhookService
 );
 
 const __filename = fileURLToPath(import.meta.url);

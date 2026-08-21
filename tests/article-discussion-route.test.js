@@ -64,6 +64,37 @@ test('article route requires login before looking up the discussion', async () =
     assert.equal(lookupCalled, false);
 });
 
+test('article route repairs a missing RU/EN link before returning 404', async () => {
+    let lookups = 0;
+    let syncedPostId = null;
+    const repository = {
+        async getByGhostPostId() {
+            lookups += 1;
+            return lookups === 1 ? null : { topic_id: 35 };
+        }
+    };
+    const synchronizer = {
+        async syncPostById(postId) {
+            syncedPostId = postId;
+        }
+    };
+    const handler = createArticleDiscussionRedirectHandler(
+        repository,
+        synchronizer
+    );
+    const response = responseRecorder();
+
+    await handler(
+        { params: { ghostPostId: 'ru-post' }, session: { guest: { id: 7 } } },
+        response,
+        assert.fail
+    );
+
+    assert.equal(syncedPostId, 'ru-post');
+    assert.equal(lookups, 2);
+    assert.equal(response.redirectUrl, '/gostinaya/topic/35');
+});
+
 test('article route returns 404 when the post has no linked discussion', async () => {
     const handler = createArticleDiscussionRedirectHandler({
         async getByGhostPostId() {

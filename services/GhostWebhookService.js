@@ -105,7 +105,14 @@ async function handlePost(payload) {
 
 const enqueuePost = createWebhookQueue(handlePost);
 
+async function syncPostById(postId) {
+  const post = await GhostApiService.getPostById(postId);
+  if (!post) throw new Error(`Ghost post ${postId} was not found`);
+  return enqueuePost({ post });
+}
+
 export default {
   handlePost: enqueuePost,
-  handlePublishedPost: enqueuePost
+  handlePublishedPost: enqueuePost,
+  syncPostById
 };

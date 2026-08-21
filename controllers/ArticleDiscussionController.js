@@ -1,9 +1,15 @@
 import { addReturnTo } from '../utils/authRedirect.js';
 
-export function createArticleDiscussionRedirectHandler(repository) {
+export function createArticleDiscussionRedirectHandler(repository, synchronizer = null) {
     if (!repository?.getByGhostPostId) {
         throw new TypeError(
             'Article discussion repository must provide getByGhostPostId'
+        );
+    }
+
+    if (synchronizer && !synchronizer.syncPostById) {
+        throw new TypeError(
+            'Article discussion synchronizer must provide syncPostById'
         );
     }
 
@@ -18,9 +24,18 @@ export function createArticleDiscussionRedirectHandler(repository) {
         }
 
         try {
-            const discussion = await repository.getByGhostPostId(
+            let discussion = await repository.getByGhostPostId(
                 req.params.ghostPostId
             );
+
+            // A Ghost post.updated webhook can be delayed or missing. Repair the
+            // RU/EN link on demand before returning a dead discussion link.
+            if (!discussion && synchronizer) {
+                await synchronizer.syncPostById(req.params.ghostPostId);
+                discussion = await repository.getByGhostPostId(
+                    req.params.ghostPostId
+                );
+            }
 
             if (!discussion) {
                 return res.status(404).send(
