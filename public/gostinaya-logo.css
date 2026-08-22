@@ -1,0 +1,21 @@
+/* Project logo in the left wing of the Lounge banner. */
+.lounge-banner-brand-logo {
+    display: block;
+    width: 100%;
+    max-width: 440px;
+    height: auto;
+    margin: 0;
+    mix-blend-mode: screen;
+    pointer-events: none;
+    user-select: none;
+}
+
+.lounge-banner-title:has(.lounge-banner-brand-logo) .lounge-banner-name {
+    margin-top: clamp(20px, 1.45vw, 28px);
+}
+
+@media (max-width: 1280px) {
+    .lounge-banner-brand-logo {
+        max-width: 100%;
+    }
+}
