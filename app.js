@@ -91,6 +91,11 @@ app.use(session({
     }
 }));
 
+app.use('/gostinaya', (req, res, next) => {
+    res.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
+    next();
+});
+
 app.use(async (req, res, next) => {
     res.locals.currentGuest = null;
 
