@@ -26,6 +26,7 @@ import session from 'express-session';
 import sessionFileStore from 'session-file-store';
 import { addReturnTo, normalizeAuthReturnTo } from './utils/authRedirect.js';
 import { formatMoscowDateTime } from './utils/dateTime.js';
+import { linkifyText } from './utils/linkifyText.js';
 import { isModerator } from './services/ModerationPolicy.js';
 import {
     loginCredentialRateLimit,
@@ -65,6 +66,7 @@ app.use(express.json());
 
 app.use((req, res, next) => {
     res.locals.formatMoscowDateTime = formatMoscowDateTime;
+    res.locals.linkifyText = linkifyText;
     next();
 });
 

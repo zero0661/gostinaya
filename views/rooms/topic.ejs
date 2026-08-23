@@ -124,7 +124,7 @@
                     <span><%= formatMoscowDateTime(messages[0].created_at) %></span>
                 </header>
 
-                <p class="<%= messages[0].hidden_at ? 'moderated-placeholder' : '' %>"><%= messages[0].body %></p>
+                <p class="<%= messages[0].hidden_at ? 'moderated-placeholder' : '' %>"><%- linkifyText(messages[0].body) %></p>
 
                 <% if (!messages[0].hidden_at && Number(currentUserId) === Number(topic.author_id)) { %>
                     <div class="message-actions">

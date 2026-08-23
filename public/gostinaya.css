@@ -361,6 +361,19 @@ body {
     white-space: pre-wrap;
 }
 
+.content a.message-link {
+    color: #7dd3fc !important;
+    overflow-wrap: anywhere;
+    text-decoration: underline;
+    text-decoration-color: rgba(125, 211, 252, 0.55);
+    text-underline-offset: 3px;
+}
+
+.content a.message-link:hover {
+    color: #bae6fd !important;
+    text-decoration-color: currentColor;
+}
+
 .room-card form {
     display: grid;
     gap: 16px;

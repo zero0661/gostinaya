@@ -41,7 +41,7 @@
       <% messages.forEach(message => { %>
         <article class="moderation-message <%= message.hidden_at ? 'is-danger' : '' %>">
           <header><strong>#<%= message.id %> · <%= message.author %></strong><span><%= formatMoscowDateTime(message.created_at) %></span></header>
-          <p><%= message.body %></p>
+          <p><%- linkifyText(message.body) %></p>
           <% if (message.hidden_at) { %>
             <p class="moderation-warning">Скрыто: <%= message.hidden_reason %></p>
             <form class="moderation-message-restore" method="post" action="/gostinaya/moderation/messages/<%= message.id %>/restore">

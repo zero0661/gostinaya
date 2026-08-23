@@ -44,7 +44,7 @@ const englishReplyWord =
     </header>
 
     <div class="topic-message-body">
-        <p><%= message.body %></p>
+        <p><%- linkifyText(message.body) %></p>
     </div>
 
     <% if (!message.hidden_at) { %>

@@ -19,7 +19,7 @@
           <h2>Жалоба №<%= report.id %> <span><%= statusLabels[report.status] || report.status %></span></h2>
           <p><strong>От:</strong> <%= report.reporter_name %></p>
           <p><strong>Тема:</strong> <a href="/gostinaya/moderation/discussions/<%= report.target_topic_id %>"><%= report.topic_title || '—' %></a></p>
-          <% if (report.message_id) { %><p><strong>Сообщение #<%= report.message_id %>:</strong> <%= report.message_body %></p><% } %>
+          <% if (report.message_id) { %><p><strong>Сообщение #<%= report.message_id %>:</strong> <%- linkifyText(report.message_body) %></p><% } %>
           <p class="moderation-warning"><%= report.reason %></p>
         </div>
         <% if (report.status === 'open') { %>
