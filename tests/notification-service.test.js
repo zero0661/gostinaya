@@ -215,6 +215,30 @@ test('new-topic category controls the internal notification and master preferenc
   assert.deepEqual(harness.emails.map(item => item.to), ['guest1@example.com']);
 });
 
+test('project news uses the topic preference but has its own notification identity and wording', async () => {
+  const harness = createHarness({
+    recipients: [
+      guest(1, { notify_new_topics: 1, notify_email: 1 }),
+      guest(2, { notify_new_topics: 1, notify_email: 1 })
+    ]
+  });
+
+  await harness.service.notifyNewTopic({
+    topicId: 61,
+    actor: guest(2, { name: 'Пётр' }),
+    title: 'Аудиоверсия статьи «После титров»',
+    room: 'news'
+  });
+
+  assert.deepEqual(harness.created.map(item => [item.recipientId, item.type]), [
+    [1, 'project_news']
+  ]);
+  assert.match(harness.created[0].text, /новость проекта/);
+  assert.deepEqual(harness.emails.map(item => item.to), ['guest1@example.com']);
+  assert.match(harness.emails[0].subject, /Новость проекта/);
+  assert.match(harness.emails[0].text, /Прочитать и обсудить/);
+});
+
 test('SMTP failure is logged and does not reject internal notification delivery', async () => {
   const harness = createHarness({
     participants: [

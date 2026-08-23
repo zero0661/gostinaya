@@ -20,6 +20,8 @@
     <h1>
       <% if (roomKey === 'articles') { %>
         Обсуждение статей <span>/ Article Discussions</span>
+      <% } else if (roomKey === 'news') { %>
+        Новости проекта <span>/ Project News</span>
       <% } else { %>
         Темы сообщества <span>/ Community Topics</span>
       <% } %>
@@ -29,6 +31,9 @@
       <% if (roomKey === 'articles') { %>
         Все статьи проекта и комментарии к ним.
         <span>All project articles and their discussions.</span>
+      <% } else if (roomKey === 'news') { %>
+        Новые материалы, аудиоверсии, объявления и изменения проекта.
+        <span>New materials, audio editions, announcements and project updates.</span>
       <% } else { %>
         Свободные обсуждения участников Гостиной.
         <span>Open discussions among Lounge members.</span>
@@ -45,6 +50,8 @@
         <h2>
           <% if (roomKey === 'articles') { %>
             Обсуждения <span>/ Discussions</span>
+          <% } else if (roomKey === 'news') { %>
+            Новости <span>/ News</span>
           <% } else { %>
             Темы <span>/ Topics</span>
           <% } %>
@@ -54,6 +61,9 @@
           <% if (roomKey === 'articles') { %>
             Разговоры о публикациях проекта.
             <span>Conversations about project publications.</span>
+          <% } else if (roomKey === 'news') { %>
+            Каждая новость проекта открыта для обсуждения.
+            <span>Every project news item is open for discussion.</span>
           <% } else { %>
             Разговоры этого пространства.
             <span>Conversations in this space.</span>
@@ -61,10 +71,14 @@
         </p>
       </div>
 
-      <% if (roomKey !== 'articles') { %>
+      <% if (canCreateTopic) { %>
         <a class="room-action"
            href="/gostinaya/<%= typeof roomKey !== 'undefined' ? roomKey : 'discussions' %>/new">
-          Создать тему <span>/ New topic</span>
+          <% if (roomKey === 'news') { %>
+            Опубликовать новость <span>/ Publish news</span>
+          <% } else { %>
+            Создать тему <span>/ New topic</span>
+          <% } %>
         </a>
       <% } %>
 
@@ -199,8 +213,13 @@
 
         <div class="room-empty">
           <h3>
-            Здесь пока тихо
-            <span>/ It is quiet here for now</span>
+            <% if (roomKey === 'news') { %>
+              Новостей пока нет
+              <span>/ No news yet</span>
+            <% } else { %>
+              Здесь пока тихо
+              <span>/ It is quiet here for now</span>
+            <% } %>
           </h3>
 
           <p><%= text %></p>

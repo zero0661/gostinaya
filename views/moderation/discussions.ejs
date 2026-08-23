@@ -9,6 +9,7 @@
     <select name="room">
       <option value="" <%= !room ? 'selected' : '' %>>Все разделы</option>
       <option value="articles" <%= room === 'articles' ? 'selected' : '' %>>Обсуждения статей</option>
+      <option value="news" <%= room === 'news' ? 'selected' : '' %>>Новости проекта</option>
       <option value="discussions" <%= room === 'discussions' ? 'selected' : '' %>>Темы сообщества</option>
     </select>
     <button type="submit">Фильтр</button>
@@ -35,7 +36,9 @@
             №<%= topic.id %> ·
             <%= topic.room === 'articles'
               ? 'Обсуждение статьи · создано автоматически'
-              : `Тема сообщества · Автор: ${topic.author}` %>
+              : topic.room === 'news'
+                ? `Новость проекта · Автор: ${topic.author}`
+                : `Тема сообщества · Автор: ${topic.author}` %>
           </p>
         </div>
         <div class="moderation-flags">

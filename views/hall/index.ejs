@@ -102,6 +102,58 @@
     </a>
 
 
+    <% const newsStats = roomStats?.news; %>
+
+    <a class="profile-card hall-card hall-card-news" href="/gostinaya/news">
+      <span class="hall-card-icon">📣</span>
+
+      <h2>
+        Новости проекта
+        <span>/ Project News</span>
+      </h2>
+
+      <p class="hall-card-description">
+        Новые материалы, аудиоверсии, объявления и изменения проекта.<br>
+        <span>New materials, audio editions, announcements and project updates.</span>
+      </p>
+
+      <div class="hall-card-stats">
+        <span>
+          💬 <%= newsStats?.topics || 0 %> новостей /
+          <em><%= newsStats?.topics || 0 %> news items</em>
+        </span>
+
+        <span>
+          ✉️ <%= newsStats?.messages || 0 %> сообщений /
+          <em><%= newsStats?.messages || 0 %> messages</em>
+        </span>
+      </div>
+
+      <% if (newsStats?.lastTopicTitle) { %>
+        <div class="hall-card-latest">
+          <span class="hall-card-latest-label">
+            Последняя новость / Latest news
+          </span>
+
+          <strong><%= newsStats.lastTopicTitle %></strong>
+
+          <span>
+            <%= newsStats.lastAuthor %> ·
+            <%= newsStats.lastActivityAt %>
+          </span>
+        </div>
+      <% } else { %>
+        <div class="hall-card-latest hall-card-latest-empty">
+          Новостей пока нет. / No news yet.
+        </div>
+      <% } %>
+
+      <span class="hall-card-link">
+        Открыть новости / View news →
+      </span>
+    </a>
+
+
     <% const topicStats = roomStats?.discussions; %>
 
     <a class="profile-card hall-card" href="/gostinaya/discussions">

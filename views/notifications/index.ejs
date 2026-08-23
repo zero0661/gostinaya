@@ -33,7 +33,7 @@
                         class="notification-item <%= item.read_at ? 'is-read' : 'is-unread' %>"
                     >
                         <div class="notification-icon" aria-hidden="true">
-                            <%= item.type === 'reply' ? '↩' : item.type === 'publication' ? '✦' : item.type === 'new_topic' ? '✎' : '◌' %>
+                            <%= item.type === 'reply' ? '↩' : item.type === 'publication' ? '✦' : item.type === 'project_news' ? '📣' : item.type === 'new_topic' ? '✎' : '◌' %>
                         </div>
 
                         <div class="notification-content">
@@ -43,6 +43,8 @@
                                         ? 'Ответ / Reply'
                                         : item.type === 'publication'
                                             ? 'Публикация / Publication'
+                                            : item.type === 'project_news'
+                                                ? 'Новость проекта / Project news'
                                             : item.type === 'new_topic'
                                                 ? 'Новая тема / New topic'
                                                 : item.type === 'article_discussion'

@@ -10,7 +10,7 @@ import {
 
 const router = express.Router();
 const reportStatuses = new Set(['open', 'resolved', 'dismissed']);
-const roomKeys = new Set(['', 'articles', 'discussions']);
+const roomKeys = new Set(['', 'articles', 'news', 'discussions']);
 
 router.use(requireModerator);
 

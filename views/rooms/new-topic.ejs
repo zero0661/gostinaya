@@ -1,13 +1,23 @@
 <section class="profile-page room-page">
   <header class="profile-header room-page-header">
     <h1>
-      Новая тема
-      <span>New Topic</span>
+      <% if (roomKey === 'news') { %>
+        Новая новость
+        <span>New Project News</span>
+      <% } else { %>
+        Новая тема
+        <span>New Topic</span>
+      <% } %>
     </h1>
 
     <p>
-      Создайте новое обсуждение для участников Гостиной.
-      <span>Create a new discussion for Lounge members.</span>
+      <% if (roomKey === 'news') { %>
+        Опубликуйте новость проекта и откройте её обсуждение.
+        <span>Publish project news and open its discussion.</span>
+      <% } else { %>
+        Создайте новое обсуждение для участников Гостиной.
+        <span>Create a new discussion for Lounge members.</span>
+      <% } %>
     </p>
   </header>
 
@@ -17,12 +27,13 @@
   >
     <section class="profile-card room-pane">
       <h2>
-        Новое обсуждение<br>
-        <span>New Discussion</span>
+        <%= roomKey === 'news' ? 'Новая публикация' : 'Новое обсуждение' %><br>
+        <span><%= roomKey === 'news' ? 'New Announcement' : 'New Discussion' %></span>
       </h2>
 
       <label>
-        Заголовок темы / <span>Topic Title</span>
+        <%= roomKey === 'news' ? 'Заголовок новости' : 'Заголовок темы' %> /
+        <span><%= roomKey === 'news' ? 'News Title' : 'Topic Title' %></span>
 
         <input
           type="text"
@@ -34,7 +45,8 @@
       </label>
 
       <label>
-        Первое сообщение / <span>First Message</span>
+        <%= roomKey === 'news' ? 'Текст новости' : 'Первое сообщение' %> /
+        <span><%= roomKey === 'news' ? 'News Text' : 'First Message' %></span>
 
         <textarea
           name="body"
@@ -72,7 +84,11 @@
       </div>
 
       <button type="submit">
-        Создать тему / <span class="en-secondary">Create Topic</span>
+        <% if (roomKey === 'news') { %>
+          Опубликовать новость / <span class="en-secondary">Publish News</span>
+        <% } else { %>
+          Создать тему / <span class="en-secondary">Create Topic</span>
+        <% } %>
       </button>
     </section>
   </form>

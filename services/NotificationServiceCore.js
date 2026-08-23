@@ -164,13 +164,22 @@ export class NotificationService {
     }
   }
 
-  newTopicEmail({ recipient, actorName, title, url }) {
+  newTopicEmail({ recipient, actorName, title, url, room = 'discussions' }) {
     const en = recipient.language === 'en';
-    const subject = en ? `New Lounge topic: ${title}` : `Новая тема в Гостиной: ${title}`;
-    const opening = en
-      ? `${actorName} started a new Lounge topic: “${title}”.`
-      : `${actorName} открыл новую тему в Гостиной: «${title}».`;
-    const linkText = en ? 'Open the topic' : 'Открыть тему';
+    const isProjectNews = room === 'news';
+    const subject = isProjectNews
+      ? (en ? `Project news: ${title}` : `Новость проекта: ${title}`)
+      : (en ? `New Lounge topic: ${title}` : `Новая тема в Гостиной: ${title}`);
+    const opening = isProjectNews
+      ? (en
+          ? `${actorName} published project news: “${title}”.`
+          : `${actorName} опубликовал новость проекта: «${title}».`)
+      : (en
+          ? `${actorName} started a new Lounge topic: “${title}”.`
+          : `${actorName} открыл новую тему в Гостиной: «${title}».`);
+    const linkText = isProjectNews
+      ? (en ? 'Read and discuss' : 'Прочитать и обсудить')
+      : (en ? 'Open the topic' : 'Открыть тему');
     return {
       subject,
       text: `${opening}\n\n${linkText}: ${url}`,
@@ -178,7 +187,7 @@ export class NotificationService {
     };
   }
 
-  async notifyNewTopic({ topicId, actor, title }) {
+  async notifyNewTopic({ topicId, actor, title, room = 'discussions' }) {
     const recipients = await this.guests.listNotificationRecipients();
     const url = this.topicUrl(topicId);
     for (const recipient of recipients) {
@@ -187,16 +196,19 @@ export class NotificationService {
       await this.notifications.create({
         recipientId: recipient.id,
         actorId: actor.id,
-        type: 'new_topic',
+        type: room === 'news' ? 'project_news' : 'new_topic',
         topicId,
-        text: 'создал новую тему / started a new topic'
+        text: room === 'news'
+          ? 'опубликовал новость проекта / published project news'
+          : 'создал новую тему / started a new topic'
       });
       if (Number(recipient.notify_email) === 1) {
         void this.deliverEmail(recipient, this.newTopicEmail({
           recipient,
           actorName: actor.name,
           title,
-          url
+          url,
+          room
         }));
       }
     }

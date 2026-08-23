@@ -26,6 +26,7 @@ import session from 'express-session';
 import sessionFileStore from 'session-file-store';
 import { addReturnTo, normalizeAuthReturnTo } from './utils/authRedirect.js';
 import { formatMoscowDateTime } from './utils/dateTime.js';
+import { isModerator } from './services/ModerationPolicy.js';
 import {
     loginCredentialRateLimit,
     loginIpRateLimit,
@@ -788,8 +789,12 @@ app.get('/gostinaya/:room/new', (req, res) => {
         return res.redirect('/gostinaya/articles');
     }
 
+    if (roomKey === 'news' && !isModerator(req.session.guest.role)) {
+        return res.status(403).send('Новости проекта публикуют администратор и модераторы');
+    }
+
     res.render('rooms/new-topic', {
-        title: 'Новая тема',
+        title: roomKey === 'news' ? 'Новая новость / New Project News' : 'Новая тема / New Topic',
         roomKey,
         room
     });
@@ -811,6 +816,10 @@ app.post('/gostinaya/:room/new', topicPublicationRateLimit, async (req, res, nex
 
     if (roomKey === 'articles') {
         return res.status(403).send('Темы обсуждения статей создаются автоматически');
+    }
+
+    if (roomKey === 'news' && !isModerator(req.session.guest.role)) {
+        return res.status(403).send('Новости проекта публикуют администратор и модераторы');
     }
 
     if (!title) {
@@ -838,7 +847,8 @@ app.post('/gostinaya/:room/new', topicPublicationRateLimit, async (req, res, nex
             await NotificationService.notifyNewTopic({
                 topicId: result.lastID,
                 actor: req.session.guest,
-                title
+                title,
+                room: roomKey
             });
         } catch (notificationError) {
             console.error('New topic notification error:', notificationError);
@@ -923,6 +933,9 @@ app.get('/gostinaya/:room', requireGuest, async (req, res, next) => {
         res.render('rooms/gostinaya', {
             ...room,
             roomKey,
+            canCreateTopic:
+                roomKey === 'discussions' ||
+                (roomKey === 'news' && isModerator(req.session.guest.role)),
             topics,
             articleDiscussions: enrichedArticleDiscussions,
             recentActivity

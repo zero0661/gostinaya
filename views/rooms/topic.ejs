@@ -63,19 +63,23 @@
         <% } else { %>
 
             <p class="profile-eyebrow">
-                Тема сообщества / <span>Community Topic</span>
+                <% if (topic.room === 'news') { %>
+                    Новость проекта / <span>Project News</span>
+                <% } else { %>
+                    Тема сообщества / <span>Community Topic</span>
+                <% } %>
             </p>
 
             <h1><%= topic.title %></h1>
 
             <p>
-                Автор темы:
+                <%= topic.room === 'news' ? 'Автор новости' : 'Автор темы' %>:
                 <a href="/gostinaya/member/<%= topic.author_id %>">
                     <%= topic.author %>
                 </a>
                 <br>
                 <span>
-                    Topic author:
+                    <%= topic.room === 'news' ? 'News author' : 'Topic author' %>:
                     <a href="/gostinaya/member/<%= topic.author_id %>">
                         <%= topic.author %>
                     </a>
@@ -99,8 +103,11 @@
         <div class="room-panel-header">
             <div>
                 <h2>
-                    Первое сообщение /
-                    <span>Opening Message</span>
+                    <% if (topic.room === 'news') { %>
+                        Новость / <span>News</span>
+                    <% } else { %>
+                        Первое сообщение / <span>Opening Message</span>
+                    <% } %>
                 </h2>
             </div>
         </div>
@@ -122,13 +129,13 @@
                 <% if (!messages[0].hidden_at && Number(currentUserId) === Number(topic.author_id)) { %>
                     <div class="message-actions">
                         <a href="/gostinaya/topic/<%= topic.id %>/edit">
-                            Изменить название темы /
-                            <span class="en-secondary">Edit Topic Title</span>
+                            <%= topic.room === 'news' ? 'Изменить заголовок новости' : 'Изменить название темы' %> /
+                            <span class="en-secondary"><%= topic.room === 'news' ? 'Edit News Title' : 'Edit Topic Title' %></span>
                         </a>
 
                         <a href="/gostinaya/message/<%= messages[0].id %>/edit">
-                            Редактировать текст темы /
-                            <span class="en-secondary">Edit Opening Message</span>
+                            <%= topic.room === 'news' ? 'Редактировать текст новости' : 'Редактировать текст темы' %> /
+                            <span class="en-secondary"><%= topic.room === 'news' ? 'Edit News Text' : 'Edit Opening Message' %></span>
                         </a>
                     </div>
                 <% } %>
@@ -192,6 +199,9 @@
                     <% if (topic.room === 'articles') { %>
                         Комментарии /
                         <span>Comments</span>
+                    <% } else if (topic.room === 'news') { %>
+                        Обсуждение новости /
+                        <span>News Discussion</span>
                     <% } else { %>
                         Ответы /
                         <span>Replies</span>
@@ -202,6 +212,9 @@
                     <% if (topic.room === 'articles') { %>
                         Обсуждение публикации участниками Гостиной.
                         <span>The Lounge members discuss the publication here.</span>
+                    <% } else if (topic.room === 'news') { %>
+                        Мнения и вопросы участников о новости проекта.
+                        <span>Members share thoughts and questions about this project news.</span>
                     <% } else { %>
                         Продолжение разговора участников.
                         <span>The members’ conversation continues here.</span>
@@ -262,6 +275,9 @@
                         <% if (topic.room === 'articles') { %>
                             Оставить комментарий /
                             <span>Leave a Comment</span>
+                        <% } else if (topic.room === 'news') { %>
+                            Обсудить новость /
+                            <span>Discuss the News</span>
                         <% } else { %>
                             Ответить в тему /
                             <span>Reply to Topic</span>
@@ -320,6 +336,9 @@
             <% if (topic.room === 'articles') { %>
                 ← Вернуться к обсуждению статей /
                 <span class="en-secondary">Back to Article Discussions</span>
+            <% } else if (topic.room === 'news') { %>
+                ← Вернуться к новостям проекта /
+                <span class="en-secondary">Back to Project News</span>
             <% } else { %>
                 ← Вернуться к темам /
                 <span class="en-secondary">Back to Topics</span>
