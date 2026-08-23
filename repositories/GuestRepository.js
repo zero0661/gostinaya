@@ -284,7 +284,7 @@ class GuestRepository {
                     ) AS messages_count
                  FROM guests g
                  WHERE g.id = ?
-                   AND g.role IN ('guest', 'author', 'moderator')
+                   AND g.role IN ('guest', 'author', 'moderator', 'admin')
                    AND COALESCE(g.is_blocked, 0) = 0
                    AND g.email_verified_at IS NOT NULL`,
                 [id],
@@ -376,7 +376,7 @@ class GuestRepository {
                         WHERE m.author_id = g.id AND m.hidden_at IS NULL
                     ) AS messages_count
                  FROM guests g
-                 WHERE g.role IN ('guest', 'author', 'moderator')
+                 WHERE g.role IN ('guest', 'author', 'moderator', 'admin')
                    AND COALESCE(g.is_blocked, 0) = 0
                    AND g.email_verified_at IS NOT NULL
                  ORDER BY g.created_at ASC, g.id ASC`,
