@@ -85,7 +85,7 @@ test('mergeTopics combines separate RU and EN rows with unique indexes', async (
 
     const verified = new DatabaseSync(databasePath);
     assert.deepEqual(
-      verified.prepare('SELECT topic_id, ghost_post_id_ru, ghost_post_id_en, url_ru, url_en FROM article_discussions').get(),
+      { ...verified.prepare('SELECT topic_id, ghost_post_id_ru, ghost_post_id_en, url_ru, url_en FROM article_discussions').get() },
       {
         topic_id: 10,
         ghost_post_id_ru: 'ru-id',
@@ -97,7 +97,7 @@ test('mergeTopics combines separate RU and EN rows with unique indexes', async (
     assert.equal(verified.prepare('SELECT topic_id FROM discussion_messages').get().topic_id, 10);
     assert.equal(verified.prepare('SELECT topic_id FROM notifications').get().topic_id, 10);
     assert.deepEqual(
-      verified.prepare('SELECT topic_id, last_read_message_id FROM discussion_topic_reads').get(),
+      { ...verified.prepare('SELECT topic_id, last_read_message_id FROM discussion_topic_reads').get() },
       { topic_id: 10, last_read_message_id: 2 }
     );
     assert.equal(verified.prepare('SELECT COUNT(*) AS count FROM discussion_topics WHERE id = 20').get().count, 0);
