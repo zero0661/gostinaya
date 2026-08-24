@@ -96,12 +96,15 @@ export default {
             THEN excluded.last_read_at ELSE discussion_topic_reads.last_read_at END`, [primaryTopicId, duplicateTopicId]);
       await run('DELETE FROM discussion_topic_reads WHERE topic_id = ?', [duplicateTopicId]);
 
+      // Release the duplicate row's unique Ghost IDs and URLs before assigning the
+      // complete language pair to the primary row. Updating first fails when partial
+      // RU/EN discussions already own those unique values.
+      await run('DELETE FROM article_discussions WHERE topic_id = ?', [duplicateTopicId]);
       await run(`UPDATE article_discussions SET ghost_post_id_ru = ?, ghost_post_id_en = ?,
         url_ru = ?, url_en = ?, published_at = ?, updated_at = CURRENT_TIMESTAMP WHERE topic_id = ?`, [
         languageVersion.ghostPostIdRu, languageVersion.ghostPostIdEn,
         languageVersion.urlRu, languageVersion.urlEn, languageVersion.publishedAt, primaryTopicId
       ]);
-      await run('DELETE FROM article_discussions WHERE topic_id = ?', [duplicateTopicId]);
       await run('DELETE FROM discussion_topics WHERE id = ?', [duplicateTopicId]);
       return { topicId: Number(primaryTopicId), merged: true };
     });
