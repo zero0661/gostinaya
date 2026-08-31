@@ -443,7 +443,8 @@ class GuestRepository {
                     notify_email
                  FROM guests
                  WHERE email_verified_at IS NOT NULL
-                   AND COALESCE(is_blocked, 0) = 0`,
+                   AND COALESCE(is_blocked, 0) = 0
+                   AND LOWER(email) NOT LIKE '%@internal.invalid'`,
                 [],
                 (error, rows) => {
                     if (error) return reject(error);
