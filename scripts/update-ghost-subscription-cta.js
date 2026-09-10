@@ -8,25 +8,24 @@ const GHOST_CONTAINER = 'ghost-ghost-1';
 const THEME_FILE = '/var/lib/docker/volumes/ghost_ghost_content/_data/themes/liebling/post.hbs';
 const BACKUP_ROOT = '/root/ghost-theme-backups';
 const CONTACT_EMAIL = 'milen.petr@gmail.com';
-const RU_NEWSLETTER = 'После логина — RU';
-const EN_NEWSLETTER = 'After Login — EN';
+const SIGNUP_ENDPOINT = '/gostinaya/api/newsletter/subscribe';
 
 const NEW_TEMPLATE = String.raw`            <section class="after-login-invitation">
                 {{#has tag="English"}}
                     <div class="after-login-invitation__part after-login-invitation__part--subscribe">
                         <h2>Stay Updated</h2>
                         <p>New essays from <em>After Login</em>, about once every two weeks. New publications only. No promotional mail.</p>
-                        <form class="after-login-subscribe" data-members-form="subscribe">
-                            <input data-members-newsletter type="hidden" value="${EN_NEWSLETTER}">
-                            <input data-members-label type="hidden" value="After Login EN">
+                        <form class="after-login-subscribe" action="${SIGNUP_ENDPOINT}" method="post" data-language="en">
+                            <input name="language" type="hidden" value="en">
+                            <input name="returnTo" type="hidden" value="">
                             <div class="after-login-subscribe__row">
                                 <label class="after-login-subscribe__label" for="after-login-email-en">Email</label>
-                                <input id="after-login-email-en" class="after-login-subscribe__input" data-members-email type="email" required autocomplete="email" placeholder="your@email.com">
+                                <input id="after-login-email-en" class="after-login-subscribe__input" name="email" type="email" required autocomplete="email" placeholder="your@email.com">
                                 <button class="after-login-invitation__button after-login-invitation__button--primary" type="submit">Subscribe</button>
                             </div>
                             <p class="after-login-subscribe__state after-login-subscribe__state--loading">Sending…</p>
                             <p class="after-login-subscribe__state after-login-subscribe__state--success">Check your inbox and confirm your subscription.</p>
-                            <p class="after-login-subscribe__state after-login-subscribe__state--error" data-members-error></p>
+                            <p class="after-login-subscribe__state after-login-subscribe__state--error">Could not send the confirmation email. Please try again.</p>
                         </form>
                     </div>
 
@@ -60,17 +59,17 @@ const NEW_TEMPLATE = String.raw`            <section class="after-login-invitati
                     <div class="after-login-invitation__part after-login-invitation__part--subscribe">
                         <h2>Не пропустить новые публикации</h2>
                         <p>Новые статьи «После логина» — примерно раз в две недели. Только новые материалы, без рекламной рассылки.</p>
-                        <form class="after-login-subscribe" data-members-form="subscribe">
-                            <input data-members-newsletter type="hidden" value="${RU_NEWSLETTER}">
-                            <input data-members-label type="hidden" value="После логина RU">
+                        <form class="after-login-subscribe" action="${SIGNUP_ENDPOINT}" method="post" data-language="ru">
+                            <input name="language" type="hidden" value="ru">
+                            <input name="returnTo" type="hidden" value="">
                             <div class="after-login-subscribe__row">
                                 <label class="after-login-subscribe__label" for="after-login-email-ru">E-mail</label>
-                                <input id="after-login-email-ru" class="after-login-subscribe__input" data-members-email type="email" required autocomplete="email" placeholder="ваш e-mail">
+                                <input id="after-login-email-ru" class="after-login-subscribe__input" name="email" type="email" required autocomplete="email" placeholder="ваш e-mail">
                                 <button class="after-login-invitation__button after-login-invitation__button--primary" type="submit">Подписаться</button>
                             </div>
                             <p class="after-login-subscribe__state after-login-subscribe__state--loading">Отправляем…</p>
                             <p class="after-login-subscribe__state after-login-subscribe__state--success">Проверьте почту и подтвердите подписку.</p>
-                            <p class="after-login-subscribe__state after-login-subscribe__state--error" data-members-error></p>
+                            <p class="after-login-subscribe__state after-login-subscribe__state--error">Не удалось отправить письмо. Попробуйте ещё раз.</p>
                         </form>
                     </div>
 
@@ -101,6 +100,41 @@ const NEW_TEMPLATE = String.raw`            <section class="after-login-invitati
                     </div>
                     <p class="after-login-invitation__motto"><em>После логина всё только начинается.</em></p>
                 {{/has}}
+
+                <script>
+                    (() => {
+                        document.querySelectorAll('.after-login-subscribe').forEach((form) => {
+                            const returnTo = form.querySelector('[name="returnTo"]');
+                            if (returnTo) returnTo.value = window.location.href;
+                            form.addEventListener('submit', async (event) => {
+                                event.preventDefault();
+                                const button = form.querySelector('button[type="submit"]');
+                                const errorState = form.querySelector('.after-login-subscribe__state--error');
+                                form.classList.remove('success', 'error');
+                                form.classList.add('loading');
+                                if (button) button.disabled = true;
+                                try {
+                                    const response = await fetch(form.action, {
+                                        method: 'POST',
+                                        headers: { 'Accept': 'application/json' },
+                                        body: new URLSearchParams(new FormData(form))
+                                    });
+                                    if (!response.ok) throw new Error('signup failed');
+                                    form.classList.remove('loading');
+                                    form.classList.add('success');
+                                } catch (error) {
+                                    form.classList.remove('loading');
+                                    form.classList.add('error');
+                                    if (errorState) errorState.textContent = form.dataset.language === 'en'
+                                        ? 'Could not send the confirmation email. Please try again.'
+                                        : 'Не удалось отправить письмо. Попробуйте ещё раз.';
+                                } finally {
+                                    if (button) button.disabled = false;
+                                }
+                            });
+                        });
+                    })();
+                </script>
 
                 <style class="after-login-invitation__styles">
                     .after-login-invitation {
@@ -284,8 +318,9 @@ function replaceInvitation(source) {
   );
 
   if (replaced === source) fail('Theme invitation replacement made no changes');
-  if (!replaced.includes(`value="${RU_NEWSLETTER}"`)) fail('RU newsletter marker missing');
-  if (!replaced.includes(`value="${EN_NEWSLETTER}"`)) fail('EN newsletter marker missing');
+  if (!replaced.includes(`action="${SIGNUP_ENDPOINT}"`)) fail('Custom signup endpoint missing');
+  if (!replaced.includes('name="language" type="hidden" value="ru"')) fail('RU language marker missing');
+  if (!replaced.includes('name="language" type="hidden" value="en"')) fail('EN language marker missing');
   if (!replaced.includes(`mailto:${CONTACT_EMAIL}`)) fail('Contact email marker missing');
   if (!replaced.includes('Статья заканчивается здесь, но разговор — нет.')) fail('RU Lounge copy changed unexpectedly');
   if (!replaced.includes('The article ends here, but the conversation doesn’t.')) fail('EN Lounge copy missing');
@@ -298,8 +333,7 @@ function main() {
   const updatedTheme = replaceInvitation(themeSource);
 
   console.log(`Theme: ${THEME_FILE}`);
-  console.log(`RU newsletter: ${RU_NEWSLETTER}`);
-  console.log(`EN newsletter: ${EN_NEWSLETTER}`);
+  console.log(`Signup endpoint: ${SIGNUP_ENDPOINT}`);
   console.log(`Contact: ${CONTACT_EMAIL}`);
   console.log('Theme block: ready to replace');
 

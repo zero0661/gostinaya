@@ -1,0 +1,17 @@
+<section class="profile-page">
+  <article class="profile-card">
+    <% if (complete) { %>
+      <h1><%= language === 'en' ? 'You are unsubscribed' : 'Вы отписались' %></h1>
+      <p><%= language === 'en' ? 'You will no longer receive new English publications.' : 'Вы больше не будете получать новые публикации на русском языке.' %></p>
+    <% } else if (valid) { %>
+      <h1><%= language === 'en' ? 'Unsubscribe from new publications?' : 'Отписаться от новых публикаций?' %></h1>
+      <form method="post" action="/gostinaya/newsletter/unsubscribe">
+        <input type="hidden" name="token" value="<%= token %>">
+        <button class="button" type="submit"><%= language === 'en' ? 'Confirm unsubscribe' : 'Подтвердить отписку' %></button>
+      </form>
+    <% } else { %>
+      <h1><%= language === 'en' ? 'The link is invalid or expired' : 'Ссылка недействительна или устарела' %></h1>
+    <% } %>
+    <p><a href="<%= language === 'en' ? '/en/' : '/' %>"><%= language === 'en' ? 'Return to the site' : 'Вернуться на сайт' %></a></p>
+  </article>
+</section>

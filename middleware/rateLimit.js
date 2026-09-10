@@ -106,6 +106,11 @@ export const verificationResendRateLimit = createRateLimiter({
     max: 5
 });
 
+export const newsletterSignupRateLimit = createRateLimiter({
+    windowMs: HOUR,
+    max: 5
+});
+
 export const passwordResetRequestIpRateLimit = createRateLimiter({
     windowMs: HOUR,
     max: 10

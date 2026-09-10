@@ -10,6 +10,8 @@ import NotificationService from './services/NotificationService.js';
 import ModerationRepository from './repositories/ModerationRepository.js';
 import EmailVerificationService from './services/EmailVerificationService.js';
 import PasswordResetService from './services/PasswordResetService.js';
+import NewsletterSignupService from './services/NewsletterSignupService.js';
+import NewsletterDeliveryService from './services/NewsletterDeliveryService.js';
 import { createArticleDiscussionRedirectHandler } from './controllers/ArticleDiscussionController.js';
 import requireGuest from './middleware/requireGuest.js';
 import moderationRouter from './routes/moderation.js';
@@ -38,7 +40,8 @@ import {
     registrationRateLimit,
     reportPublicationRateLimit,
     topicPublicationRateLimit,
-    verificationResendRateLimit
+    verificationResendRateLimit,
+    newsletterSignupRateLimit
 } from './middleware/rateLimit.js';
 
 dotenv.config();
@@ -187,6 +190,16 @@ async function handleGhostPostWebhook(req, res) {
       }
     }
 
+    const isPublishedEvent = req.path.endsWith('/post-published');
+    if (isPublishedEvent && result.publicationReady && result.publication) {
+      try {
+        result.newsletterDelivery = await NewsletterDeliveryService.deliverPublication(result.publication);
+      } catch (newsletterError) {
+        console.error('Newsletter delivery error:', newsletterError);
+        result.newsletterDelivery = { ok: false, error: 'delivery-failed' };
+      }
+    }
+
     return res.status(200).json({
       ok: true,
       ...result
@@ -203,6 +216,79 @@ async function handleGhostPostWebhook(req, res) {
 
 app.post('/gostinaya/webhooks/ghost/post-published', handleGhostPostWebhook);
 app.post('/gostinaya/webhooks/ghost/post-updated', handleGhostPostWebhook);
+
+app.post('/gostinaya/api/newsletter/subscribe', newsletterSignupRateLimit, async (req, res) => {
+  try {
+    const result = await NewsletterSignupService.issue({
+      email: req.body?.email,
+      language: req.body?.language,
+      returnTo: req.body?.returnTo
+    });
+    return res.status(202).json({ ok: true, language: result.language });
+  } catch (error) {
+    if (error.message === 'INVALID_EMAIL') return res.status(400).json({ ok: false, error: 'invalid-email' });
+    console.error('Newsletter signup error:', error);
+    return res.status(500).json({ ok: false, error: 'delivery-failed' });
+  }
+});
+
+app.get('/gostinaya/newsletter/confirm', async (req, res) => {
+  try {
+    const result = await NewsletterSignupService.confirm(req.query.token);
+    const language = result?.language === 'en' ? 'en' : 'ru';
+    return res.status(result ? 200 : 400).render('newsletter/confirmed', {
+      title: language === 'en' ? 'Subscription confirmed' : 'Подписка подтверждена',
+      layout: 'layouts/public',
+      confirmed: Boolean(result),
+      language,
+      returnTo: result?.returnTo || (language === 'en' ? '/en/' : '/')
+    });
+  } catch (error) {
+    console.error('Newsletter confirmation error:', error);
+    return res.status(500).render('newsletter/confirmed', {
+      title: 'Subscription error / Ошибка подписки', layout: 'layouts/public', confirmed: false, language: 'ru', returnTo: '/'
+    });
+  }
+});
+
+app.get('/gostinaya/newsletter/unsubscribe', async (req, res) => {
+  try {
+    const result = await NewsletterSignupService.previewUnsubscribe(req.query.token);
+    const language = result?.language === 'en' ? 'en' : 'ru';
+    return res.status(result ? 200 : 400).render('newsletter/unsubscribe', {
+      title: language === 'en' ? 'Unsubscribe' : 'Отписка',
+      layout: 'layouts/public',
+      valid: Boolean(result),
+      complete: false,
+      language,
+      token: result ? req.query.token : ''
+    });
+  } catch (error) {
+    return res.status(500).render('newsletter/unsubscribe', {
+      title: 'Unsubscribe error / Ошибка отписки', layout: 'layouts/public', valid: false, complete: false, language: 'ru', token: ''
+    });
+  }
+});
+
+app.post('/gostinaya/newsletter/unsubscribe', async (req, res) => {
+  try {
+    const result = await NewsletterSignupService.unsubscribe(req.body?.token);
+    const language = result?.language === 'en' ? 'en' : 'ru';
+    return res.status(result ? 200 : 400).render('newsletter/unsubscribe', {
+      title: language === 'en' ? 'Unsubscribed' : 'Подписка отменена',
+      layout: 'layouts/public',
+      valid: Boolean(result),
+      complete: Boolean(result),
+      language,
+      token: ''
+    });
+  } catch (error) {
+    console.error('Newsletter unsubscribe error:', error);
+    return res.status(500).render('newsletter/unsubscribe', {
+      title: 'Unsubscribe error / Ошибка отписки', layout: 'layouts/public', valid: false, complete: false, language: 'ru', token: ''
+    });
+  }
+});
 
 app.get('/health', (req, res) => {
   res.status(200).send('Gostinaya is alive');

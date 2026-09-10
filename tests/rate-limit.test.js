@@ -87,4 +87,5 @@ test('public write routes are protected by their dedicated limiters', async () =
     assert.match(app, /topic\/:id\/messages', messagePublicationRateLimit/);
     assert.match(app, /:room\/new', topicPublicationRateLimit/);
     assert.match(app, /reports', reportPublicationRateLimit, reportsRouter/);
+    assert.match(app, /api\/newsletter\/subscribe', newsletterSignupRateLimit/);
 });

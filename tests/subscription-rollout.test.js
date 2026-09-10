@@ -11,12 +11,13 @@ function read(relativePath) {
   return fs.readFileSync(path.join(root, relativePath), 'utf8');
 }
 
-test('subscription CTA keeps required RU/EN routing and Lounge copy', () => {
+test('subscription CTA uses the bilingual server confirmation flow and keeps Lounge copy', () => {
   const source = read('scripts/update-ghost-subscription-cta.js');
 
-  assert.match(source, /После логина — RU/);
-  assert.match(source, /After Login — EN/);
-  assert.match(source, /data-members-newsletter/);
+  assert.match(source, /gostinaya\/api\/newsletter\/subscribe/);
+  assert.match(source, /name="language" type="hidden" value="ru"/);
+  assert.match(source, /name="language" type="hidden" value="en"/);
+  assert.doesNotMatch(source, /data-members-form="subscribe"/);
   assert.match(source, /Статья заканчивается здесь, но разговор — нет\./);
   assert.match(source, /milen\.petr@gmail\.com/);
   assert.match(source, /gostinaya\/article\/\{\{id\}\}/);
