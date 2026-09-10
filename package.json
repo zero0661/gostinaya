@@ -16,6 +16,7 @@
     "backup:verify": "node scripts/verify-gostinaya-backup.js",
     "role:set": "node scripts/set-guest-role.js",
     "import:cusdis": "node scripts/import-cusdis-comments.js",
+    "ghost:newsletters": "node scripts/setup-ghost-newsletters.js",
     "ghost:subscription-cta": "node scripts/update-ghost-subscription-cta.js"
   },
   "dependencies": {
