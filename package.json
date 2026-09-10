@@ -18,7 +18,8 @@
     "import:cusdis": "node scripts/import-cusdis-comments.js",
     "ghost:newsletters": "node scripts/setup-ghost-newsletters.js",
     "ghost:subscription-cta": "node scripts/update-ghost-subscription-cta.js",
-    "ghost:contact-email": "node scripts/update-ghost-contact-email.js"
+    "ghost:contact-email": "node scripts/update-ghost-contact-email.js",
+    "ghost:mail-diagnose": "node scripts/diagnose-ghost-mail.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
