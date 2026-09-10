@@ -15,7 +15,8 @@
     "backup:create": "node scripts/backup-gostinaya.js",
     "backup:verify": "node scripts/verify-gostinaya-backup.js",
     "role:set": "node scripts/set-guest-role.js",
-    "import:cusdis": "node scripts/import-cusdis-comments.js"
+    "import:cusdis": "node scripts/import-cusdis-comments.js",
+    "ghost:subscription-cta": "node scripts/update-ghost-subscription-cta.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
