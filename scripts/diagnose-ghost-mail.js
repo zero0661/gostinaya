@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import net from 'node:net';
+import nodemailer from 'nodemailer';
 import path from 'node:path';
 
 function run(args) {
@@ -58,6 +59,42 @@ async function tcpProbe(host, port) {
       resolve({ ok: false, detail: error.code || error.message });
     });
   });
+}
+
+function asBoolean(value) {
+  return String(value || '').toLowerCase() === 'true';
+}
+
+async function smtpVerify(config) {
+  if (!config.host || !config.port || !config.user || !config.pass) {
+    return { ok: false, detail: 'skipped: SMTP configuration is incomplete' };
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: config.host,
+    port: Number(config.port),
+    secure: asBoolean(config.secure),
+    auth: {
+      user: config.user,
+      pass: config.pass
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000
+  });
+
+  try {
+    await transporter.verify();
+    return { ok: true, detail: 'server accepted the SMTP credentials' };
+  } catch (error) {
+    const code = error?.code || error?.responseCode || 'SMTP_ERROR';
+    const message = String(error?.message || 'verification failed')
+      .replaceAll(config.user, '[redacted-user]')
+      .replaceAll(config.pass, '[redacted-password]');
+    return { ok: false, detail: `${code}: ${message}` };
+  } finally {
+    transporter.close();
+  }
 }
 
 async function main() {
@@ -120,16 +157,22 @@ async function main() {
   console.log('  password:', present(lounge.SMTP_PASS));
   console.log('  from:', lounge.MAIL_FROM || 'MISSING');
 
-  const probe = await tcpProbe(lounge.SMTP_HOST, lounge.SMTP_PORT);
+  const ghostProbe = await tcpProbe(ghost.host, ghost.port);
+  const ghostAuth = await smtpVerify(ghost);
+  const loungeProbe = await tcpProbe(lounge.SMTP_HOST, lounge.SMTP_PORT);
   console.log('');
-  console.log('SMTP reachability from VPS:', probe.ok ? 'OK' : 'FAILED', '-', probe.detail);
+  console.log('Ghost SMTP reachability from VPS:', ghostProbe.ok ? 'OK' : 'FAILED', '-', ghostProbe.detail);
+  console.log('Ghost SMTP authentication:', ghostAuth.ok ? 'OK' : 'FAILED', '-', ghostAuth.detail);
+  console.log('Lounge SMTP reachability from VPS:', loungeProbe.ok ? 'OK' : 'FAILED', '-', loungeProbe.detail);
 
   const ghostReady = String(ghost.transport || '').toUpperCase() === 'SMTP'
     && ghost.host && ghost.port && ghost.user && ghost.pass && ghost.from;
 
   console.log('');
-  if (ghostReady) {
-    console.log('RESULT: Ghost has an explicit SMTP configuration. Investigate authentication or delivery logs next.');
+  if (ghostReady && ghostAuth.ok) {
+    console.log('RESULT: Ghost SMTP configuration and authentication are valid. Investigate Brevo delivery logs and sender verification next.');
+  } else if (ghostReady) {
+    console.log('RESULT: Ghost SMTP is configured, but authentication failed. Replace or correct the Brevo SMTP credentials.');
   } else if (lounge.SMTP_HOST && lounge.SMTP_PORT && lounge.SMTP_USER && lounge.SMTP_PASS && lounge.MAIL_FROM) {
     console.log('RESULT: Ghost SMTP is incomplete, while the Lounge already has a complete SMTP account that may be reused.');
   } else {
