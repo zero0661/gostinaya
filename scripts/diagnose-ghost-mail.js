@@ -97,7 +97,50 @@ async function smtpVerify(config) {
   }
 }
 
+async function smtpSendTest(config, recipient) {
+  const transporter = nodemailer.createTransport({
+    host: config.host,
+    port: Number(config.port),
+    secure: asBoolean(config.secure),
+    auth: {
+      user: config.user,
+      pass: config.pass
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000,
+    disableFileAccess: true,
+    disableUrlAccess: true
+  });
+
+  try {
+    const info = await transporter.sendMail({
+      from: config.from,
+      to: recipient,
+      subject: '[После логина] Проверка SMTP Ghost',
+      text: 'Это техническое тестовое письмо. Оно подтверждает, что Ghost SMTP может передавать сообщения через Brevo.'
+    });
+    return { ok: true, detail: `accepted by SMTP (message id: ${info.messageId || 'not returned'})` };
+  } catch (error) {
+    const code = error?.code || error?.responseCode || 'SMTP_ERROR';
+    const message = String(error?.message || 'test send failed')
+      .replaceAll(config.user, '[redacted-user]')
+      .replaceAll(config.pass, '[redacted-password]');
+    return { ok: false, detail: `${code}: ${message}` };
+  } finally {
+    transporter.close();
+  }
+}
+
 async function main() {
+  const sendTestArg = process.argv.find((arg) => arg.startsWith('--send-test='));
+  const testRecipient = sendTestArg ? sendTestArg.slice('--send-test='.length).trim() : '';
+  if (sendTestArg && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(testRecipient)) {
+    console.error('Invalid --send-test email address.');
+    process.exitCode = 1;
+    return;
+  }
+
   const container = findGhostContainer();
   if (!container) {
     console.error('Ghost container was not found.');
@@ -165,6 +208,13 @@ async function main() {
   console.log('Ghost SMTP authentication:', ghostAuth.ok ? 'OK' : 'FAILED', '-', ghostAuth.detail);
   console.log('Lounge SMTP reachability from VPS:', loungeProbe.ok ? 'OK' : 'FAILED', '-', loungeProbe.detail);
 
+  if (testRecipient) {
+    const testSend = ghostAuth.ok
+      ? await smtpSendTest(ghost, testRecipient)
+      : { ok: false, detail: 'skipped because SMTP authentication failed' };
+    console.log('Ghost SMTP test message:', testSend.ok ? 'SENT' : 'FAILED', '-', testSend.detail);
+  }
+
   const ghostReady = String(ghost.transport || '').toUpperCase() === 'SMTP'
     && ghost.host && ghost.port && ghost.user && ghost.pass && ghost.from;
 
@@ -178,7 +228,9 @@ async function main() {
   } else {
     console.log('RESULT: Ghost SMTP is incomplete and no complete reusable Lounge SMTP account was found.');
   }
-  console.log('No settings were changed and no email was sent.');
+  console.log(testRecipient
+    ? 'No settings were changed. One explicitly requested SMTP test message was attempted.'
+    : 'No settings were changed and no email was sent.');
 }
 
 main().catch((error) => {
