@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { newsletterLogoAttachment, newsletterLogoHeader } from '../utils/newsletterBrand.js';
 
 const NEWSLETTERS = {
   ru: { name: 'После логина — RU', label: 'После логина RU' },
@@ -48,11 +49,13 @@ export class NewsletterSignupService {
     const action = en ? 'Confirm subscription' : 'Подтвердить подписку';
     const expiry = en ? 'The link is valid for 24 hours.' : 'Ссылка действует 24 часа.';
     const ignore = en ? 'If you did not request this, simply ignore the message.' : 'Если вы не запрашивали подписку, просто проигнорируйте письмо.';
+    const logo = newsletterLogoHeader(language);
     return {
       to: email,
       subject,
       text: `${opening}\n\n${action}: ${url}\n\n${expiry}\n${ignore}`,
-      html: `<p>${escapeHtml(opening)}</p><p><a href="${escapeHtml(url)}">${escapeHtml(action)}</a></p><p>${escapeHtml(expiry)}</p><p>${escapeHtml(ignore)}</p>`
+      html: `${logo}<p>${escapeHtml(opening)}</p><p><a href="${escapeHtml(url)}">${escapeHtml(action)}</a></p><p>${escapeHtml(expiry)}</p><p>${escapeHtml(ignore)}</p>`,
+      attachments: [newsletterLogoAttachment()]
     };
   }
 
@@ -74,12 +77,12 @@ export class NewsletterSignupService {
     const signature = en ? 'Peter Milenin\nAuthor of After Login' : 'Пётр Миленин\nАвтор проекта «После логина»';
     const unsubscribe = en ? 'Unsubscribe' : 'Отписаться';
     const loungeUrl = `${this.appUrl}/gostinaya/register`;
-    const brand = en ? 'AFTER LOGIN' : 'ПОСЛЕ ЛОГИНА';
+    const logo = newsletterLogoHeader(language);
     const html = `<!doctype html>
 <html lang="${en ? 'en' : 'ru'}">
 <body style="margin:0;padding:0;background:#f4f1ed;color:#202027;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">
   <div style="max-width:640px;margin:0 auto;padding:32px 18px;">
-    <div style="margin:0 0 18px;color:#6941c6;font-size:14px;font-weight:700;letter-spacing:.12em;">&gt;_ ${escapeHtml(brand)}</div>
+    ${logo}
     <div style="background:#ffffff;border:1px solid #e7e1da;border-radius:18px;padding:34px 34px 30px;box-shadow:0 8px 28px rgba(32,32,39,.06);">
       <h1 style="margin:0 0 24px;font-family:Georgia,'Times New Roman',serif;font-size:38px;line-height:1.15;color:#202027;">${escapeHtml(heading)}</h1>
       <p style="margin:0 0 20px;font-size:17px;line-height:1.65;">${escapeHtml(thanks)}</p>
@@ -99,7 +102,8 @@ export class NewsletterSignupService {
       subject,
       text: `${heading}\n\n${thanks}\n\n${about}\n\n${lounge}\n\n${loungeAction}: ${loungeUrl}\n\n${goodbye}\n\n${signature}\n\n${unsubscribe}: ${unsubscribeUrl}`,
       html,
-      headers: { 'List-Unsubscribe': `<${unsubscribeUrl}>` }
+      headers: { 'List-Unsubscribe': `<${unsubscribeUrl}>` },
+      attachments: [newsletterLogoAttachment()]
     };
   }
 

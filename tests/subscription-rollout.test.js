@@ -50,7 +50,6 @@ test('newsletter status pages use After Login branding instead of the Lounge lay
   const layout = read('views/layouts/newsletter.ejs');
 
   assert.match(app, /newsletter\/unsubscribe[\s\S]*?layout: 'layouts\/newsletter'/);
-  assert.match(layout, /ПОСЛЕ ЛОГИНА/);
-  assert.match(layout, /AFTER LOGIN/);
+  assert.match(layout, /after-login-logo-transparent\.png/);
   assert.doesNotMatch(layout, /Гостиная|The Lounge|lounge-banner/);
 });

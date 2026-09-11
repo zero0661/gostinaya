@@ -37,6 +37,8 @@ test('publication delivery separates languages and skips duplicate claims', asyn
   assert.equal(sent.length, 2);
   assert.match(sent[0].subject, /Русская статья/);
   assert.match(sent[0].text, /unsubscribe\/ru/);
+  assert.match(sent[0].html, /cid:after-login-logo/);
+  assert.equal(sent[0].attachments[0].cid, 'after-login-logo');
   assert.match(sent[1].subject, /English article/);
   assert.match(sent[1].text, /unsubscribe\/en/);
   assert.equal(marked.length, 2);

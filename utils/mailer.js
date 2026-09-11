@@ -31,13 +31,14 @@ export async function sendMail({ to, subject, html, text }) {
   });
 }
 
-export async function sendNewsletterMail({ to, subject, html, text, headers }) {
+export async function sendNewsletterMail({ to, subject, html, text, headers, attachments }) {
   return newsletterTransporter.sendMail({
     from: process.env.NEWSLETTER_MAIL_FROM || process.env.MAIL_FROM,
     to,
     subject,
     text,
     html,
-    headers
+    headers,
+    attachments
   });
 }

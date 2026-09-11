@@ -24,17 +24,12 @@
       padding: 42px 0 64px;
     }
     .newsletter-brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
+      display: block;
+      width: min(100%, 420px);
       margin-bottom: 72px;
-      color: #b49aff;
-      font-size: 15px;
-      font-weight: 800;
-      letter-spacing: .12em;
       text-decoration: none;
     }
-    .newsletter-brand-mark { color: #8ee7ff; }
+    .newsletter-brand img { display: block; width: 100%; height: auto; }
     .newsletter-content { width: 100%; }
     .newsletter-status {
       max-width: 44rem;
@@ -80,8 +75,7 @@
 <body>
   <main class="newsletter-shell">
     <a class="newsletter-brand" href="<%= language === 'en' ? '/en/' : '/' %>">
-      <span class="newsletter-brand-mark">&gt;_</span>
-      <span><%= language === 'en' ? 'AFTER LOGIN' : 'ПОСЛЕ ЛОГИНА' %></span>
+      <img src="/gostinaya/public/after-login-logo-transparent.png" alt="<%= language === 'en' ? 'After Login' : 'После логина' %>">
     </a>
     <div class="newsletter-content"><%- body %></div>
   </main>

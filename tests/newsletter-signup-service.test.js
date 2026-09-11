@@ -34,6 +34,8 @@ test('confirmation email and Ghost newsletter are localized independently', asyn
   assert.equal(sent.length, 1);
   assert.match(sent[0].subject, /Confirm your subscription/);
   assert.doesNotMatch(sent[0].subject, /Подтвердите/);
+  assert.match(sent[0].html, /cid:after-login-logo/);
+  assert.equal(sent[0].attachments[0].cid, 'after-login-logo');
   const token = new URL(sent[0].text.match(/https:\/\/\S+/)[0]).searchParams.get('token');
   const result = await service.confirm(token);
   assert.equal(result.returnTo, '/en/article/');
@@ -46,9 +48,10 @@ test('confirmation email and Ghost newsletter are localized independently', asyn
   assert.equal(sent[1].subject, 'Welcome to After Login');
   assert.match(sent[1].text, /Join the Lounge: https:\/\/milenin\.pro\/gostinaya\/register/);
   assert.match(sent[1].text, /Unsubscribe: https:\/\/milenin\.pro\/gostinaya\/newsletter\/unsubscribe\?token=/);
-  assert.match(sent[1].html, /&gt;_ AFTER LOGIN/);
+  assert.match(sent[1].html, /cid:after-login-logo/);
   assert.match(sent[1].html, /background:#6941c6/);
   assert.match(sent[1].headers['List-Unsubscribe'], /^<https:\/\/milenin\.pro\/gostinaya\/newsletter\/unsubscribe\?token=.*>$/);
+  assert.equal(sent[1].attachments[0].cid, 'after-login-logo');
   assert.equal(await service.confirm(token), null, 'the confirmation link must not send a second welcome email');
   assert.equal(sent.length, 2);
 });

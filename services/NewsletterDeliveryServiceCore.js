@@ -1,3 +1,5 @@
+import { newsletterLogoAttachment, newsletterLogoHeader } from '../utils/newsletterBrand.js';
+
 const CHANNELS = {
   ru: { name: 'После логина — RU', key: 'ru' },
   en: { name: 'After Login — EN', key: 'en' }
@@ -25,11 +27,13 @@ export class NewsletterDeliveryService {
     const action = en ? 'Read the article' : 'Прочитать статью';
     const unsubscribe = en ? 'Unsubscribe' : 'Отписаться';
     const footer = unsubscribeUrl ? `\n\n${unsubscribe}: ${unsubscribeUrl}` : '';
+    const logo = newsletterLogoHeader(language);
     return {
       subject,
       text: `${opening}\n\n${action}: ${url}${footer}`,
-      html: `<p>${escapeHtml(opening)}</p><p><a href="${escapeHtml(url)}">${escapeHtml(action)}</a></p>${unsubscribeUrl ? `<p><small><a href="${escapeHtml(unsubscribeUrl)}">${escapeHtml(unsubscribe)}</a></small></p>` : ''}`,
-      headers: unsubscribeUrl ? { 'List-Unsubscribe': `<${unsubscribeUrl}>` } : undefined
+      html: `${logo}<p>${escapeHtml(opening)}</p><p><a href="${escapeHtml(url)}">${escapeHtml(action)}</a></p>${unsubscribeUrl ? `<p><small><a href="${escapeHtml(unsubscribeUrl)}">${escapeHtml(unsubscribe)}</a></small></p>` : ''}`,
+      headers: unsubscribeUrl ? { 'List-Unsubscribe': `<${unsubscribeUrl}>` } : undefined,
+      attachments: [newsletterLogoAttachment()]
     };
   }
 
