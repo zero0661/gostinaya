@@ -31,6 +31,88 @@ export function createGhostApiService({ fetchImpl = fetch, adminBaseUrl = 'https
   }
 
   return {
+    async listNewsletters() {
+      const data = await adminFetch('/newsletters/?limit=all');
+      return data.newsletters || [];
+    },
+    async findMemberByEmail(email) {
+      const normalized = String(email || '').trim().toLowerCase();
+      const filter = `email:'${escapeNql(normalized)}'`;
+      const data = await adminFetch(`/members/?limit=1&include=newsletters,labels&filter=${encodeURIComponent(filter)}`);
+      return data.members?.[0] || null;
+    },
+    async getMemberById(memberId) {
+      const data = await adminFetch(`/members/${encodeURIComponent(memberId)}/?include=newsletters,labels`);
+      return data.members?.[0] || null;
+    },
+    async subscribeMember({ email, newsletterName, labelName }) {
+      const newsletters = await this.listNewsletters();
+      const newsletter = newsletters.find(item => item.name === newsletterName);
+      if (!newsletter) throw new Error(`Ghost newsletter not found: ${newsletterName}`);
+
+      const existing = await this.findMemberByEmail(email);
+      const newsletterRefs = new Map((existing?.newsletters || []).map(item => [item.id, { id: item.id }]));
+      newsletterRefs.set(newsletter.id, { id: newsletter.id });
+      const labelNames = new Set((existing?.labels || []).map(item => item.name).filter(Boolean));
+      if (labelName) labelNames.add(labelName);
+
+      const member = {
+        email: String(email).trim().toLowerCase(),
+        newsletters: [...newsletterRefs.values()],
+        labels: [...labelNames].map(name => ({ name }))
+      };
+      const method = existing ? 'PUT' : 'POST';
+      const endpoint = existing ? `/members/${encodeURIComponent(existing.id)}/` : '/members/';
+      if (existing) member.id = existing.id;
+      const data = await adminFetch(endpoint, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ members: [member] })
+      });
+      return data.members?.[0] || null;
+    },
+    async isMemberSubscribed({ email, newsletterName }) {
+      const newsletters = await this.listNewsletters();
+      const target = newsletters.find(item => item.name === newsletterName);
+      if (!target) throw new Error(`Ghost newsletter not found: ${newsletterName}`);
+      const member = await this.findMemberByEmail(email);
+      return Boolean(
+        member &&
+        member.subscribed !== false &&
+        member.email_suppression?.suppressed !== true &&
+        (member.newsletters || []).some(item => item.id === target.id)
+      );
+    },
+    async unsubscribeMember({ memberId, email, newsletterName }) {
+      const newsletters = await this.listNewsletters();
+      const target = newsletters.find(item => item.name === newsletterName);
+      if (!target) throw new Error(`Ghost newsletter not found: ${newsletterName}`);
+      const existing = await this.getMemberById(memberId);
+      if (!existing || String(existing.email).toLowerCase() !== String(email).toLowerCase()) return null;
+      const member = {
+        id: existing.id,
+        email: existing.email,
+        newsletters: (existing.newsletters || []).filter(item => item.id !== target.id).map(item => ({ id: item.id })),
+        labels: (existing.labels || []).map(item => ({ name: item.name }))
+      };
+      const data = await adminFetch(`/members/${encodeURIComponent(existing.id)}/`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ members: [member] })
+      });
+      return data.members?.[0] || null;
+    },
+    async listNewsletterMembers(newsletterName) {
+      const newsletters = await this.listNewsletters();
+      const newsletter = newsletters.find(item => item.name === newsletterName);
+      if (!newsletter) throw new Error(`Ghost newsletter not found: ${newsletterName}`);
+      const data = await adminFetch('/members/?limit=all&include=newsletters,labels');
+      return (data.members || []).filter(member =>
+        member.subscribed !== false &&
+        member.email_suppression?.suppressed !== true &&
+        (member.newsletters || []).some(item => item.id === newsletter.id)
+      );
+    },
   async getPostById(postId) {
     const data = await adminFetch(`/posts/${encodeURIComponent(postId)}/?include=tags`);
     return data.posts?.[0] || null;
