@@ -56,6 +56,53 @@ export class NewsletterSignupService {
     };
   }
 
+  welcomeEmail({ email, language, unsubscribeUrl }) {
+    const en = language === 'en';
+    const subject = en ? 'Welcome to After Login' : 'Добро пожаловать в «После логина»';
+    const heading = en ? 'Welcome!' : 'Добро пожаловать!';
+    const thanks = en
+      ? 'Thank you for subscribing to new publications from After Login.'
+      : 'Спасибо, что подписались на новые публикации проекта «После логина».';
+    const about = en
+      ? 'I write about how technology and artificial intelligence are changing people, society, and the world we thought we understood. New essays are published approximately once every two weeks. No advertising and no unnecessary emails — only new publications.'
+      : 'Я пишу о том, как технологии и искусственный интеллект меняют человека, общество и привычный нам мир. Новые материалы выходят примерно раз в две недели. Никакой рекламы и лишних писем — только новые публикации.';
+    const lounge = en
+      ? 'If you would like to do more than read, you are welcome to join the Lounge. It is a place to discuss the essays, disagree with the author, respond to other readers, and suggest questions of your own.'
+      : 'Если вам захочется не только читать, но и обсуждать прочитанное, присоединяйтесь к Гостиной. Там можно спорить с автором, отвечать другим читателям и предлагать собственные темы.';
+    const loungeAction = en ? 'Join the Lounge' : 'Зарегистрироваться в Гостиной';
+    const goodbye = en ? 'Thank you for being here.' : 'Спасибо, что вы здесь.';
+    const signature = en ? 'Peter Milenin\nAuthor of After Login' : 'Пётр Миленин\nАвтор проекта «После логина»';
+    const unsubscribe = en ? 'Unsubscribe' : 'Отписаться';
+    const loungeUrl = `${this.appUrl}/gostinaya/register`;
+    const brand = en ? 'AFTER LOGIN' : 'ПОСЛЕ ЛОГИНА';
+    const html = `<!doctype html>
+<html lang="${en ? 'en' : 'ru'}">
+<body style="margin:0;padding:0;background:#f4f1ed;color:#202027;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">
+  <div style="max-width:640px;margin:0 auto;padding:32px 18px;">
+    <div style="margin:0 0 18px;color:#6941c6;font-size:14px;font-weight:700;letter-spacing:.12em;">&gt;_ ${escapeHtml(brand)}</div>
+    <div style="background:#ffffff;border:1px solid #e7e1da;border-radius:18px;padding:34px 34px 30px;box-shadow:0 8px 28px rgba(32,32,39,.06);">
+      <h1 style="margin:0 0 24px;font-family:Georgia,'Times New Roman',serif;font-size:38px;line-height:1.15;color:#202027;">${escapeHtml(heading)}</h1>
+      <p style="margin:0 0 20px;font-size:17px;line-height:1.65;">${escapeHtml(thanks)}</p>
+      <p style="margin:0 0 20px;font-size:17px;line-height:1.65;">${escapeHtml(about)}</p>
+      <p style="margin:0 0 26px;font-size:17px;line-height:1.65;">${escapeHtml(lounge)}</p>
+      <p style="margin:0 0 30px;"><a href="${escapeHtml(loungeUrl)}" style="display:inline-block;padding:13px 20px;border-radius:10px;background:#6941c6;color:#ffffff;text-decoration:none;font-size:16px;font-weight:700;">${escapeHtml(loungeAction)}</a></p>
+      <p style="margin:0 0 22px;font-size:17px;line-height:1.65;">${escapeHtml(goodbye)}</p>
+      <p style="margin:0;font-size:16px;line-height:1.55;"><strong>${escapeHtml(signature).replaceAll('\n', '</strong><br><span style="color:#67636d;">')}</span></p>
+    </div>
+    <p style="margin:18px 0 0;text-align:center;font-size:13px;line-height:1.5;color:#77727d;"><a href="${escapeHtml(unsubscribeUrl)}" style="color:#77727d;">${escapeHtml(unsubscribe)}</a></p>
+  </div>
+</body>
+</html>`;
+
+    return {
+      to: email,
+      subject,
+      text: `${heading}\n\n${thanks}\n\n${about}\n\n${lounge}\n\n${loungeAction}: ${loungeUrl}\n\n${goodbye}\n\n${signature}\n\n${unsubscribe}: ${unsubscribeUrl}`,
+      html,
+      headers: { 'List-Unsubscribe': `<${unsubscribeUrl}>` }
+    };
+  }
+
   async issue({ email, language, returnTo }) {
     const normalizedEmail = String(email || '').trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail) || normalizedEmail.length > 254) throw new Error('INVALID_EMAIL');
@@ -95,6 +142,17 @@ export class NewsletterSignupService {
     if (!payload) return null;
     const target = NEWSLETTERS[payload.language];
     const member = await this.ghost.subscribeMember({ email: payload.email, newsletterName: target.name, labelName: target.label });
+    if (!member?.id) throw new Error('Ghost member ID missing after subscription');
+    const unsubscribeUrl = await this.createUnsubscribeUrl({
+      memberId: member.id,
+      email: payload.email,
+      language: payload.language
+    });
+    await this.mailer(this.welcomeEmail({
+      email: payload.email,
+      language: payload.language,
+      unsubscribeUrl
+    }));
     await this.tokens.remove(this.tokenHash(token));
     return { ...payload, member };
   }
