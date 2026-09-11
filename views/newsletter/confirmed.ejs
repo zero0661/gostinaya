@@ -1,5 +1,5 @@
 <section class="profile-page">
-  <article class="profile-card">
+  <article class="profile-card newsletter-status">
     <% if (confirmed) { %>
       <h1><%= language === 'en' ? 'Subscription confirmed' : 'Подписка подтверждена' %></h1>
       <p><%= language === 'en' ? 'You will receive new After Login publications in English.' : 'Вы будете получать новые публикации «После логина» на русском языке.' %></p>
@@ -10,3 +10,8 @@
     <p><a class="button" href="<%= returnTo %>"><%= language === 'en' ? 'Return to the site' : 'Вернуться на сайт' %></a></p>
   </article>
 </section>
+<style>
+  .newsletter-status { max-width: 44rem; margin: 1rem auto; color: #182230; background: #fff; }
+  .newsletter-status h1, .newsletter-status p { color: #182230; }
+  .newsletter-status .button { display: inline-block; padding: .75rem 1rem; border-radius: 10px; color: #fff !important; background: #1f5fd2; text-decoration: none; }
+</style>

@@ -1,5 +1,5 @@
 <section class="profile-page">
-  <article class="profile-card">
+  <article class="profile-card newsletter-status">
     <% if (complete) { %>
       <h1><%= language === 'en' ? 'You are unsubscribed' : 'Вы отписались' %></h1>
       <p><%= language === 'en' ? 'You will no longer receive new English publications.' : 'Вы больше не будете получать новые публикации на русском языке.' %></p>
@@ -15,3 +15,8 @@
     <p><a href="<%= language === 'en' ? '/en/' : '/' %>"><%= language === 'en' ? 'Return to the site' : 'Вернуться на сайт' %></a></p>
   </article>
 </section>
+<style>
+  .newsletter-status { max-width: 44rem; margin: 1rem auto; color: #182230; background: #fff; }
+  .newsletter-status h1, .newsletter-status p, .newsletter-status a:not(.button) { color: #182230; }
+  .newsletter-status .button { display: inline-block; padding: .75rem 1rem; border: 0; border-radius: 10px; color: #fff !important; background: #1f5fd2; text-decoration: none; }
+</style>
