@@ -133,6 +133,19 @@ const NEW_TEMPLATE = String.raw`            <section class="after-login-invitati
                                 }
                             });
                         });
+                        const pageUrl = new URL(window.location.href);
+                        if (pageUrl.searchParams.get('newsletter') === 'confirmed') {
+                            const form = document.querySelector('.after-login-subscribe');
+                            const state = form && form.querySelector('.after-login-subscribe__state--success');
+                            if (form && state) {
+                                state.textContent = form.dataset.language === 'en'
+                                    ? 'Subscription confirmed. Thank you.'
+                                    : 'Подписка подтверждена. Спасибо.';
+                                form.classList.add('success');
+                                pageUrl.searchParams.delete('newsletter');
+                                window.history.replaceState({}, '', pageUrl.pathname + pageUrl.search + pageUrl.hash);
+                            }
+                        }
                     })();
                 </script>
 

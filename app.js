@@ -236,12 +236,17 @@ app.get('/gostinaya/newsletter/confirm', async (req, res) => {
   try {
     const result = await NewsletterSignupService.confirm(req.query.token);
     const language = result?.language === 'en' ? 'en' : 'ru';
-    return res.status(result ? 200 : 400).render('newsletter/confirmed', {
+    if (result) {
+      const target = new URL(result.returnTo, process.env.APP_URL || 'https://milenin.pro');
+      target.searchParams.set('newsletter', 'confirmed');
+      return res.redirect(303, `${target.pathname}${target.search}${target.hash}`);
+    }
+    return res.status(400).render('newsletter/confirmed', {
       title: language === 'en' ? 'Subscription confirmed' : 'Подписка подтверждена',
       layout: 'layouts/public',
-      confirmed: Boolean(result),
+      confirmed: false,
       language,
-      returnTo: result?.returnTo || (language === 'en' ? '/en/' : '/')
+      returnTo: language === 'en' ? '/en/' : '/'
     });
   } catch (error) {
     console.error('Newsletter confirmation error:', error);
