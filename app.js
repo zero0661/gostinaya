@@ -248,7 +248,7 @@ app.get('/gostinaya/newsletter/confirm', async (req, res) => {
     }
     return res.status(400).render('newsletter/confirmed', {
       title: language === 'en' ? 'Subscription confirmed' : 'Подписка подтверждена',
-      layout: 'layouts/public',
+      layout: 'layouts/newsletter',
       confirmed: false,
       language,
       returnTo: language === 'en' ? '/en/' : '/'
@@ -256,7 +256,7 @@ app.get('/gostinaya/newsletter/confirm', async (req, res) => {
   } catch (error) {
     console.error('Newsletter confirmation error:', error);
     return res.status(500).render('newsletter/confirmed', {
-      title: 'Subscription error / Ошибка подписки', layout: 'layouts/public', confirmed: false, language: 'ru', returnTo: '/'
+      title: 'Subscription error / Ошибка подписки', layout: 'layouts/newsletter', confirmed: false, language: 'ru', returnTo: '/'
     });
   }
 });
@@ -267,7 +267,7 @@ app.get('/gostinaya/newsletter/unsubscribe', async (req, res) => {
     const language = result?.language === 'en' ? 'en' : 'ru';
     return res.status(result ? 200 : 400).render('newsletter/unsubscribe', {
       title: language === 'en' ? 'Unsubscribe' : 'Отписка',
-      layout: 'layouts/public',
+      layout: 'layouts/newsletter',
       valid: Boolean(result),
       complete: false,
       language,
@@ -275,7 +275,7 @@ app.get('/gostinaya/newsletter/unsubscribe', async (req, res) => {
     });
   } catch (error) {
     return res.status(500).render('newsletter/unsubscribe', {
-      title: 'Unsubscribe error / Ошибка отписки', layout: 'layouts/public', valid: false, complete: false, language: 'ru', token: ''
+      title: 'Unsubscribe error / Ошибка отписки', layout: 'layouts/newsletter', valid: false, complete: false, language: 'ru', token: ''
     });
   }
 });
@@ -286,7 +286,7 @@ app.post('/gostinaya/newsletter/unsubscribe', async (req, res) => {
     const language = result?.language === 'en' ? 'en' : 'ru';
     return res.status(result ? 200 : 400).render('newsletter/unsubscribe', {
       title: language === 'en' ? 'Unsubscribed' : 'Подписка отменена',
-      layout: 'layouts/public',
+      layout: 'layouts/newsletter',
       valid: Boolean(result),
       complete: Boolean(result),
       language,
@@ -295,7 +295,7 @@ app.post('/gostinaya/newsletter/unsubscribe', async (req, res) => {
   } catch (error) {
     console.error('Newsletter unsubscribe error:', error);
     return res.status(500).render('newsletter/unsubscribe', {
-      title: 'Unsubscribe error / Ошибка отписки', layout: 'layouts/public', valid: false, complete: false, language: 'ru', token: ''
+      title: 'Unsubscribe error / Ошибка отписки', layout: 'layouts/newsletter', valid: false, complete: false, language: 'ru', token: ''
     });
   }
 });

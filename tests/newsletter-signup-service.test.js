@@ -60,6 +60,8 @@ test('Russian subscribers receive one localized welcome email after confirmation
   await service.confirm(token);
   assert.equal(sent.length, 2);
   assert.equal(sent[1].subject, 'Добро пожаловать в «После логина»');
+  assert.match(sent[1].text, /проекта «После логина»!/);
+  assert.doesNotMatch(sent[1].text, /«После логина»\.\./);
   assert.match(sent[1].text, /Зарегистрироваться в Гостиной: https:\/\/milenin\.pro\/gostinaya\/register/);
   assert.match(sent[1].text, /Отписаться: https:\/\/milenin\.pro\/gostinaya\/newsletter\/unsubscribe\?token=/);
 });

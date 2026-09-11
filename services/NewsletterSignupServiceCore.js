@@ -62,7 +62,7 @@ export class NewsletterSignupService {
     const heading = en ? 'Welcome!' : 'Добро пожаловать!';
     const thanks = en
       ? 'Thank you for subscribing to new publications from After Login.'
-      : 'Спасибо, что подписались на новые публикации проекта «После логина».';
+      : 'Спасибо, что подписались на новые публикации проекта «После логина»!';
     const about = en
       ? 'I write about how technology and artificial intelligence are changing people, society, and the world we thought we understood. New essays are published approximately once every two weeks. No advertising and no unnecessary emails — only new publications.'
       : 'Я пишу о том, как технологии и искусственный интеллект меняют человека, общество и привычный нам мир. Новые материалы выходят примерно раз в две недели. Никакой рекламы и лишних писем — только новые публикации.';

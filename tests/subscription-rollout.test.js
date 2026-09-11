@@ -44,3 +44,13 @@ test('contact updater only targets the exact legacy email and creates backups', 
   assert.match(source, /mysqldump/);
   assert.match(source, /Dry run passed\. Nothing changed/);
 });
+
+test('newsletter status pages use After Login branding instead of the Lounge layout', () => {
+  const app = read('app.js');
+  const layout = read('views/layouts/newsletter.ejs');
+
+  assert.match(app, /newsletter\/unsubscribe[\s\S]*?layout: 'layouts\/newsletter'/);
+  assert.match(layout, /ПОСЛЕ ЛОГИНА/);
+  assert.match(layout, /AFTER LOGIN/);
+  assert.doesNotMatch(layout, /Гостиная|The Lounge|lounge-banner/);
+});
