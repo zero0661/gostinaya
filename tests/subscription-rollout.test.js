@@ -17,6 +17,8 @@ test('subscription CTA uses the bilingual server confirmation flow and keeps Lou
   assert.match(source, /gostinaya\/api\/newsletter\/subscribe/);
   assert.match(source, /name="language" type="hidden" value="ru"/);
   assert.match(source, /name="language" type="hidden" value="en"/);
+  assert.match(source, /body\.set\('language', form\.dataset\.language === 'en' \? 'en' : 'ru'\)/);
+  assert.match(source, /body\.set\('returnTo', window\.location\.href\)/);
   assert.doesNotMatch(source, /data-members-form="subscribe"/);
   assert.match(source, /Subscription confirmed\. Thank you\./);
   assert.match(source, /Подписка подтверждена\. Спасибо\./);

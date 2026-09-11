@@ -150,10 +150,13 @@ const NEW_TEMPLATE = String.raw`            <section class="after-login-invitati
                                 form.classList.add('loading');
                                 if (button) button.disabled = true;
                                 try {
+                                    const body = new URLSearchParams(new FormData(form));
+                                    body.set('language', form.dataset.language === 'en' ? 'en' : 'ru');
+                                    body.set('returnTo', window.location.href);
                                     const response = await fetch(form.action, {
                                         method: 'POST',
                                         headers: { 'Accept': 'application/json' },
-                                        body: new URLSearchParams(new FormData(form))
+                                        body
                                     });
                                     if (!response.ok) throw new Error('signup failed');
                                     const result = await response.json();
