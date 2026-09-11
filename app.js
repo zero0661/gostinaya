@@ -224,7 +224,12 @@ app.post('/gostinaya/api/newsletter/subscribe', newsletterSignupRateLimit, async
       language: req.body?.language,
       returnTo: req.body?.returnTo
     });
-    return res.status(202).json({ ok: true, language: result.language });
+    const statusCode = result.status === 'already-subscribed' ? 200 : 202;
+    return res.status(statusCode).json({
+      ok: true,
+      language: result.language,
+      status: result.status
+    });
   } catch (error) {
     if (error.message === 'INVALID_EMAIL') return res.status(400).json({ ok: false, error: 'invalid-email' });
     console.error('Newsletter signup error:', error);

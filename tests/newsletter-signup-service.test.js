@@ -20,6 +20,7 @@ function serviceFixture() {
       async remove(tokenHash) { tokenRows.delete(tokenHash); }
     },
     ghost: {
+      async isMemberSubscribed() { return false; },
       async subscribeMember(value) { subscribed.push(value); return { id: 'member-1' }; },
       async unsubscribeMember(value) { unsubscribed.push(value); }
     }
@@ -41,6 +42,22 @@ test('confirmation email and Ghost newsletter are localized independently', asyn
     newsletterName: 'After Login — EN',
     labelName: 'After Login EN'
   }]);
+});
+
+test('confirmed subscribers are recognized without sending another email', async () => {
+  const { service, sent } = serviceFixture();
+  service.ghost.isMemberSubscribed = async ({ email, newsletterName }) => {
+    assert.equal(email, 'reader@example.com');
+    assert.equal(newsletterName, 'После логина — RU');
+    return true;
+  };
+  const result = await service.issue({
+    email: 'Reader@Example.com',
+    language: 'ru',
+    returnTo: 'https://milenin.pro/article/'
+  });
+  assert.deepEqual(result, { language: 'ru', status: 'already-subscribed' });
+  assert.equal(sent.length, 0);
 });
 
 test('tokens reject tampering and foreign return URLs', async () => {

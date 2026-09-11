@@ -60,6 +60,14 @@ export class NewsletterSignupService {
     const normalizedEmail = String(email || '').trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail) || normalizedEmail.length > 254) throw new Error('INVALID_EMAIL');
     const normalizedLanguage = language === 'en' ? 'en' : 'ru';
+    const target = NEWSLETTERS[normalizedLanguage];
+    const alreadySubscribed = await this.ghost.isMemberSubscribed({
+      email: normalizedEmail,
+      newsletterName: target.name
+    });
+    if (alreadySubscribed) {
+      return { language: normalizedLanguage, status: 'already-subscribed' };
+    }
     const payload = {
       version: 1,
       action: 'confirm',
@@ -79,7 +87,7 @@ export class NewsletterSignupService {
       await this.tokens.remove(tokenHash);
       throw error;
     }
-    return { language: normalizedLanguage };
+    return { language: normalizedLanguage, status: 'confirmation-sent' };
   }
 
   async confirm(token) {

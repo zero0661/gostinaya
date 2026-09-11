@@ -55,3 +55,18 @@ test('delivery recipients exclude unsubscribed and suppressed members', async ()
   const service = createGhostApiService({ fetchImpl, adminBaseUrl: 'https://ghost.test/admin' });
   assert.deepEqual((await service.listNewsletterMembers('После логина — RU')).map(item => item.id), ['ok']);
 });
+
+test('existing newsletter membership is detected without changing the member', async () => {
+  const newsletters = [{ id: 'en-id', name: 'After Login — EN' }];
+  const member = {
+    id: 'member-1', email: 'reader@example.com', subscribed: true,
+    newsletters: [{ id: 'en-id', name: 'After Login — EN' }], labels: []
+  };
+  const fetchImpl = async url => url.includes('/newsletters/')
+    ? response({ newsletters })
+    : response({ members: [member] });
+  const service = createGhostApiService({ fetchImpl, adminBaseUrl: 'https://ghost.test/admin' });
+  assert.equal(await service.isMemberSubscribed({
+    email: 'reader@example.com', newsletterName: 'After Login — EN'
+  }), true);
+});

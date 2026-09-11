@@ -103,6 +103,42 @@ const NEW_TEMPLATE = String.raw`            <section class="after-login-invitati
 
                 <script>
                     (() => {
+                        function showNewsletterToast(message) {
+                            const previous = document.querySelector('.after-login-newsletter-toast');
+                            if (previous) previous.remove();
+
+                            const toast = document.createElement('div');
+                            toast.className = 'after-login-newsletter-toast';
+                            toast.setAttribute('role', 'status');
+                            toast.setAttribute('aria-live', 'polite');
+
+                            const mark = document.createElement('span');
+                            mark.className = 'after-login-newsletter-toast__mark';
+                            mark.setAttribute('aria-hidden', 'true');
+                            mark.textContent = '✓';
+
+                            const text = document.createElement('span');
+                            text.className = 'after-login-newsletter-toast__text';
+                            text.textContent = message;
+
+                            const close = document.createElement('button');
+                            close.className = 'after-login-newsletter-toast__close';
+                            close.type = 'button';
+                            close.setAttribute('aria-label', 'Close');
+                            close.textContent = '×';
+
+                            const dismiss = () => {
+                                toast.classList.remove('visible');
+                                window.setTimeout(() => toast.remove(), 220);
+                            };
+
+                            close.addEventListener('click', dismiss);
+                            toast.append(mark, text, close);
+                            document.body.appendChild(toast);
+                            window.requestAnimationFrame(() => toast.classList.add('visible'));
+                            window.setTimeout(dismiss, 8000);
+                        }
+
                         document.querySelectorAll('.after-login-subscribe').forEach((form) => {
                             const returnTo = form.querySelector('[name="returnTo"]');
                             if (returnTo) returnTo.value = window.location.href;
@@ -120,8 +156,15 @@ const NEW_TEMPLATE = String.raw`            <section class="after-login-invitati
                                         body: new URLSearchParams(new FormData(form))
                                     });
                                     if (!response.ok) throw new Error('signup failed');
+                                    const result = await response.json();
                                     form.classList.remove('loading');
-                                    form.classList.add('success');
+                                    if (result.status === 'already-subscribed') {
+                                        showNewsletterToast(form.dataset.language === 'en'
+                                            ? 'You’re already subscribed.'
+                                            : 'Вы уже подписаны.');
+                                    } else {
+                                        form.classList.add('success');
+                                    }
                                 } catch (error) {
                                     form.classList.remove('loading');
                                     form.classList.add('error');
@@ -136,15 +179,13 @@ const NEW_TEMPLATE = String.raw`            <section class="after-login-invitati
                         const pageUrl = new URL(window.location.href);
                         if (pageUrl.searchParams.get('newsletter') === 'confirmed') {
                             const form = document.querySelector('.after-login-subscribe');
-                            const state = form && form.querySelector('.after-login-subscribe__state--success');
-                            if (form && state) {
-                                state.textContent = form.dataset.language === 'en'
+                            if (form) {
+                                showNewsletterToast(form.dataset.language === 'en'
                                     ? 'Subscription confirmed. Thank you.'
-                                    : 'Подписка подтверждена. Спасибо.';
-                                form.classList.add('success');
-                                pageUrl.searchParams.delete('newsletter');
-                                window.history.replaceState({}, '', pageUrl.pathname + pageUrl.search + pageUrl.hash);
+                                    : 'Подписка подтверждена. Спасибо.');
                             }
+                            pageUrl.searchParams.delete('newsletter');
+                            window.history.replaceState({}, '', pageUrl.pathname + pageUrl.search + pageUrl.hash);
                         }
                     })();
                 </script>
@@ -282,7 +323,69 @@ const NEW_TEMPLATE = String.raw`            <section class="after-login-invitati
                         font-size: .98rem;
                     }
 
+                    .after-login-newsletter-toast {
+                        position: fixed;
+                        top: 1.25rem;
+                        right: 1.25rem;
+                        z-index: 2147483646;
+                        display: grid;
+                        grid-template-columns: auto minmax(0, 1fr) auto;
+                        align-items: center;
+                        gap: .75rem;
+                        width: min(26rem, calc(100vw - 2.5rem));
+                        padding: 1rem 1.05rem;
+                        color: #f7f4ed;
+                        text-align: left;
+                        background: rgba(24, 22, 29, .96);
+                        border: 1px solid rgba(200, 165, 255, .45);
+                        border-radius: 14px;
+                        box-shadow: 0 18px 45px rgba(0, 0, 0, .36);
+                        opacity: 0;
+                        transform: translateY(-12px);
+                        transition: opacity .2s ease, transform .2s ease;
+                    }
+
+                    .after-login-newsletter-toast.visible {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+
+                    .after-login-newsletter-toast__mark {
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        width: 1.8rem;
+                        height: 1.8rem;
+                        color: #18151c;
+                        font-weight: 800;
+                        background: linear-gradient(135deg, #f2d9a7, #c8a5ff);
+                        border-radius: 50%;
+                    }
+
+                    .after-login-newsletter-toast__text {
+                        font-size: 1rem;
+                        font-weight: 700;
+                        line-height: 1.35;
+                    }
+
+                    .after-login-newsletter-toast__close {
+                        padding: .15rem .3rem;
+                        color: rgba(247, 244, 237, .72);
+                        font: inherit;
+                        font-size: 1.35rem;
+                        line-height: 1;
+                        background: transparent;
+                        border: 0;
+                        cursor: pointer;
+                    }
+
                     @media (max-width: 600px) {
+                        .after-login-newsletter-toast {
+                            top: .75rem;
+                            right: .75rem;
+                            width: calc(100vw - 1.5rem);
+                        }
+
                         .after-login-subscribe__row {
                             grid-template-columns: 1fr;
                         }

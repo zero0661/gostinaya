@@ -20,6 +20,9 @@ test('subscription CTA uses the bilingual server confirmation flow and keeps Lou
   assert.doesNotMatch(source, /data-members-form="subscribe"/);
   assert.match(source, /Subscription confirmed\. Thank you\./);
   assert.match(source, /Подписка подтверждена\. Спасибо\./);
+  assert.match(source, /You’re already subscribed\./);
+  assert.match(source, /Вы уже подписаны\./);
+  assert.match(source, /after-login-newsletter-toast/);
   assert.match(source, /Статья заканчивается здесь, но разговор — нет\./);
   assert.match(source, /milen\.petr@gmail\.com/);
   assert.match(source, /gostinaya\/article\/\{\{id\}\}/);

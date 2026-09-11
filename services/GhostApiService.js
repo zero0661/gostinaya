@@ -71,6 +71,18 @@ export function createGhostApiService({ fetchImpl = fetch, adminBaseUrl = 'https
       });
       return data.members?.[0] || null;
     },
+    async isMemberSubscribed({ email, newsletterName }) {
+      const newsletters = await this.listNewsletters();
+      const target = newsletters.find(item => item.name === newsletterName);
+      if (!target) throw new Error(`Ghost newsletter not found: ${newsletterName}`);
+      const member = await this.findMemberByEmail(email);
+      return Boolean(
+        member &&
+        member.subscribed !== false &&
+        member.email_suppression?.suppressed !== true &&
+        (member.newsletters || []).some(item => item.id === target.id)
+      );
+    },
     async unsubscribeMember({ memberId, email, newsletterName }) {
       const newsletters = await this.listNewsletters();
       const target = newsletters.find(item => item.name === newsletterName);
