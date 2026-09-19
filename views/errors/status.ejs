@@ -1,0 +1,25 @@
+<section class="profile-page lounge-status-page">
+  <header class="profile-header lounge-status-header">
+    <p class="profile-eyebrow">
+      <span data-lang="ru">Гостиная</span>
+      <span data-lang="en">The Lounge</span>
+    </p>
+    <h1>
+      <span data-lang="ru"><%= headingRu %></span>
+      <span data-lang="en"><%= headingEn %></span>
+    </h1>
+  </header>
+
+  <div class="profile-card lounge-status-card">
+    <p class="lounge-status-code"><%= statusCode %></p>
+    <p data-lang="ru"><%= messageRu %></p>
+    <p data-lang="en"><%= messageEn %></p>
+
+    <div class="welcome-actions lounge-status-actions">
+      <a class="welcome-primary" href="<%= backHref || '/gostinaya/hall' %>">
+        <span data-lang="ru"><%= backLabelRu || 'Вернуться в Холл' %></span>
+        <span data-lang="en"><%= backLabelEn || 'Back to Hall' %></span>
+      </a>
+    </div>
+  </div>
+</section>
