@@ -937,8 +937,7 @@ app.post('/gostinaya/:room/new', topicPublicationRateLimit, async (req, res, nex
 
     const roomKey = req.params.room;
     const room = rooms[roomKey];
-    const title = String(req.body.title || '').trim().slice(0, 160);
-    const body = String(req.body.body || '').trim().slice(0, 5000);
+    const isNews = roomKey === 'news';
 
     if (!room) {
         return res.status(404).send('Комната не найдена');
@@ -952,20 +951,49 @@ app.post('/gostinaya/:room/new', topicPublicationRateLimit, async (req, res, nex
         return res.status(403).send('Новости проекта публикуют администратор и модераторы');
     }
 
-    if (!title) {
-        return res.status(400).send('Заголовок темы обязателен');
-    }
+    const titleRu = String(req.body.title_ru || '').trim().slice(0, 160);
+    const titleEn = String(req.body.title_en || '').trim().slice(0, 160);
+    const bodyRu = String(req.body.body_ru || '').trim().slice(0, 5000);
+    const bodyEn = String(req.body.body_en || '').trim().slice(0, 5000);
 
-    if (!body) {
-        return res.status(400).send('Первое сообщение обязательно');
+    const title = isNews
+        ? (titleRu || titleEn)
+        : String(req.body.title || '').trim().slice(0, 160);
+
+    const body = isNews
+        ? (bodyRu || bodyEn)
+        : String(req.body.body || '').trim().slice(0, 5000);
+
+    if (isNews) {
+        if (!titleRu || !titleEn || !bodyRu || !bodyEn) {
+            return res.status(400).send(
+                'Для новости нужны русская и английская версии заголовка и текста / Both Russian and English versions are required'
+            );
+        }
+    } else {
+        if (!title) {
+            return res.status(400).send('Заголовок темы обязателен');
+        }
+
+        if (!body) {
+            return res.status(400).send('Первое сообщение обязательно');
+        }
     }
 
     try {
-        const result = await DiscussionRepository.createTopic(
-            roomKey,
-            title,
-            req.session.guest.id
-        );
+        const result = isNews
+            ? await DiscussionRepository.createBilingualNewsTopic({
+                titleRu,
+                titleEn,
+                bodyRu,
+                bodyEn,
+                authorId: req.session.guest.id
+            })
+            : await DiscussionRepository.createTopic(
+                roomKey,
+                title,
+                req.session.guest.id
+            );
 
         await DiscussionRepository.createMessage(
             result.lastID,
