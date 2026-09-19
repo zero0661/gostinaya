@@ -126,7 +126,8 @@
   const message = document.getElementById('register-message');
   const returnTo = <%- JSON.stringify(returnTo || '') %>;
   const languageSelect = document.getElementById('language');
-  const uiLanguage = () => document.documentElement.dataset.loungeLang === 'en' ? 'en' : 'ru';
+  const uiLanguage = () => window.getLoungeLanguage ? window.getLoungeLanguage() : (document.documentElement.dataset.loungeLang === 'en' ? 'en' : 'ru');
+  const localizeMessage = (value, language) => window.localizeLoungeMessage ? window.localizeLoungeMessage(value, language) : String(value || '');
   const copy = {
     ru: {
       select: 'Выберите',
@@ -218,7 +219,7 @@
       const data = await response.json();
 
       if (!response.ok) {
-        message.textContent = data.error || copy[language].failed;
+        message.textContent = data.error ? localizeMessage(data.error, language) : copy[language].failed;
         submitButton.disabled = false;
         return;
       }
