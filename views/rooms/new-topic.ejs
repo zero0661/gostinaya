@@ -9,7 +9,7 @@
     </h1>
     <p>
       <% if (roomKey === 'news') { %>
-        <span data-lang="ru">Опубликуйте новость проекта и откройте её обсуждение.</span><span data-lang="en">Publish project news and open its discussion.</span>
+        <span data-lang="ru">Одна новость, две языковые версии и одно общее обсуждение.</span><span data-lang="en">One news item, two language versions and one shared discussion.</span>
       <% } else { %>
         <span data-lang="ru">Создайте новое обсуждение для участников Гостиной.</span><span data-lang="en">Create a new discussion for Lounge members.</span>
       <% } %>
@@ -26,27 +26,46 @@
         <% } %>
       </h2>
 
-      <label>
-        <% if (roomKey === 'news') { %>
-          <span data-lang="ru">Заголовок новости</span><span data-lang="en">News Title</span>
-        <% } else { %>
-          <span data-lang="ru">Заголовок темы</span><span data-lang="en">Topic Title</span>
-        <% } %>
-        <input type="text" name="title" maxlength="160" required autofocus>
-      </label>
+      <% if (roomKey === 'news') { %>
+        <div class="room-intro">
+          <p data-lang="ru">Заполните обе версии. В ленте и внутри новости участник увидит только выбранный язык.</p>
+          <p data-lang="en">Fill in both versions. Members will see only the language they have selected.</p>
+        </div>
 
-      <label>
-        <% if (roomKey === 'news') { %>
-          <span data-lang="ru">Текст новости</span><span data-lang="en">News Text</span>
-        <% } else { %>
+        <label>
+          <span>RU · Заголовок</span>
+          <input type="text" name="title_ru" maxlength="160" required autofocus>
+        </label>
+
+        <label>
+          <span>RU · Текст</span>
+          <textarea name="body_ru" rows="8" maxlength="5000" required></textarea>
+        </label>
+
+        <label>
+          <span>EN · Title</span>
+          <input type="text" name="title_en" maxlength="160" required>
+        </label>
+
+        <label>
+          <span>EN · Text</span>
+          <textarea name="body_en" rows="8" maxlength="5000" required></textarea>
+        </label>
+      <% } else { %>
+        <label>
+          <span data-lang="ru">Заголовок темы</span><span data-lang="en">Topic Title</span>
+          <input type="text" name="title" maxlength="160" required autofocus>
+        </label>
+
+        <label>
           <span data-lang="ru">Первое сообщение</span><span data-lang="en">First Message</span>
-        <% } %>
-        <textarea name="body" rows="10" maxlength="5000" required></textarea>
-      </label>
+          <textarea name="body" rows="10" maxlength="5000" required></textarea>
+        </label>
+      <% } %>
 
       <div class="room-intro">
         <p><span data-lang="ru">После публикации тема становится частью общего обсуждения.</span><span data-lang="en">Once published, the topic becomes part of the community discussion.</span></p>
-        <p><span data-lang="ru">До появления первого ответа вы можете изменить название, текст или удалить тему.</span><span data-lang="en">Before the first reply, you can edit the title and message or delete the topic.</span></p>
+        <p><span data-lang="ru">До появления первого ответа вы можете изменить название и текст.</span><span data-lang="en">Before the first reply, you can edit the title and text.</span></p>
         <p><span data-lang="ru">После появления ответов изменение или удаление темы возможно только через модератора.</span><span data-lang="en">After replies appear, the topic can be changed or deleted only by a moderator.</span></p>
       </div>
 
