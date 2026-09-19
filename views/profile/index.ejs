@@ -1,4 +1,4 @@
-<section class="profile-page">
+<section class="profile-page profile-page-polished">
 
     <%
         const joinedDate = guest.created_at
@@ -41,7 +41,7 @@
     <% } %>
 
     <form method="post" action="/gostinaya/profile">
-        <section class="profile-card">
+        <section class="profile-card profile-main-card">
             <h2><span data-lang="ru">Профиль участника</span><span data-lang="en">Profile</span></h2>
 
             <label>
@@ -60,7 +60,7 @@
             </label>
 
             <label>
-                <span data-lang="ru">Язык общения</span><span data-lang="en">Language</span>
+                <span data-lang="ru">Предпочитаемый язык</span><span data-lang="en">Preferred language</span>
                 <select name="language">
                     <option value="ru" <%= guest.language === 'ru' ? 'selected' : '' %> data-label-ru="Русский" data-label-en="Russian">Русский</option>
                     <option value="en" <%= guest.language === 'en' ? 'selected' : '' %> data-label-ru="Английский" data-label-en="English">English</option>
@@ -69,7 +69,7 @@
 
             <label>
                 <span data-lang="ru">О себе</span><span data-lang="en">About</span>
-                <textarea name="bio" maxlength="1000" rows="6" data-placeholder-ru="Несколько слов, которыми вы хотите представиться" data-placeholder-en="A few words you would like to use to introduce yourself"><%= guest.bio %></textarea>
+                <textarea name="bio" maxlength="1000" rows="5" data-placeholder-ru="Несколько слов, которыми вы хотите представиться" data-placeholder-en="A few words you would like to use to introduce yourself"><%= guest.bio %></textarea>
             </label>
         </section>
 
@@ -141,6 +141,44 @@
     </nav>
 
 </section>
+
+<style>
+.profile-page-polished .profile-main-card input:disabled {
+    color: #98a2b3;
+    -webkit-text-fill-color: #98a2b3;
+    opacity: 1;
+}
+.profile-page-polished .profile-main-card textarea::placeholder,
+.profile-page-polished .profile-main-card input::placeholder {
+    color: #98a2b3;
+    opacity: 1;
+}
+@media (max-width: 700px) {
+    .profile-page-polished .profile-header {
+        margin-bottom: 20px;
+    }
+    .profile-page-polished .profile-main-card {
+        padding: 16px !important;
+    }
+    .profile-page-polished .profile-main-card h2 {
+        margin-bottom: 16px;
+    }
+    .profile-page-polished .profile-main-card label {
+        margin-bottom: 14px;
+    }
+    .profile-page-polished .profile-main-card input[type="text"],
+    .profile-page-polished .profile-main-card input[type="email"],
+    .profile-page-polished .profile-main-card select,
+    .profile-page-polished .profile-main-card textarea {
+        margin-top: 6px;
+        padding: 10px 12px;
+    }
+    .profile-page-polished .profile-main-card textarea {
+        min-height: 112px;
+    }
+}
+</style>
+
 <script>
 (function () {
     function localizeLanguageOptions() {
