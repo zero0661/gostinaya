@@ -45,8 +45,20 @@
         <div class="hall-card-latest">
           <span class="hall-card-latest-label" data-lang="ru">Последняя статья</span>
           <span class="hall-card-latest-label" data-lang="en">Latest article</span>
-          <strong><%= articleStats.lastTopicTitle %></strong>
-          <span><%= articleStats.lastAuthor %> · <%= articleStats.lastActivityAt %></span>
+          <% if (latestArticle?.ru?.title) { %>
+            <strong data-lang="ru"><%= latestArticle.ru.title %></strong>
+          <% } else { %>
+            <strong data-lang="ru"><%= articleStats.lastTopicTitle %></strong>
+          <% } %>
+
+          <% if (latestArticle?.en?.title) { %>
+            <strong data-lang="en"><%= latestArticle.en.title %></strong>
+          <% } else { %>
+            <strong data-lang="en"><%= articleStats.lastTopicTitle %></strong>
+          <% } %>
+
+          <span data-lang="ru"><%= String(articleStats.lastAuthor || '').replace(/\s*\/\s*Editorial\s*$/i, '') %> · <%= articleStats.lastActivityAt %></span>
+          <span data-lang="en"><%= String(articleStats.lastAuthor || '').replace(/^Редакция\s*\/\s*/i, '') %> · <%= articleStats.lastActivityAt %></span>
         </div>
       <% } else { %>
         <div class="hall-card-latest hall-card-latest-empty"><span data-lang="ru">Статей пока нет.</span><span data-lang="en">No articles yet.</span></div>

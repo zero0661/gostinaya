@@ -377,15 +377,42 @@ app.get('/gostinaya/welcome', requireGuest, (req, res) => {
 
 app.get('/gostinaya/hall', requireGuest, async (req, res, next) => {
   try {
-    const [recentActivity, roomStats] = await Promise.all([
+    const [recentActivity, roomStats, articleDiscussions] = await Promise.all([
         DiscussionRepository.getRecentActivity(15),
-        DiscussionRepository.getRoomStats()
+        DiscussionRepository.getRoomStats(),
+        ArticleDiscussionRepository.list()
     ]);
+
+    let latestArticle = null;
+
+    const latestDiscussion = [...articleDiscussions]
+        .sort((a, b) => {
+            const dateA = new Date(a.published_at || a.created_at || 0).getTime();
+            const dateB = new Date(b.published_at || b.created_at || 0).getTime();
+            return dateB - dateA;
+        })[0];
+
+    if (latestDiscussion) {
+        try {
+            const articlePair = await ArticleMetadataService.getPair(
+                latestDiscussion.url_ru,
+                latestDiscussion.url_en
+            );
+
+            latestArticle = {
+                ru: articlePair.ru,
+                en: articlePair.en
+            };
+        } catch (error) {
+            console.error('Could not load latest article metadata for Hall:', error.message);
+        }
+    }
 
     res.render('hall/index', {
       title: 'Холл / Hall',
       recentActivity,
       roomStats,
+      latestArticle,
       guest: req.session.guest
     });
   } catch (error) {
