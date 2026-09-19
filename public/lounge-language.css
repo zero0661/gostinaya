@@ -118,6 +118,26 @@ html[data-lounge-lang="en"] .sidebar [data-lang="en"] {
   overflow-wrap: anywhere;
 }
 
+/* The Hall used to render the second locale as a small italic translation.
+   Once only one locale is visible, the active text must inherit the primary
+   component typography instead of keeping that old secondary style. */
+.hall-header h1 > [data-lang],
+.hall-header > p:last-child > [data-lang],
+.hall-grid .hall-card h2 > [data-lang],
+.hall-card-description > [data-lang],
+.hall-intro-greeting > [data-lang],
+.hall-intro-text > [data-lang],
+.hall-first-word-copy h2 > [data-lang],
+.hall-first-word-copy p > [data-lang],
+.hall-first-word-copy small > [data-lang],
+.hall-first-word-link > [data-lang] {
+  margin-top: 0 !important;
+  color: inherit !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  font-style: inherit !important;
+}
+
 @media (max-width: 700px) {
   .lounge-language-page {
     padding-left: 8px !important;
