@@ -62,8 +62,8 @@
             <label>
                 <span data-lang="ru">Язык общения</span><span data-lang="en">Language</span>
                 <select name="language">
-                    <option value="ru" <%= guest.language === 'ru' ? 'selected' : '' %>>Русский</option>
-                    <option value="en" <%= guest.language === 'en' ? 'selected' : '' %>>English</option>
+                    <option value="ru" <%= guest.language === 'ru' ? 'selected' : '' %> data-label-ru="Русский" data-label-en="Russian">Русский</option>
+                    <option value="en" <%= guest.language === 'en' ? 'selected' : '' %> data-label-ru="Английский" data-label-en="English">English</option>
                 </select>
             </label>
 
@@ -141,3 +141,15 @@
     </nav>
 
 </section>
+<script>
+(function () {
+    function localizeLanguageOptions() {
+        const lang = document.documentElement.dataset.loungeLang === 'en' ? 'en' : 'ru';
+        document.querySelectorAll('option[data-label-ru][data-label-en]').forEach(option => {
+            option.textContent = lang === 'en' ? option.dataset.labelEn : option.dataset.labelRu;
+        });
+    }
+    document.addEventListener('DOMContentLoaded', localizeLanguageOptions);
+    document.addEventListener('lounge-language-change', localizeLanguageOptions);
+})();
+</script>
