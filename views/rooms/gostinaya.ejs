@@ -89,49 +89,31 @@
               <% const enImage = discussion.article_en?.image || discussion.article_ru?.image; %>
 
               <% if (isPair) { %>
-                <% if (ruImage) { %>
-                  <div class="article-shared-image-wrap" data-lang="ru">
-                    <img src="<%= ruImage %>" alt="" class="article-shared-image">
-                  </div>
-                <% } %>
-                <% if (enImage) { %>
-                  <div class="article-shared-image-wrap" data-lang="en">
-                    <img src="<%= enImage %>" alt="" class="article-shared-image">
-                  </div>
-                <% } %>
+                <% if (ruImage) { %><div class="article-shared-image-wrap" data-lang="ru"><img src="<%= ruImage %>" alt="" class="article-shared-image"></div><% } %>
+                <% if (enImage) { %><div class="article-shared-image-wrap" data-lang="en"><img src="<%= enImage %>" alt="" class="article-shared-image"></div><% } %>
               <% } else { %>
                 <% const singleImage = discussion.article_ru?.image || discussion.article_en?.image; %>
-                <% if (singleImage) { %>
-                  <div class="article-shared-image-wrap">
-                    <img src="<%= singleImage %>" alt="" class="article-shared-image">
-                  </div>
-                <% } %>
+                <% if (singleImage) { %><div class="article-shared-image-wrap"><img src="<%= singleImage %>" alt="" class="article-shared-image"></div><% } %>
               <% } %>
 
               <div class="article-language-grid article-language-single">
                 <% if (discussion.article_ru) { %>
-                  <a class="article-language-card" <%- isPair ? 'data-lang="ru"' : '' %>
-                     href="<%= discussion.url_ru %>" target="_blank" rel="noopener">
+                  <a class="article-language-card" <%- isPair ? 'data-lang="ru"' : '' %> href="<%= discussion.url_ru %>" target="_blank" rel="noopener">
                     <div class="article-language-body">
                       <span class="article-language-label">RU</span>
                       <h3><%= discussion.article_ru.title %></h3>
-                      <% if (discussion.article_ru.excerpt) { %>
-                        <p><%= discussion.article_ru.excerpt %></p>
-                      <% } %>
+                      <% if (discussion.article_ru.excerpt) { %><p><%= discussion.article_ru.excerpt %></p><% } %>
                       <span class="article-read-link">Читать статью →</span>
                     </div>
                   </a>
                 <% } %>
 
                 <% if (discussion.article_en) { %>
-                  <a class="article-language-card" <%- isPair ? 'data-lang="en"' : '' %>
-                     href="<%= discussion.url_en %>" target="_blank" rel="noopener">
+                  <a class="article-language-card" <%- isPair ? 'data-lang="en"' : '' %> href="<%= discussion.url_en %>" target="_blank" rel="noopener">
                     <div class="article-language-body">
                       <span class="article-language-label">EN</span>
                       <h3><%= discussion.article_en.title %></h3>
-                      <% if (discussion.article_en.excerpt) { %>
-                        <p><%= discussion.article_en.excerpt %></p>
-                      <% } %>
+                      <% if (discussion.article_en.excerpt) { %><p><%= discussion.article_en.excerpt %></p><% } %>
                       <span class="article-read-link">Read article →</span>
                     </div>
                   </a>
@@ -140,21 +122,12 @@
 
               <div class="article-discussion-footer">
                 <div class="article-discussion-stats">
-                  <strong data-lang="ru">Обсуждение</strong>
-                  <strong data-lang="en">Discussion</strong>
-
+                  <strong data-lang="ru">Обсуждение</strong><strong data-lang="en">Discussion</strong>
                   <span data-lang="ru">💬 <%= Number(discussion.messages_count || 0) %> сообщений</span>
                   <span data-lang="en">💬 <%= Number(discussion.messages_count || 0) %> messages</span>
-
-                  <% if (discussion.last_message_at) { %>
-                    <span>🕘 <%= discussion.last_message_author %> · <%= formatMoscowDateTime(discussion.last_message_at) %></span>
-                  <% } %>
+                  <% if (discussion.last_message_at) { %><span>🕘 <%= discussion.last_message_author %> · <%= formatMoscowDateTime(discussion.last_message_at) %></span><% } %>
                 </div>
-
-                <a class="room-action article-discussion-action" href="/gostinaya/topic/<%= discussion.topic_id %>">
-                  <span data-lang="ru">Обсудить</span>
-                  <span data-lang="en">Join Discussion</span>
-                </a>
+                <a class="room-action article-discussion-action" href="/gostinaya/topic/<%= discussion.topic_id %>"><span data-lang="ru">Обсудить</span><span data-lang="en">Join Discussion</span></a>
               </div>
             </article>
           <% }) %>
@@ -164,49 +137,35 @@
     <% } else { %>
       <% if (topics.length === 0) { %>
         <div class="room-empty">
-          <% if (roomKey === 'news') { %>
-            <h3 data-lang="ru">Новостей пока нет</h3>
-            <h3 data-lang="en">No news yet</h3>
-          <% } else { %>
-            <h3 data-lang="ru">Здесь пока тихо</h3>
-            <h3 data-lang="en">It is quiet here for now</h3>
-          <% } %>
-          <% if (roomKey === 'news') { %>
-            <p data-lang="ru">Здесь появляются новости проекта, которые можно обсудить вместе с участниками Гостиной.</p>
-            <p data-lang="en">Project news appears here and can be discussed with other Lounge members.</p>
-          <% } else { %>
-            <p data-lang="ru">Здесь участники могут создавать собственные темы для обсуждения.</p>
-            <p data-lang="en">Members can start their own discussion topics here.</p>
-          <% } %>
+          <% if (roomKey === 'news') { %><h3 data-lang="ru">Новостей пока нет</h3><h3 data-lang="en">No news yet</h3><% } else { %><h3 data-lang="ru">Здесь пока тихо</h3><h3 data-lang="en">It is quiet here for now</h3><% } %>
+          <% if (roomKey === 'news') { %><p data-lang="ru">Здесь появляются новости проекта, которые можно обсудить вместе с участниками Гостиной.</p><p data-lang="en">Project news appears here and can be discussed with other Lounge members.</p><% } else { %><p data-lang="ru">Здесь участники могут создавать собственные темы для обсуждения.</p><p data-lang="en">Members can start their own discussion topics here.</p><% } %>
         </div>
       <% } else { %>
         <div class="topic-list">
           <% topics.forEach(topic => { %>
             <article class="topic-item">
               <div class="topic-main">
-                <h3><a href="/gostinaya/topic/<%= topic.id %>"><%= topic.title %></a></h3>
-                <% if (topic.preview) { %>
-                  <p class="topic-preview"><%= topic.preview %><%= topic.preview.length >= 140 ? '…' : '' %></p>
+                <% if (roomKey === 'news') { %>
+                  <h3 data-lang="ru"><a href="/gostinaya/topic/<%= topic.id %>"><%= topic.title_ru || topic.title %></a></h3>
+                  <h3 data-lang="en"><a href="/gostinaya/topic/<%= topic.id %>"><%= topic.title_en || 'English version not available yet' %></a></h3>
+
+                  <p class="topic-preview" data-lang="ru"><%= topic.body_ru || topic.preview || '' %><%= String(topic.body_ru || topic.preview || '').length >= 140 ? '…' : '' %></p>
+                  <p class="topic-preview" data-lang="en"><%= topic.body_en || 'This older project update has not been translated.' %><%= String(topic.body_en || '').length >= 140 ? '…' : '' %></p>
+                <% } else { %>
+                  <h3><a href="/gostinaya/topic/<%= topic.id %>"><%= topic.title %></a></h3>
+                  <% if (topic.preview) { %><p class="topic-preview"><%= topic.preview %><%= topic.preview.length >= 140 ? '…' : '' %></p><% } %>
                 <% } %>
-                <% if (Number(topic.unread_count || 0) > 0) { %>
-                  <span class="topic-unread" data-lang="ru">Новое: <%= topic.unread_count %></span>
-                  <span class="topic-unread" data-lang="en">New: <%= topic.unread_count %></span>
-                <% } %>
+
+                <% if (Number(topic.unread_count || 0) > 0) { %><span class="topic-unread" data-lang="ru">Новое: <%= topic.unread_count %></span><span class="topic-unread" data-lang="en">New: <%= topic.unread_count %></span><% } %>
               </div>
 
               <div class="topic-meta">
                 <span>👤 <a href="/gostinaya/member/<%= topic.author_id %>"><%= topic.author %></a></span>
                 <span data-lang="ru">💬 <%= Math.max(Number(topic.replies || 0) - 1, 0) %> ответов</span>
                 <span data-lang="en">💬 <%= Math.max(Number(topic.replies || 0) - 1, 0) %> replies</span>
-                <% if (topic.last_reply_at) { %>
-                  <span>🕘 <%= topic.last_reply_author %> · <%= topic.last_reply_at %></span>
-                <% } %>
-                <% if (topic.pinned) { %>
-                  <span data-lang="ru">📌 Закреплено</span><span data-lang="en">📌 Pinned</span>
-                <% } %>
-                <% if (topic.closed) { %>
-                  <span data-lang="ru">🔒 Закрыто</span><span data-lang="en">🔒 Closed</span>
-                <% } %>
+                <% if (topic.last_reply_at) { %><span>🕘 <%= topic.last_reply_author %> · <%= topic.last_reply_at %></span><% } %>
+                <% if (topic.pinned) { %><span data-lang="ru">📌 Закреплено</span><span data-lang="en">📌 Pinned</span><% } %>
+                <% if (topic.closed) { %><span data-lang="ru">🔒 Закрыто</span><span data-lang="en">🔒 Closed</span><% } %>
               </div>
             </article>
           <% }) %>
@@ -216,10 +175,7 @@
   </section>
 
   <nav class="room-navigation">
-    <a href="/gostinaya/hall">
-      <span data-lang="ru">← Вернуться в Холл</span>
-      <span data-lang="en">← Back to Hall</span>
-    </a>
+    <a href="/gostinaya/hall"><span data-lang="ru">← Вернуться в Холл</span><span data-lang="en">← Back to Hall</span></a>
   </nav>
 
 </section>
