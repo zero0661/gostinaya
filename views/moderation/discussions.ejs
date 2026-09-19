@@ -1,18 +1,18 @@
 <section class="profile-page moderation-page">
   <header class="profile-header">
-    <p class="profile-eyebrow"><a href="/gostinaya/moderation">Модерация</a></p>
-    <h1>Обсуждения</h1>
+    <p class="profile-eyebrow"><a href="/gostinaya/moderation"><span data-lang="ru">Модерация</span><span data-lang="en">Moderation</span></a></p>
+    <h1><span data-lang="ru">Обсуждения</span><span data-lang="en">Discussions</span></h1>
   </header>
 
   <form class="moderation-filter" method="get">
-    <input type="search" name="q" value="<%= search %>" placeholder="Тема или автор">
+    <input type="search" name="q" value="<%= search %>" data-placeholder-ru="Тема или автор" data-placeholder-en="Topic or author" placeholder="Тема или автор">
     <select name="room">
-      <option value="" <%= !room ? 'selected' : '' %>>Все разделы</option>
-      <option value="articles" <%= room === 'articles' ? 'selected' : '' %>>Обсуждения статей</option>
-      <option value="news" <%= room === 'news' ? 'selected' : '' %>>Новости проекта</option>
-      <option value="discussions" <%= room === 'discussions' ? 'selected' : '' %>>Темы сообщества</option>
+      <option value="" <%= !room ? 'selected' : '' %>>Все разделы / All sections</option>
+      <option value="articles" <%= room === 'articles' ? 'selected' : '' %>>Обсуждения статей / Article discussions</option>
+      <option value="news" <%= room === 'news' ? 'selected' : '' %>>Новости проекта / Project news</option>
+      <option value="discussions" <%= room === 'discussions' ? 'selected' : '' %>>Темы сообщества / Community topics</option>
     </select>
-    <button type="submit">Фильтр</button>
+    <button type="submit"><span data-lang="ru">Фильтр</span><span data-lang="en">Filter</span></button>
   </form>
 
   <%
@@ -32,7 +32,7 @@
       <a class="profile-card moderation-item moderation-topic-link <%= topic.hidden_at ? 'is-danger' : '' %>" href="/gostinaya/moderation/discussions/<%= topic.id %>">
         <div>
           <h2><%= topic.title %></h2>
-          <p>
+          <p data-lang="ru">
             №<%= topic.id %> ·
             <%= topic.room === 'articles'
               ? 'Обсуждение статьи · создано автоматически'
@@ -40,13 +40,25 @@
                 ? `Новость проекта · Автор: ${topic.author}`
                 : `Тема сообщества · Автор: ${topic.author}` %>
           </p>
+          <p data-lang="en">
+            #<%= topic.id %> ·
+            <%= topic.room === 'articles'
+              ? 'Article discussion · created automatically'
+              : topic.room === 'news'
+                ? `Project news · Author: ${topic.author}`
+                : `Community topic · Author: ${topic.author}` %>
+          </p>
         </div>
         <div class="moderation-flags">
-          <span><%= topic.messages_count %> <%= plural(topic.messages_count, 'сообщение', 'сообщения', 'сообщений') %></span>
-          <% if (topic.pinned) { %><strong>Закреплена</strong><% } %>
-          <% if (topic.closed) { %><strong>Закрыта</strong><% } %>
-          <% if (topic.hidden_at) { %><strong>Скрыта</strong><% } %>
-          <% if (topic.open_reports) { %><strong><%= topic.open_reports %> <%= plural(topic.open_reports, 'жалоба', 'жалобы', 'жалоб') %></strong><% } %>
+          <span data-lang="ru"><%= topic.messages_count %> <%= plural(topic.messages_count, 'сообщение', 'сообщения', 'сообщений') %></span>
+          <span data-lang="en"><%= topic.messages_count %> <%= Number(topic.messages_count) === 1 ? 'message' : 'messages' %></span>
+          <% if (topic.pinned) { %><strong><span data-lang="ru">Закреплена</span><span data-lang="en">Pinned</span></strong><% } %>
+          <% if (topic.closed) { %><strong><span data-lang="ru">Закрыта</span><span data-lang="en">Closed</span></strong><% } %>
+          <% if (topic.hidden_at) { %><strong><span data-lang="ru">Скрыта</span><span data-lang="en">Hidden</span></strong><% } %>
+          <% if (topic.open_reports) { %>
+            <strong data-lang="ru"><%= topic.open_reports %> <%= plural(topic.open_reports, 'жалоба', 'жалобы', 'жалоб') %></strong>
+            <strong data-lang="en"><%= topic.open_reports %> <%= Number(topic.open_reports) === 1 ? 'report' : 'reports' %></strong>
+          <% } %>
         </div>
       </a>
     <% }) %>

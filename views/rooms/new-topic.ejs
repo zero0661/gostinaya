@@ -2,100 +2,65 @@
   <header class="profile-header room-page-header">
     <h1>
       <% if (roomKey === 'news') { %>
-        Новая новость
-        <span>New Project News</span>
+        <span data-lang="ru">Новая новость</span><span data-lang="en">New Project News</span>
       <% } else { %>
-        Новая тема
-        <span>New Topic</span>
+        <span data-lang="ru">Новая тема</span><span data-lang="en">New Topic</span>
       <% } %>
     </h1>
-
     <p>
       <% if (roomKey === 'news') { %>
-        Опубликуйте новость проекта и откройте её обсуждение.
-        <span>Publish project news and open its discussion.</span>
+        <span data-lang="ru">Опубликуйте новость проекта и откройте её обсуждение.</span><span data-lang="en">Publish project news and open its discussion.</span>
       <% } else { %>
-        Создайте новое обсуждение для участников Гостиной.
-        <span>Create a new discussion for Lounge members.</span>
+        <span data-lang="ru">Создайте новое обсуждение для участников Гостиной.</span><span data-lang="en">Create a new discussion for Lounge members.</span>
       <% } %>
     </p>
   </header>
 
-  <form
-    method="post"
-    action="/gostinaya/<%= roomKey %>/new"
-  >
+  <form method="post" action="/gostinaya/<%= roomKey %>/new">
     <section class="profile-card room-pane">
       <h2>
-        <%= roomKey === 'news' ? 'Новая публикация' : 'Новое обсуждение' %><br>
-        <span><%= roomKey === 'news' ? 'New Announcement' : 'New Discussion' %></span>
+        <% if (roomKey === 'news') { %>
+          <span data-lang="ru">Новая публикация</span><span data-lang="en">New Announcement</span>
+        <% } else { %>
+          <span data-lang="ru">Новое обсуждение</span><span data-lang="en">New Discussion</span>
+        <% } %>
       </h2>
 
       <label>
-        <%= roomKey === 'news' ? 'Заголовок новости' : 'Заголовок темы' %> /
-        <span><%= roomKey === 'news' ? 'News Title' : 'Topic Title' %></span>
-
-        <input
-          type="text"
-          name="title"
-          maxlength="160"
-          required
-          autofocus
-        >
+        <% if (roomKey === 'news') { %>
+          <span data-lang="ru">Заголовок новости</span><span data-lang="en">News Title</span>
+        <% } else { %>
+          <span data-lang="ru">Заголовок темы</span><span data-lang="en">Topic Title</span>
+        <% } %>
+        <input type="text" name="title" maxlength="160" required autofocus>
       </label>
 
       <label>
-        <%= roomKey === 'news' ? 'Текст новости' : 'Первое сообщение' %> /
-        <span><%= roomKey === 'news' ? 'News Text' : 'First Message' %></span>
-
-        <textarea
-          name="body"
-          rows="10"
-          maxlength="5000"
-          required
-        ></textarea>
+        <% if (roomKey === 'news') { %>
+          <span data-lang="ru">Текст новости</span><span data-lang="en">News Text</span>
+        <% } else { %>
+          <span data-lang="ru">Первое сообщение</span><span data-lang="en">First Message</span>
+        <% } %>
+        <textarea name="body" rows="10" maxlength="5000" required></textarea>
       </label>
 
       <div class="room-intro">
-        <p>
-          После публикации тема становится частью общего обсуждения.<br>
-          <span class="en-secondary">
-            Once published, the topic becomes part of the community discussion.
-          </span>
-        </p>
-
-        <p>
-          До появления первого ответа вы можете изменить название,
-          текст или удалить тему.<br>
-          <span class="en-secondary">
-            Before the first reply, you can edit the title and message
-            or delete the topic.
-          </span>
-        </p>
-
-        <p>
-          После появления ответов изменение или удаление темы возможно
-          только через модератора.<br>
-          <span class="en-secondary">
-            After replies appear, the topic can be changed or deleted
-            only by a moderator.
-          </span>
-        </p>
+        <p><span data-lang="ru">После публикации тема становится частью общего обсуждения.</span><span data-lang="en">Once published, the topic becomes part of the community discussion.</span></p>
+        <p><span data-lang="ru">До появления первого ответа вы можете изменить название, текст или удалить тему.</span><span data-lang="en">Before the first reply, you can edit the title and message or delete the topic.</span></p>
+        <p><span data-lang="ru">После появления ответов изменение или удаление темы возможно только через модератора.</span><span data-lang="en">After replies appear, the topic can be changed or deleted only by a moderator.</span></p>
       </div>
 
       <button type="submit">
         <% if (roomKey === 'news') { %>
-          Опубликовать новость / <span class="en-secondary">Publish News</span>
+          <span data-lang="ru">Опубликовать новость</span><span data-lang="en">Publish News</span>
         <% } else { %>
-          Создать тему / <span class="en-secondary">Create Topic</span>
+          <span data-lang="ru">Создать тему</span><span data-lang="en">Create Topic</span>
         <% } %>
       </button>
     </section>
   </form>
 
   <nav class="room-navigation">
-    <a href="/gostinaya/<%= roomKey %>">
-      ← Вернуться к темам / <span class="en-secondary">Back to Topics</span>
-    </a>
+    <a href="/gostinaya/<%= roomKey %>"><span data-lang="ru">← Вернуться к темам</span><span data-lang="en">← Back to Topics</span></a>
   </nav>
 </section>

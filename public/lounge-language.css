@@ -1,0 +1,296 @@
+/* Lounge language switch and mobile polish */
+
+[data-lang] {
+  display: none;
+}
+
+html[data-lounge-lang="ru"] [data-lang="ru"],
+html[data-lounge-lang="en"] [data-lang="en"] {
+  display: revert;
+}
+
+.public-nav [data-lang],
+.sidebar [data-lang] {
+  display: none;
+}
+
+html[data-lounge-lang="ru"] .public-nav [data-lang="ru"],
+html[data-lounge-lang="en"] .public-nav [data-lang="en"] {
+  display: inline-flex;
+}
+
+html[data-lounge-lang="ru"] .sidebar [data-lang="ru"],
+html[data-lounge-lang="en"] .sidebar [data-lang="en"] {
+  display: inline;
+}
+
+.language-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-left: auto;
+  margin-right: auto;
+  color: #667085;
+  white-space: nowrap;
+}
+
+.language-switch button {
+  appearance: none;
+  border: 0;
+  min-width: 38px;
+  min-height: 38px;
+  padding: 6px 8px;
+  background: transparent;
+  color: #7f8a99;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.language-switch button[aria-pressed="true"] {
+  color: #ffffff;
+}
+
+.language-switch button:hover,
+.language-switch button:focus-visible {
+  color: #ffffff;
+  outline: 2px solid rgba(147, 197, 253, 0.7);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.authenticated-language-switch {
+  width: fit-content;
+  margin: 0 0 18px auto;
+  padding: 2px 6px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.42);
+}
+
+.article-language-single {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.article-language-single .article-language-card {
+  width: 100%;
+}
+
+.lounge-language-page .public-welcome h1,
+.lounge-language-page .public-welcome h2,
+.lounge-language-page .public-welcome p,
+.lounge-language-page .public-welcome li,
+.lounge-language-page .welcome-actions a {
+  font-style: normal !important;
+}
+
+.lounge-language-page .public-welcome h1 {
+  margin-bottom: 18px !important;
+}
+
+.lounge-language-page .public-welcome h2 {
+  margin-top: 28px;
+}
+
+.lounge-language-page .public-welcome ul {
+  margin-top: 10px;
+}
+
+.content,
+.profile-page,
+.profile-card,
+.room-panel,
+.topic-item,
+.notification-item,
+.moderation-item,
+.article-language-card,
+.message-item {
+  min-width: 0;
+}
+
+.content p,
+.content li,
+.content a,
+.content strong,
+.content span,
+.content input,
+.content textarea,
+.content select {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 700px) {
+  .lounge-language-page {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .lounge-language-page .public-nav {
+    width: calc(100% - 8px);
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .lounge-language-page .public-nav > a {
+    flex: 1 1 0;
+    font-size: 13px;
+  }
+
+  .lounge-language-page .public-nav > a:last-child {
+    justify-content: flex-end;
+    text-align: right;
+  }
+
+  .language-switch {
+    flex: 0 0 auto;
+    margin: 0;
+    font-size: 13px;
+  }
+
+  .authenticated-language-switch {
+    margin: 0 0 12px auto;
+  }
+
+  .auth-card.public-welcome {
+    width: calc(100% - 8px) !important;
+    padding: 22px 16px !important;
+    border-radius: 14px !important;
+  }
+
+  .lounge-language-page .public-welcome h1 {
+    font-size: clamp(27px, 8vw, 31px) !important;
+    line-height: 1.08;
+  }
+
+  .lounge-language-page .public-welcome h2 {
+    margin-top: 24px;
+    margin-bottom: 10px;
+    font-size: 21px;
+  }
+
+  .lounge-language-page .public-welcome p,
+  .lounge-language-page .public-welcome li {
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+  }
+
+  .lounge-language-page .public-welcome .auth-intro {
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+    margin-bottom: 18px !important;
+  }
+
+  .lounge-language-page .public-welcome ul {
+    padding-left: 20px;
+  }
+
+  .welcome-actions {
+    gap: 10px !important;
+    margin-top: 26px !important;
+  }
+
+  .welcome-actions a {
+    min-height: 50px !important;
+    padding: 10px 14px !important;
+  }
+
+  .content {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  .content .profile-page,
+  .content .room-page,
+  .content .members-page,
+  .content .notifications-page,
+  .content .moderation-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .content .profile-header h1,
+  .content .room-page-header h1,
+  .content .topic-page-header h1 {
+    font-size: clamp(28px, 8vw, 34px) !important;
+    line-height: 1.12 !important;
+  }
+
+  .content .profile-header p,
+  .content .room-page-header p,
+  .content .hall-intro-text,
+  .content .topic-message-body,
+  .content .notification-message,
+  .content .legal-card p,
+  .content .legal-card li {
+    font-size: 16px !important;
+    line-height: 1.55 !important;
+  }
+
+  .content .profile-card,
+  .content .room-panel,
+  .content .hall-intro,
+  .content .hall-first-word,
+  .content .notification-item,
+  .content .moderation-item {
+    padding: 16px !important;
+    border-radius: 14px !important;
+  }
+
+  .content .hall-grid,
+  .content .members-grid,
+  .content .article-language-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .content .hall-card {
+    min-height: 0 !important;
+  }
+
+  .content input,
+  .content select,
+  .content textarea,
+  .content button {
+    font-size: 16px !important;
+  }
+
+  .content button,
+  .content .room-action,
+  .content .hall-first-word-link,
+  .content .notification-open {
+    min-height: 44px;
+  }
+
+  .content .topic-message-header,
+  .content .notification-meta,
+  .content .notification-footer,
+  .content .room-panel-header,
+  .content .moderation-button-row {
+    gap: 10px !important;
+  }
+
+  .content .topic-message-header,
+  .content .notification-footer,
+  .content .room-panel-header {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+  }
+
+  .content .moderation-filter,
+  .content .moderation-actions,
+  .content .moderation-button-row,
+  .content .moderation-resolution {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    width: 100% !important;
+  }
+
+  .content .moderation-filter > *,
+  .content .moderation-actions > *,
+  .content .moderation-button-row > *,
+  .content .moderation-resolution > * {
+    width: 100% !important;
+  }
+}

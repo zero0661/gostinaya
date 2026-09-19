@@ -1,46 +1,12 @@
-<%
-const directReplies =
-    repliesByParent.get(Number(message.id)) || [];
-
-const replyCount = countThreadReplies(message.id);
-
-function getRussianReplyWord(count) {
-    const lastTwoDigits = count % 100;
-    const lastDigit = count % 10;
-
-    if (lastTwoDigits >= 11 && lastTwoDigits <= 14) {
-        return 'ответов';
-    }
-
-    if (lastDigit === 1) {
-        return 'ответ';
-    }
-
-    if (lastDigit >= 2 && lastDigit <= 4) {
-        return 'ответа';
-    }
-
-    return 'ответов';
-}
-
-const englishReplyWord =
-    replyCount === 1 ? 'reply' : 'replies';
-%>
-
 <article
     class="message-item topic-message-card <%= parentAuthor ? 'thread-reply' : 'thread-root' %> <%= message.hidden_at ? 'is-moderated-hidden' : '' %>"
     id="message-<%= message.id %>"
 >
     <header class="topic-message-header">
         <strong class="topic-message-author">
-            <a href="/gostinaya/member/<%= message.author_id %>">
-                <%= message.author %>
-            </a>
+            <a href="/gostinaya/member/<%= message.author_id %>"><%= message.author %></a>
         </strong>
-
-        <span class="topic-message-date">
-            <%= formatMoscowDateTime(message.created_at) %>
-        </span>
+        <span class="topic-message-date"><%= formatMoscowDateTime(message.created_at) %></span>
     </header>
 
     <div class="topic-message-body">
@@ -49,42 +15,37 @@ const englishReplyWord =
 
     <% if (!message.hidden_at) { %>
     <div class="message-actions topic-message-actions">
-        <button
-            type="button"
-            class="reply-button"
-            data-message-id="<%= message.id %>"
-            data-author="<%= message.author %>"
-        >
-            Ответить /
-            <span class="en-secondary">Reply</span>
+        <button type="button" class="reply-button" data-message-id="<%= message.id %>" data-author="<%= message.author %>">
+            <span data-lang="ru">Ответить</span>
+            <span data-lang="en">Reply</span>
         </button>
 
-        <% if (
-            Number(currentUserId) ===
-            Number(message.author_id)
-        ) { %>
+        <% if (Number(currentUserId) === Number(message.author_id)) { %>
             <a href="/gostinaya/message/<%= message.id %>/edit">
-                Редактировать /
-                <span class="en-secondary">Edit</span>
+                <span data-lang="ru">Редактировать</span>
+                <span data-lang="en">Edit</span>
             </a>
         <% } %>
     </div>
 
     <details class="report-control">
-        <summary>Пожаловаться / Report</summary>
+        <summary>
+            <span data-lang="ru">Пожаловаться</span>
+            <span data-lang="en">Report</span>
+        </summary>
         <form method="post" action="/gostinaya/reports">
             <input type="hidden" name="topic_id" value="<%= topicId %>">
             <input type="hidden" name="message_id" value="<%= message.id %>">
-            <textarea name="reason" maxlength="500" rows="3" placeholder="Что произошло? / What happened?" required></textarea>
-            <button type="submit">Отправить / Send</button>
+            <textarea name="reason" maxlength="500" rows="3" data-placeholder-ru="Что произошло?" data-placeholder-en="What happened?" required></textarea>
+            <button type="submit">
+                <span data-lang="ru">Отправить</span>
+                <span data-lang="en">Send</span>
+            </button>
         </form>
     </details>
     <% } %>
 
-    <div
-        class="reply-form-slot"
-        data-message-id="<%= message.id %>"
-    ></div>
+    <div class="reply-form-slot" data-message-id="<%= message.id %>"></div>
 
     <% if (directReplies.length) { %>
         <div class="thread-replies">

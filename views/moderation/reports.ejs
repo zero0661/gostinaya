@@ -1,36 +1,37 @@
 <section class="profile-page moderation-page">
-  <% const statusLabels = { open: 'Открыта', resolved: 'Решена', dismissed: 'Отклонена' }; %>
+  <% const statusLabelsRu = { open: 'Открыта', resolved: 'Решена', dismissed: 'Отклонена' }; %>
+  <% const statusLabelsEn = { open: 'Open', resolved: 'Resolved', dismissed: 'Dismissed' }; %>
   <header class="profile-header">
-    <p class="profile-eyebrow"><a href="/gostinaya/moderation">Модерация</a></p>
-    <h1>Жалобы</h1>
+    <p class="profile-eyebrow"><a href="/gostinaya/moderation"><span data-lang="ru">Модерация</span><span data-lang="en">Moderation</span></a></p>
+    <h1><span data-lang="ru">Жалобы</span><span data-lang="en">Reports</span></h1>
   </header>
 
   <nav class="moderation-tabs">
-    <a href="?status=open">Открытые</a>
-    <a href="?status=resolved">Решённые</a>
-    <a href="?status=dismissed">Отклонённые</a>
-    <a href="?status=all">Все</a>
+    <a href="?status=open"><span data-lang="ru">Открытые</span><span data-lang="en">Open</span></a>
+    <a href="?status=resolved"><span data-lang="ru">Решённые</span><span data-lang="en">Resolved</span></a>
+    <a href="?status=dismissed"><span data-lang="ru">Отклонённые</span><span data-lang="en">Dismissed</span></a>
+    <a href="?status=all"><span data-lang="ru">Все</span><span data-lang="en">All</span></a>
   </nav>
 
   <div class="moderation-list">
     <% reports.forEach(report => { %>
       <article class="profile-card moderation-item <%= report.status === 'open' ? 'is-warning' : '' %>">
         <div>
-          <h2>Жалоба №<%= report.id %> <span><%= statusLabels[report.status] || report.status %></span></h2>
-          <p><strong>От:</strong> <%= report.reporter_name %></p>
-          <p><strong>Тема:</strong> <a href="/gostinaya/moderation/discussions/<%= report.target_topic_id %>"><%= report.topic_title || '—' %></a></p>
-          <% if (report.message_id) { %><p><strong>Сообщение #<%= report.message_id %>:</strong> <%- linkifyText(report.message_body) %></p><% } %>
+          <h2><span data-lang="ru">Жалоба №<%= report.id %></span><span data-lang="en">Report #<%= report.id %></span> <span data-lang="ru"><%= statusLabelsRu[report.status] || report.status %></span><span data-lang="en"><%= statusLabelsEn[report.status] || report.status %></span></h2>
+          <p><strong data-lang="ru">От:</strong><strong data-lang="en">From:</strong> <%= report.reporter_name %></p>
+          <p><strong data-lang="ru">Тема:</strong><strong data-lang="en">Topic:</strong> <a href="/gostinaya/moderation/discussions/<%= report.target_topic_id %>"><%= report.topic_title || '—' %></a></p>
+          <% if (report.message_id) { %><p><strong><span data-lang="ru">Сообщение #<%= report.message_id %>:</span><span data-lang="en">Message #<%= report.message_id %>:</span></strong> <%- linkifyText(report.message_body) %></p><% } %>
           <p class="moderation-warning"><%= report.reason %></p>
         </div>
         <% if (report.status === 'open') { %>
           <form class="moderation-resolution" method="post" action="/gostinaya/moderation/reports/<%= report.id %>/status">
-            <input name="note" maxlength="500" placeholder="Примечание к решению">
-            <button name="status" value="resolved" type="submit">Решено</button>
-            <button name="status" value="dismissed" type="submit">Отклонить</button>
+            <input name="note" maxlength="500" data-placeholder-ru="Примечание к решению" data-placeholder-en="Decision note" placeholder="Примечание к решению">
+            <button name="status" value="resolved" type="submit"><span data-lang="ru">Решено</span><span data-lang="en">Resolve</span></button>
+            <button name="status" value="dismissed" type="submit"><span data-lang="ru">Отклонить</span><span data-lang="en">Dismiss</span></button>
           </form>
         <% } %>
       </article>
     <% }) %>
-    <% if (!reports.length) { %><p>Здесь пусто.</p><% } %>
+    <% if (!reports.length) { %><p><span data-lang="ru">Здесь пусто.</span><span data-lang="en">Nothing here.</span></p><% } %>
   </div>
 </section>

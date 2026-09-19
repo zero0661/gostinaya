@@ -1,87 +1,49 @@
 <section class="profile-page members-page">
-
   <header class="profile-header lounge-page-header">
-    <p class="profile-eyebrow">
-      Гостиная <span>/ The Lounge</span>
-    </p>
-
-    <h1>
-      Участники <span>/ Members</span>
-    </h1>
-
-    <p>
-      Люди, которые уже присоединились к проекту.
-      <span>People who have already joined the project.</span>
-    </p>
+    <p class="profile-eyebrow"><span data-lang="ru">Гостиная</span><span data-lang="en">The Lounge</span></p>
+    <h1><span data-lang="ru">Участники</span><span data-lang="en">Members</span></h1>
+    <p><span data-lang="ru">Люди, которые уже присоединились к проекту.</span><span data-lang="en">People who have already joined the project.</span></p>
   </header>
 
   <section class="profile-card members-panel">
-
     <div class="members-panel-header">
       <div>
-        <h2>
-          Сообщество <span>/ Community</span>
-        </h2>
-
-        <p>
-          Все зарегистрированные участники.
-          <span>All registered members.</span>
-        </p>
+        <h2><span data-lang="ru">Сообщество</span><span data-lang="en">Community</span></h2>
+        <p><span data-lang="ru">Все зарегистрированные участники.</span><span data-lang="en">All registered members.</span></p>
       </div>
     </div>
 
     <% if (!members.length) { %>
-
       <div class="members-empty">
-        <h3>Пока никого</h3>
-        <p>
-          Вы будете первым участником.
-          <span>You will be the first member.</span>
-        </p>
+        <h3><span data-lang="ru">Пока никого</span><span data-lang="en">No members yet</span></h3>
+        <p><span data-lang="ru">Вы будете первым участником.</span><span data-lang="en">You will be the first member.</span></p>
       </div>
-
     <% } else { %>
-
       <div class="members-grid">
-
         <% members.forEach(member => { %>
-
           <article class="member-card">
-
-            <h3>
-              <a href="/gostinaya/member/<%= member.id %>">
-                <%= member.name %>
-              </a>
-            </h3>
-
+            <h3><a href="/gostinaya/member/<%= member.id %>"><%= member.name %></a></h3>
             <p class="member-bio">
-              <%= member.bio || 'Пока без описания.' %>
+              <% if (member.bio) { %>
+                <%= member.bio %>
+              <% } else { %>
+                <span data-lang="ru">Пока без описания.</span><span data-lang="en">No description yet.</span>
+              <% } %>
             </p>
-
             <div class="member-meta">
               <span>👤 <%= member.role %></span>
               <span>🌍 <%= member.language %></span>
-
-              <% if (member.location) { %>
-                <span>📍 <%= member.location %></span>
-              <% } %>
-
+              <% if (member.location) { %><span>📍 <%= member.location %></span><% } %>
               <span>💬 <%= member.messages_count %></span>
               <span>📝 <%= member.topics_count %></span>
             </div>
-
           </article>
-
         <% }) %>
-
       </div>
-
     <% } %>
-
   </section>
 
   <nav class="members-navigation">
-    <a href="/gostinaya/hall">← Вернуться в Холл / <span>Back to Hall</span></a>
+    <a href="/gostinaya/hall"><span data-lang="ru">← Вернуться в Холл</span><span data-lang="en">← Back to Hall</span></a>
   </nav>
-
 </section>

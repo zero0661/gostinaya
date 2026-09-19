@@ -1,16 +1,29 @@
-<section class="auth-page">
+<section class="auth-page lounge-language-page">
   <div class="auth-card public-welcome">
-    <p class="auth-kicker">Гостиная / The Lounge</p>
-    <h1>Доступ приостановлен<br><span>Access suspended</span></h1>
-    <p class="auth-intro">
-      Модератор временно приостановил доступ к этому аккаунту.<br>
-      <span>A moderator has temporarily suspended access to this account.</span>
-    </p>
-    <% if (reason) { %>
-      <p><strong>Причина / Reason:</strong> <%= reason %></p>
-    <% } %>
-    <a class="welcome-secondary" href="https://milenin.pro/">
-      Вернуться на сайт / <span>Return to the website</span>
-    </a>
+    <div data-lang="ru">
+      <h1>Доступ приостановлен</h1>
+      <p class="auth-intro">
+        Модератор временно приостановил доступ к этому аккаунту.
+      </p>
+      <% if (reason) { %>
+        <p><strong>Причина:</strong> <%= reason %></p>
+      <% } %>
+      <a class="welcome-secondary" href="https://milenin.pro/">
+        Вернуться на сайт
+      </a>
+    </div>
+
+    <div data-lang="en">
+      <h1>Access suspended</h1>
+      <p class="auth-intro">
+        A moderator has temporarily suspended access to this account.
+      </p>
+      <% if (reason) { %>
+        <p><strong>Reason:</strong> <%= reason %></p>
+      <% } %>
+      <a class="welcome-secondary" href="https://milenin.pro/">
+        Return to the website
+      </a>
+    </div>
   </div>
 </section>
