@@ -9,20 +9,24 @@
     (function () {
       const params = new URLSearchParams(window.location.search);
       const requested = params.get('lang');
-      const stored = localStorage.getItem('gostinayaLanguage');
+      const stored = localStorage.getItem('loungeLanguage');
+      const legacyStored = localStorage.getItem('gostinayaLanguage');
       const browserLanguage = (navigator.language || '').toLowerCase().startsWith('en') ? 'en' : 'ru';
       const language = requested === 'en' || requested === 'ru'
         ? requested
-        : (stored === 'en' || stored === 'ru' ? stored : browserLanguage);
+        : (stored === 'en' || stored === 'ru'
+            ? stored
+            : (legacyStored === 'en' || legacyStored === 'ru' ? legacyStored : browserLanguage));
 
-      localStorage.setItem('gostinayaLanguage', language);
+      localStorage.setItem('loungeLanguage', language);
+      localStorage.removeItem('gostinayaLanguage');
       document.documentElement.dataset.loungeLang = language;
       document.documentElement.lang = language;
     })();
   </script>
   <link rel="stylesheet" type="text/css" href="/gostinaya/public/gostinaya.css?v=20260817-1">
   <link rel="stylesheet" type="text/css" href="/gostinaya/public/gostinaya-logo.css?v=20260822-1">
-  <link rel="stylesheet" type="text/css" href="/gostinaya/public/lounge-language.css?v=20260919-1">
+  <link rel="stylesheet" type="text/css" href="/gostinaya/public/lounge-language.css?v=20260919-4">
 </head>
 
 <body>
@@ -64,7 +68,8 @@
     const languageButtons = document.querySelectorAll('[data-set-lang]');
 
     function applyLanguage(language) {
-      localStorage.setItem('gostinayaLanguage', language);
+      localStorage.setItem('loungeLanguage', language);
+      localStorage.removeItem('gostinayaLanguage');
       document.documentElement.dataset.loungeLang = language;
       document.documentElement.lang = language;
 
