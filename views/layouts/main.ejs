@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-lounge-lang="ru">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,6 +7,21 @@
 <title><%= title %> — Гостиная / The Lounge</title>
 <link rel="stylesheet" type="text/css" href="/gostinaya/public/gostinaya.css?v=20260815-1">
 <link rel="stylesheet" type="text/css" href="/gostinaya/public/gostinaya-logo.css?v=20260822-1">
+<link rel="stylesheet" type="text/css" href="/gostinaya/public/lounge-language.css?v=20260919-2">
+<script>
+(() => {
+  const params = new URLSearchParams(window.location.search);
+  const requested = params.get('lang');
+  const stored = localStorage.getItem('loungeLanguage');
+  const accountLanguage = <%- JSON.stringify(currentGuest?.language === 'en' ? 'en' : 'ru') %>;
+  const lang = ['ru', 'en'].includes(requested)
+    ? requested
+    : (['ru', 'en'].includes(stored) ? stored : accountLanguage);
+  document.documentElement.dataset.loungeLang = lang;
+  document.documentElement.lang = lang;
+  localStorage.setItem('loungeLanguage', lang);
+})();
+</script>
 </head>
 
 <body>
@@ -15,22 +30,28 @@
     <img
         class="lounge-banner-image"
         src="/gostinaya/public/lounge-banner-center.jpg"
-        alt="Гостиная проекта После логина"
+        alt="После логина / After Login"
     >
 
-    <div class="lounge-banner-title" aria-label="После логина — Гостиная">
+    <div class="lounge-banner-title">
         <img
             class="lounge-banner-brand-logo"
             src="/gostinaya/public/after-login-logo-transparent.png"
             alt="После логина / After Login"
         >
-        <span class="lounge-banner-name">Гостиная</span>
-        <small>The Lounge</small>
+        <span class="lounge-banner-name" data-lang="ru">Гостиная</span>
+        <span class="lounge-banner-name" data-lang="en">The Lounge</span>
     </div>
 
     <blockquote class="lounge-banner-quote">
-        <p>«Любая достаточно развитая технология неотличима от магии»</p>
-        <cite>Артур Кларк</cite>
+        <div data-lang="ru">
+            <p>«Любая достаточно развитая технология неотличима от магии»</p>
+            <cite>Артур Кларк</cite>
+        </div>
+        <div data-lang="en">
+            <p>“Any sufficiently advanced technology is indistinguishable from magic.”</p>
+            <cite>Arthur C. Clarke</cite>
+        </div>
     </blockquote>
 </header>
 
@@ -39,20 +60,38 @@
     <%- include('../partials/sidebar') %>
 
     <main class="content">
+        <div class="authenticated-language-switch language-switch" aria-label="Language">
+            <button type="button" data-set-language="ru">RU</button>
+            <span aria-hidden="true">/</span>
+            <button type="button" data-set-language="en">EN</button>
+        </div>
         <%- body %>
     </main>
 
 </div>
 
-
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const sidebar = document.querySelector('.sidebar');
+function setLoungeLanguage(lang) {
+    if (!['ru', 'en'].includes(lang)) return;
+    document.documentElement.dataset.loungeLang = lang;
+    document.documentElement.lang = lang;
+    localStorage.setItem('loungeLanguage', lang);
+    document.querySelectorAll('[data-set-language]').forEach(button => {
+        button.setAttribute('aria-pressed', String(button.dataset.setLanguage === lang));
+    });
+}
 
+document.addEventListener('DOMContentLoaded', () => {
+    setLoungeLanguage(document.documentElement.dataset.loungeLang || 'ru');
+
+    document.querySelectorAll('[data-set-language]').forEach(button => {
+        button.addEventListener('click', () => setLoungeLanguage(button.dataset.setLanguage));
+    });
+
+    const sidebar = document.querySelector('.sidebar');
     if (!sidebar) return;
 
     const savedPosition = sessionStorage.getItem('gostinayaSidebarScroll');
-
     if (savedPosition !== null) {
         requestAnimationFrame(() => {
             sidebar.scrollTop = Number(savedPosition);
@@ -60,18 +99,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     sidebar.addEventListener('scroll', () => {
-        sessionStorage.setItem(
-            'gostinayaSidebarScroll',
-            String(sidebar.scrollTop)
-        );
+        sessionStorage.setItem('gostinayaSidebarScroll', String(sidebar.scrollTop));
     });
 
     sidebar.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', () => {
-            sessionStorage.setItem(
-                'gostinayaSidebarScroll',
-                String(sidebar.scrollTop)
-            );
+            sessionStorage.setItem('gostinayaSidebarScroll', String(sidebar.scrollTop));
         });
     });
 });
