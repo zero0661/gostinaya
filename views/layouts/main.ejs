@@ -7,7 +7,7 @@
 <title><%= title %> — Гостиная / The Lounge</title>
 <link rel="stylesheet" type="text/css" href="/gostinaya/public/gostinaya.css?v=20260815-1">
 <link rel="stylesheet" type="text/css" href="/gostinaya/public/gostinaya-logo.css?v=20260822-1">
-<link rel="stylesheet" type="text/css" href="/gostinaya/public/lounge-language.css?v=20260919-5">
+<link rel="stylesheet" type="text/css" href="/gostinaya/public/lounge-language.css?v=20260919-6">
 <script>
 (() => {
   const params = new URLSearchParams(window.location.search);
@@ -64,6 +64,17 @@
 </header>
 
 <div class="layout">
+    <button
+        class="mobile-nav-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="lounge-sidebar"
+    >
+        <span aria-hidden="true">☰</span>
+        <span data-lang="ru">Меню</span>
+        <span data-lang="en">Menu</span>
+    </button>
+
     <%- include('../partials/sidebar') %>
 
     <main class="content">
@@ -109,7 +120,29 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const sidebar = document.querySelector('.sidebar');
+    const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
     if (!sidebar) return;
+
+    if (mobileNavToggle) {
+        const closeMobileNav = () => {
+            sidebar.classList.remove('is-open');
+            mobileNavToggle.setAttribute('aria-expanded', 'false');
+        };
+
+        mobileNavToggle.addEventListener('click', () => {
+            const willOpen = !sidebar.classList.contains('is-open');
+            sidebar.classList.toggle('is-open', willOpen);
+            mobileNavToggle.setAttribute('aria-expanded', String(willOpen));
+        });
+
+        sidebar.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', closeMobileNav);
+        });
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape') closeMobileNav();
+        });
+    }
 
     const savedPosition = sessionStorage.getItem('gostinayaSidebarScroll');
     if (savedPosition !== null) {
