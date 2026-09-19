@@ -65,6 +65,14 @@ html[data-lounge-lang="en"] .sidebar [data-lang="en"] {
   background: rgba(15, 23, 42, 0.42);
 }
 
+.article-language-single {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.article-language-single .article-language-card {
+  width: 100%;
+}
+
 .lounge-language-page .public-welcome h1,
 .lounge-language-page .public-welcome h2,
 .lounge-language-page .public-welcome p,
