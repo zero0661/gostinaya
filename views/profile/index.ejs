@@ -40,7 +40,7 @@
         </script>
     <% } %>
 
-    <form method="post" action="/gostinaya/profile">
+    <form method="post" action="/gostinaya/profile" id="profile-form">
         <section class="profile-card profile-main-card">
             <h2><span data-lang="ru">Профиль участника</span><span data-lang="en">Profile</span></h2>
 
@@ -187,6 +187,17 @@
             option.textContent = lang === 'en' ? option.dataset.labelEn : option.dataset.labelRu;
         });
     }
+
+    const profileForm = document.getElementById('profile-form');
+    if (profileForm) {
+        profileForm.addEventListener('submit', () => {
+            const languageSelect = profileForm.elements.language;
+            const language = languageSelect?.value === 'en' ? 'en' : 'ru';
+            localStorage.setItem('loungeLanguage', language);
+            document.cookie = `loungeLanguage=${language}; Path=/gostinaya; Max-Age=31536000; SameSite=Lax`;
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', localizeLanguageOptions);
     document.addEventListener('lounge-language-change', localizeLanguageOptions);
 })();
