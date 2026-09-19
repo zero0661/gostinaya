@@ -1,35 +1,48 @@
-<section class="auth-page">
-  <nav class="public-nav" aria-label="Навигация / Navigation">
-    <a href="https://milenin.pro/">← На сайт проекта / <span>Main website</span></a>
+<section class="auth-page lounge-language-page">
+  <nav class="public-nav" aria-label="Language-aware navigation">
+    <a href="https://milenin.pro/">
+      <span data-lang="ru">← На сайт проекта</span>
+      <span data-lang="en">← Main website</span>
+    </a>
   </nav>
 
   <div class="auth-card public-welcome registration-welcome">
-    <p class="auth-kicker">Гостиная / The Lounge</p>
+    <div data-lang="ru">
+      <h1>Дверь открыта, <%= guest.name %></h1>
 
-    <h1>
-      Дверь открыта, <%= guest.name %><br>
-      <span>The door is open</span>
-    </h1>
+      <p class="auth-intro">
+        Вы стали участником сообщества проекта «После логина».
+      </p>
 
-    <p class="auth-intro">
-      Вы стали участником сообщества проекта «После логина».<br>
-      <span>You are now a member of the After Login community.</span>
-    </p>
+      <p>
+        Здесь не нужно спешить, собирать реакции или доказывать свою полезность.
+        Читайте, отвечайте, спорьте и начинайте разговор, когда появится собственная мысль.
+      </p>
 
-    <p>
-      Здесь не нужно спешить, собирать реакции или доказывать свою полезность.
-      Читайте, отвечайте, спорьте и начинайте разговор, когда появится собственная мысль.<br>
-      <span>
+      <div class="welcome-actions">
+        <a class="welcome-primary" href="<%= returnTo || '/gostinaya/hall' %>">
+          <%= returnTo ? 'Перейти к обсуждению' : 'Войти в Холл' %>
+        </a>
+      </div>
+    </div>
+
+    <div data-lang="en">
+      <h1>The door is open, <%= guest.name %></h1>
+
+      <p class="auth-intro">
+        You are now a member of the After Login community.
+      </p>
+
+      <p>
         There is no need to rush, collect reactions, or prove your usefulness here.
         Read, reply, disagree, and start a conversation when you have a thought of your own.
-      </span>
-    </p>
+      </p>
 
-    <div class="welcome-actions">
-      <a class="welcome-primary" href="<%= returnTo || '/gostinaya/hall' %>">
-        <%= returnTo ? 'Перейти к обсуждению' : 'Войти в Холл' %><br>
-        <span><%= returnTo ? 'Go to the Discussion' : 'Enter the Hall' %></span>
-      </a>
+      <div class="welcome-actions">
+        <a class="welcome-primary" href="<%= returnTo || '/gostinaya/hall' %>">
+          <%= returnTo ? 'Go to the Discussion' : 'Enter the Hall' %>
+        </a>
+      </div>
     </div>
   </div>
 </section>

@@ -1,24 +1,33 @@
 <section class="profile-page moderation-page">
-  <% const actionLabels = {
+  <% const actionLabelsRu = {
     account_blocked: 'Заблокирован аккаунт', account_unblocked: 'Разблокирован аккаунт', account_role_changed: 'Изменена роль',
     topic_pinned: 'Закреплена тема', topic_unpinned: 'Откреплена тема', topic_closed: 'Закрыта тема', topic_reopened: 'Открыта тема',
     topic_hidden: 'Скрыта тема', topic_restored: 'Восстановлена тема', message_hidden: 'Скрыто сообщение', message_restored: 'Восстановлено сообщение',
     report_resolved: 'Жалоба решена', report_dismissed: 'Жалоба отклонена'
   }; %>
-  <% const targetLabels = { account: 'аккаунт', topic: 'тема', message: 'сообщение', report: 'жалоба' }; %>
+  <% const actionLabelsEn = {
+    account_blocked: 'Account blocked', account_unblocked: 'Account unblocked', account_role_changed: 'Role changed',
+    topic_pinned: 'Topic pinned', topic_unpinned: 'Topic unpinned', topic_closed: 'Topic closed', topic_reopened: 'Topic reopened',
+    topic_hidden: 'Topic hidden', topic_restored: 'Topic restored', message_hidden: 'Message hidden', message_restored: 'Message restored',
+    report_resolved: 'Report resolved', report_dismissed: 'Report dismissed'
+  }; %>
+  <% const targetLabelsRu = { account: 'аккаунт', topic: 'тема', message: 'сообщение', report: 'жалоба' }; %>
+  <% const targetLabelsEn = { account: 'account', topic: 'topic', message: 'message', report: 'report' }; %>
   <header class="profile-header">
-    <p class="profile-eyebrow"><a href="/gostinaya/moderation">Модерация</a></p>
-    <h1>Журнал действий</h1>
-    <p>История не редактируется через интерфейс.</p>
+    <p class="profile-eyebrow"><a href="/gostinaya/moderation"><span data-lang="ru">Модерация</span><span data-lang="en">Moderation</span></a></p>
+    <h1><span data-lang="ru">Журнал действий</span><span data-lang="en">Action Log</span></h1>
+    <p data-lang="ru">История не редактируется через интерфейс.</p>
+    <p data-lang="en">The history cannot be edited through the interface.</p>
   </header>
   <section class="profile-card moderation-panel moderation-log-list">
     <% actions.forEach(item => { %>
       <article>
         <strong><%= item.actor_name %></strong>
-        <span><%= actionLabels[item.action] || item.action %> · <%= targetLabels[item.target_type] || item.target_type %> №<%= item.target_id %></span>
+        <span data-lang="ru"><%= actionLabelsRu[item.action] || item.action %> · <%= targetLabelsRu[item.target_type] || item.target_type %> №<%= item.target_id %></span>
+        <span data-lang="en"><%= actionLabelsEn[item.action] || item.action %> · <%= targetLabelsEn[item.target_type] || item.target_type %> #<%= item.target_id %></span>
         <small><%= formatMoscowDateTime(item.created_at) %><%= item.details ? ` · ${item.details}` : '' %></small>
       </article>
     <% }) %>
-    <% if (!actions.length) { %><p>Журнал пуст.</p><% } %>
+    <% if (!actions.length) { %><p><span data-lang="ru">Журнал пуст.</span><span data-lang="en">The log is empty.</span></p><% } %>
   </section>
 </section>

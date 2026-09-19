@@ -8,17 +8,25 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
+    "test": "node --test tests/*.test.js",
     "migrate:registration": "node database/migrate-registration.js",
     "migrate:email-verification": "node database/migrate-email-verification.js",
     "migrate:notification-preferences": "node database/migrate-notification-preferences.js",
     "migrate:moderation": "node database/migrate-moderation.js",
+    "migrate:newsletter-deliveries": "node database/migrate-newsletter-deliveries.js",
+    "migrate:bilingual-news": "node database/migrate-bilingual-news.js",
     "backup:create": "node scripts/backup-gostinaya.js",
     "backup:verify": "node scripts/verify-gostinaya-backup.js",
     "role:set": "node scripts/set-guest-role.js",
-    "import:cusdis": "node scripts/import-cusdis-comments.js"
+    "import:cusdis": "node scripts/import-cusdis-comments.js",
+    "ghost:newsletters": "node scripts/setup-ghost-newsletters.js",
+    "ghost:subscription-cta": "node scripts/update-ghost-subscription-cta.js",
+    "ghost:contact-email": "node scripts/update-ghost-contact-email.js",
+    "ghost:mail-diagnose": "node scripts/diagnose-ghost-mail.js",
+    "newsletter:smtp": "node scripts/configure-newsletter-smtp.js"
   },
   "dependencies": {
-    "bcrypt": "^5.1.1",
+    "bcrypt": "^6.0.0",
     "better-sqlite3": "^11.8.1",
     "cookie-parser": "^1.4.7",
     "dotenv": "^16.4.7",

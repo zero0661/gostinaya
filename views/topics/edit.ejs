@@ -1,70 +1,25 @@
 <section class="profile-page room-page topic-page topic-edit-page">
-
   <header class="profile-header room-page-header topic-page-header">
-    <p class="profile-eyebrow">
-      Редактирование темы /
-      <span>Edit Topic</span>
-    </p>
-
-    <h1>
-      Изменить название темы /
-      <span class="en-secondary">Edit Topic Title</span>
-    </h1>
-
-    <p>
-      Измените название темы и сохраните изменения.
-      <br>
-      <span>Edit the topic title and save your changes.</span>
-    </p>
+    <p class="profile-eyebrow"><span data-lang="ru">Редактирование темы</span><span data-lang="en">Edit Topic</span></p>
+    <h1><span data-lang="ru">Изменить название темы</span><span data-lang="en">Edit Topic Title</span></h1>
+    <p><span data-lang="ru">Измените название темы и сохраните изменения.</span><span data-lang="en">Edit the topic title and save your changes.</span></p>
   </header>
 
   <section class="profile-card room-panel topic-panel topic-composer">
-    <div class="room-panel-header">
-      <div>
-        <h2>
-          Название темы /
-          <span>Topic Title</span>
-        </h2>
-      </div>
-    </div>
-
-    <form
-      method="post"
-      action="/gostinaya/topic/<%= topic.id %>/edit"
-    >
+    <div class="room-panel-header"><div><h2><span data-lang="ru">Название темы</span><span data-lang="en">Topic Title</span></h2></div></div>
+    <form method="post" action="/gostinaya/topic/<%= topic.id %>/edit">
       <label for="title">
-        Название /
-        <span class="en-secondary">Title</span>
-
-        <input
-          id="title"
-          type="text"
-          name="title"
-          value="<%= topic.title %>"
-          maxlength="200"
-          required
-        >
+        <span data-lang="ru">Название</span><span data-lang="en">Title</span>
+        <input id="title" type="text" name="title" value="<%= topic.title %>" maxlength="200" required>
       </label>
-
       <div class="message-actions">
-        <button type="submit">
-          Сохранить изменения /
-          <span class="en-secondary">Save Changes</span>
-        </button>
-
-        <a href="/gostinaya/topic/<%= topic.id %>">
-          Отмена /
-          <span class="en-secondary">Cancel</span>
-        </a>
+        <button type="submit"><span data-lang="ru">Сохранить изменения</span><span data-lang="en">Save Changes</span></button>
+        <a href="/gostinaya/topic/<%= topic.id %>"><span data-lang="ru">Отмена</span><span data-lang="en">Cancel</span></a>
       </div>
     </form>
   </section>
 
   <nav class="room-navigation">
-    <a href="/gostinaya/topic/<%= topic.id %>">
-      ← Вернуться к теме /
-      <span class="en-secondary">Back to Topic</span>
-    </a>
+    <a href="/gostinaya/topic/<%= topic.id %>"><span data-lang="ru">← Вернуться к теме</span><span data-lang="en">← Back to Topic</span></a>
   </nav>
-
 </section>

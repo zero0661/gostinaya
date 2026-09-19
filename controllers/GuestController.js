@@ -67,7 +67,7 @@ class GuestController {
 
             if (!email || !password) {
                 return res.status(400).json({
-                    message: 'E-mail и пароль обязательны'
+                    message: 'E-mail и пароль обязательны. / E-mail and password are required.'
                 });
             }
 
@@ -75,7 +75,7 @@ class GuestController {
 
             if (!guest) {
                 return res.status(401).json({
-                    message: 'Неверный e-mail или пароль'
+                    message: 'Неверный e-mail или пароль. / Invalid e-mail or password.'
                 });
             }
 
@@ -86,7 +86,7 @@ class GuestController {
 
             if (!passwordIsValid) {
                 return res.status(401).json({
-                    message: 'Неверный e-mail или пароль'
+                    message: 'Неверный e-mail или пароль. / Invalid e-mail or password.'
                 });
             }
 
@@ -118,13 +118,14 @@ class GuestController {
 
             return res.json({
                 success: true,
+                language: guest.language === 'en' ? 'en' : 'ru',
                 redirect: returnTo || '/gostinaya/hall'
             });
         } catch (err) {
             console.error(err);
 
             return res.status(500).json({
-                message: 'Внутренняя ошибка сервера'
+                message: 'Внутренняя ошибка сервера. / Internal server error.'
             });
         }
     }
@@ -156,7 +157,7 @@ class GuestController {
 
       if (!email) {
         return res.status(400).json({
-          message: 'Укажите e-mail'
+          message: 'Укажите e-mail. / Enter your e-mail.'
         });
       }
 
@@ -164,13 +165,13 @@ class GuestController {
 
       return res.json({
         success: true,
-        message: 'Если такой e-mail зарегистрирован, письмо будет отправлено'
+        message: 'Если такой e-mail зарегистрирован, письмо будет отправлено. / If this e-mail is registered, a message will be sent.'
       });
     } catch (error) {
       console.error(error);
 
       return res.status(500).json({
-        message: 'Не удалось отправить письмо'
+        message: 'Не удалось отправить письмо. / Could not send the message.'
       });
     }
   }

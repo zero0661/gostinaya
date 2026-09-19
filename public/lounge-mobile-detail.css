@@ -1,0 +1,215 @@
+/* Final mobile pass for authenticated Lounge detail screens. */
+@media (max-width: 700px) {
+  .notifications-card,
+  .member-profile-meta,
+  .member-profile-section,
+  .topic-replies-panel,
+  .topic-composer,
+  .topic-opening-panel {
+    padding: 16px !important;
+    border-radius: 14px !important;
+  }
+
+  .notifications-heading {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .notifications-heading form,
+  .notifications-heading button {
+    width: 100% !important;
+  }
+
+  .notifications-list {
+    display: grid !important;
+    gap: 12px !important;
+  }
+
+  .notification-item {
+    display: grid !important;
+    grid-template-columns: 42px minmax(0, 1fr) !important;
+    gap: 12px !important;
+    padding: 14px !important;
+  }
+
+  .notification-icon {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+  }
+
+  .notification-meta,
+  .notification-footer {
+    width: 100% !important;
+  }
+
+  .notification-meta {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
+  }
+
+  .notification-message,
+  .notification-topic {
+    margin-top: 8px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .notification-open {
+    display: flex !important;
+    width: 100% !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 10px 14px !important;
+    text-align: center !important;
+  }
+
+  .notification-footer time {
+    align-self: flex-end !important;
+    font-size: 13px !important;
+  }
+
+  .member-profile-meta-list {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .member-profile-meta-list > span {
+    max-width: 100% !important;
+    min-height: 38px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 7px 10px !important;
+    border-radius: 10px !important;
+    line-height: 1.3 !important;
+  }
+
+  .member-profile-section h2 {
+    font-size: 22px !important;
+    line-height: 1.25 !important;
+  }
+
+  .member-profile-section .topic-list {
+    display: grid !important;
+    gap: 10px !important;
+  }
+
+  .member-profile-section .topic-item {
+    padding: 14px !important;
+  }
+
+  .member-profile-section .topic-item h3 {
+    font-size: 18px !important;
+    line-height: 1.35 !important;
+  }
+
+  .member-profile-section .topic-preview {
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+  }
+
+  .article-discussion-page-title {
+    margin-bottom: 8px !important;
+  }
+
+  .article-discussion-source-links a {
+    font-size: 18px !important;
+    line-height: 1.35 !important;
+  }
+
+  .article-discussion-source-image {
+    margin-top: 14px !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+  }
+
+  .article-discussion-source-image img {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  .topic-message-list {
+    display: grid !important;
+    gap: 12px !important;
+  }
+
+  .message-item,
+  .topic-message {
+    padding: 14px !important;
+    border-radius: 12px !important;
+  }
+
+  .message-item header,
+  .topic-message-header {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px 10px !important;
+  }
+
+  .message-actions {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .message-actions > a,
+  .message-actions > button {
+    width: 100% !important;
+    min-height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+  }
+
+  .reply-button {
+    min-height: 44px !important;
+  }
+
+  .topic-composer textarea,
+  .report-control textarea {
+    min-height: 150px !important;
+  }
+
+  .report-control form {
+    display: grid !important;
+    gap: 10px !important;
+  }
+
+  .report-control button {
+    width: 100% !important;
+  }
+
+  .room-navigation,
+  .members-navigation {
+    margin-top: 18px !important;
+  }
+
+  .room-navigation a,
+  .members-navigation a {
+    display: inline-flex !important;
+    min-height: 44px !important;
+    align-items: center !important;
+    line-height: 1.35 !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .notification-item {
+    grid-template-columns: 1fr !important;
+  }
+
+  .notification-icon {
+    margin-bottom: 2px !important;
+  }
+
+  .member-profile-meta-list > span {
+    width: 100% !important;
+  }
+}

@@ -1,0 +1,556 @@
+/* Lounge language switch and mobile polish */
+
+/* Hide only the inactive locale. Do not force a display mode on the active
+   locale: existing component CSS should keep control of inline/block/flex. */
+html[data-lounge-lang="ru"] [data-lang="en"],
+html[data-lounge-lang="en"] [data-lang="ru"] {
+  display: none !important;
+}
+
+.public-nav [data-lang],
+.sidebar [data-lang] {
+  display: none;
+}
+
+html[data-lounge-lang="ru"] .public-nav [data-lang="ru"],
+html[data-lounge-lang="en"] .public-nav [data-lang="en"] {
+  display: inline-flex;
+}
+
+html[data-lounge-lang="ru"] .sidebar [data-lang="ru"],
+html[data-lounge-lang="en"] .sidebar [data-lang="en"] {
+  display: inline;
+}
+
+.language-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-left: auto;
+  margin-right: auto;
+  color: #667085;
+  white-space: nowrap;
+}
+
+.language-switch button {
+  appearance: none;
+  border: 0;
+  min-width: 38px;
+  min-height: 38px;
+  padding: 6px 8px;
+  background: transparent;
+  color: #7f8a99;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.language-switch button[aria-pressed="true"] {
+  color: #ffffff;
+}
+
+.language-switch button:hover,
+.language-switch button:focus-visible {
+  color: #ffffff;
+  outline: 2px solid rgba(147, 197, 253, 0.7);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.authenticated-language-switch {
+  width: fit-content;
+  margin: 0 0 18px auto;
+  padding: 2px 6px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.42);
+}
+
+.article-language-single {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.article-language-single .article-language-card {
+  width: 100%;
+}
+
+.lounge-language-page .public-welcome h1,
+.lounge-language-page .public-welcome h2,
+.lounge-language-page .public-welcome p,
+.lounge-language-page .public-welcome li,
+.lounge-language-page .welcome-actions a {
+  font-style: normal !important;
+}
+
+.lounge-language-page .public-welcome h1 {
+  margin-bottom: 18px !important;
+}
+
+.lounge-language-page .public-welcome h2 {
+  margin-top: 28px;
+}
+
+.lounge-language-page .public-welcome ul {
+  margin-top: 10px;
+}
+
+.content,
+.profile-page,
+.profile-card,
+.room-panel,
+.topic-item,
+.notification-item,
+.moderation-item,
+.article-language-card,
+.message-item {
+  min-width: 0;
+}
+
+.content p,
+.content li,
+.content a,
+.content strong,
+.content span,
+.content input,
+.content textarea,
+.content select {
+  overflow-wrap: anywhere;
+}
+
+/* The Hall used to render the second locale as a small italic translation.
+   Once only one locale is visible, the active text must inherit the primary
+   component typography instead of keeping that old secondary style. */
+.hall-header h1 > [data-lang],
+.hall-header > p:last-child > [data-lang],
+.hall-grid .hall-card h2 > [data-lang],
+.hall-card-description > [data-lang],
+.hall-intro-greeting > [data-lang],
+.hall-intro-text > [data-lang],
+.hall-first-word-copy h2 > [data-lang],
+.hall-first-word-copy p > [data-lang],
+.hall-first-word-copy small > [data-lang],
+.hall-first-word-link > [data-lang] {
+  margin-top: 0 !important;
+  color: inherit !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  font-style: inherit !important;
+}
+
+@media (max-width: 700px) {
+  .lounge-language-page {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .lounge-language-page .public-nav {
+    width: calc(100% - 8px);
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .lounge-language-page .public-nav > a {
+    flex: 1 1 0;
+    font-size: 13px;
+  }
+
+  .lounge-language-page .public-nav > a:last-child {
+    justify-content: flex-end;
+    text-align: right;
+  }
+
+  .language-switch {
+    flex: 0 0 auto;
+    margin: 0;
+    font-size: 13px;
+  }
+
+  .authenticated-language-switch {
+    margin: 0 0 12px auto;
+  }
+
+  .auth-card.public-welcome {
+    width: calc(100% - 8px) !important;
+    padding: 22px 16px !important;
+    border-radius: 14px !important;
+  }
+
+  .lounge-language-page .public-welcome h1 {
+    font-size: clamp(27px, 8vw, 31px) !important;
+    line-height: 1.08;
+  }
+
+  .lounge-language-page .public-welcome h2 {
+    margin-top: 24px;
+    margin-bottom: 10px;
+    font-size: 21px;
+  }
+
+  .lounge-language-page .public-welcome p,
+  .lounge-language-page .public-welcome li {
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+  }
+
+  .lounge-language-page .public-welcome .auth-intro {
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+    margin-bottom: 18px !important;
+  }
+
+  .lounge-language-page .public-welcome ul {
+    padding-left: 20px;
+  }
+
+  .welcome-actions {
+    gap: 10px !important;
+    margin-top: 26px !important;
+  }
+
+  .welcome-actions a {
+    min-height: 50px !important;
+    padding: 10px 14px !important;
+  }
+
+  .content {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  .content .profile-page,
+  .content .room-page,
+  .content .members-page,
+  .content .notifications-page,
+  .content .moderation-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .content .profile-header h1,
+  .content .room-page-header h1,
+  .content .topic-page-header h1 {
+    font-size: clamp(28px, 8vw, 34px) !important;
+    line-height: 1.12 !important;
+  }
+
+  .content .profile-header p,
+  .content .room-page-header p,
+  .content .hall-intro-text,
+  .content .topic-message-body,
+  .content .notification-message,
+  .content .legal-card p,
+  .content .legal-card li {
+    font-size: 16px !important;
+    line-height: 1.55 !important;
+  }
+
+  .content .profile-card,
+  .content .room-panel,
+  .content .hall-intro,
+  .content .hall-first-word,
+  .content .notification-item,
+  .content .moderation-item {
+    padding: 16px !important;
+    border-radius: 14px !important;
+  }
+
+  .content .hall-grid,
+  .content .members-grid,
+  .content .article-language-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .content .hall-card {
+    min-height: 0 !important;
+  }
+
+  .content input,
+  .content select,
+  .content textarea,
+  .content button {
+    font-size: 16px !important;
+  }
+
+  .content button,
+  .content .room-action,
+  .content .hall-first-word-link,
+  .content .notification-open {
+    min-height: 44px;
+  }
+
+  .content .topic-message-header,
+  .content .notification-meta,
+  .content .notification-footer,
+  .content .room-panel-header,
+  .content .moderation-button-row {
+    gap: 10px !important;
+  }
+
+  .content .topic-message-header,
+  .content .notification-footer,
+  .content .room-panel-header {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+  }
+
+  .content .moderation-filter,
+  .content .moderation-actions,
+  .content .moderation-button-row,
+  .content .moderation-resolution {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    width: 100% !important;
+  }
+
+  .content .moderation-filter > *,
+  .content .moderation-actions > *,
+  .content .moderation-button-row > *,
+  .content .moderation-resolution > * {
+    width: 100% !important;
+  }
+}
+
+
+/* Authenticated content may still have legacy bilingual span styles.
+   Selected locale always wins. */
+html[data-lounge-lang="ru"] .layout .content [data-lang="en"],
+html[data-lounge-lang="en"] .layout .content [data-lang="ru"] {
+  display: none !important;
+}
+
+
+/* ===== Authenticated Lounge: compact mobile navigation ===== */
+
+.mobile-nav-toggle {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .lounge-banner {
+    height: 210px !important;
+    min-height: 210px !important;
+    overflow: hidden !important;
+  }
+
+  .lounge-banner-image {
+    width: 100% !important;
+    height: 210px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+
+  .lounge-banner-title,
+  .lounge-banner-quote {
+    display: none !important;
+  }
+
+  .layout {
+    display: block !important;
+    min-height: 0 !important;
+  }
+
+  .mobile-nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 46px;
+    margin: 12px 12px 0;
+    padding: 9px 14px;
+    border: 1px solid rgba(148, 163, 184, 0.26);
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.88);
+    color: #e5e7eb;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .mobile-nav-toggle > span:first-child {
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .sidebar {
+    display: none !important;
+    width: 100% !important;
+    padding: 10px 12px 16px !important;
+  }
+
+  .sidebar.is-open {
+    display: block !important;
+  }
+
+  .sidebar nav {
+    gap: 3px !important;
+  }
+
+  .sidebar nav a {
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    padding: 10px 12px !important;
+    font-size: 16px !important;
+  }
+
+  .sidebar hr {
+    margin: 8px 0 !important;
+  }
+
+  .content {
+    padding-top: 12px !important;
+  }
+
+  .authenticated-language-switch {
+    margin: 0 0 18px 0 !important;
+  }
+
+  .content .hall-grid {
+    gap: 14px !important;
+  }
+
+  .content .hall-grid .hall-card {
+    padding: 16px !important;
+  }
+
+  .content .hall-grid .hall-card h2 {
+    font-size: 24px !important;
+    line-height: 1.2 !important;
+  }
+
+  .content .hall-card-description {
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+  }
+
+  .content .hall-card-stats {
+    margin: 14px 0 !important;
+    padding: 11px 0 !important;
+  }
+
+  .content .hall-card-latest {
+    margin-bottom: 14px !important;
+    padding: 12px !important;
+  }
+
+  .content .article-language-card h3 {
+    font-size: 22px !important;
+    line-height: 1.3 !important;
+  }
+
+  .content .article-language-card p {
+    font-size: 16px !important;
+    line-height: 1.55 !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .hall-first-word {
+    display: block !important;
+    padding: 18px !important;
+  }
+
+  .hall-first-word-copy h2 {
+    margin: 0 0 10px !important;
+    font-size: 28px !important;
+    line-height: 1.12 !important;
+  }
+
+  .hall-first-word-copy p {
+    margin: 0 0 8px !important;
+    font-size: 20px !important;
+    line-height: 1.35 !important;
+  }
+
+  .hall-first-word-copy small {
+    display: block !important;
+    font-size: 15px !important;
+    line-height: 1.45 !important;
+  }
+
+  .hall-first-word-link {
+    display: flex !important;
+    width: 100% !important;
+    min-height: 48px !important;
+    margin-top: 16px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 11px 16px !important;
+    font-size: 16px !important;
+  }
+}
+
+/* ===== Project news editor ===== */
+.news-language-groups {
+  display: grid;
+  gap: 18px;
+  margin: 22px 0;
+}
+
+.news-language-section {
+  min-width: 0;
+  margin: 0;
+  padding: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.28);
+}
+
+.news-language-section legend {
+  padding: 0 8px;
+  color: #e5e7eb;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.news-language-section label {
+  display: block;
+  margin: 0 0 16px;
+}
+
+.news-language-section label:last-child {
+  margin-bottom: 0;
+}
+
+.news-language-section label > span {
+  display: block;
+  margin-bottom: 7px;
+}
+
+.news-language-section input,
+.news-language-section textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 700px) {
+  .news-editor-card {
+    padding: 16px !important;
+  }
+
+  .news-language-groups {
+    gap: 14px;
+    margin: 18px 0;
+  }
+
+  .news-language-section {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .news-language-section legend {
+    font-size: 16px;
+  }
+
+  .news-language-section textarea {
+    min-height: 180px;
+  }
+
+  .news-editor-card .room-primary-action {
+    width: 100% !important;
+    min-height: 48px !important;
+  }
+}

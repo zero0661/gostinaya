@@ -18,7 +18,31 @@ function languageVersion(posts) {
     publishedAt: ru.published_at || en.published_at || null,
     title: ru.title || en.title,
     titleRu: ru.title,
-    titleEn: en.title
+    titleEn: en.title,
+    publicationReady: [ru, en].every(post => post.status === 'published')
+  };
+}
+
+function singlePublication(post) {
+  const english = isEnglish(post);
+  return {
+    deliveryKey: `post:${post.id}`,
+    title: post.title,
+    titleRu: english ? null : post.title,
+    titleEn: english ? post.title : null,
+    urlRu: english ? null : post.url,
+    urlEn: english ? post.url : null
+  };
+}
+
+function pairedPublication(tag, version) {
+  return {
+    deliveryKey: `discussion:${String(tag).toLowerCase()}`,
+    title: version.title,
+    titleRu: version.titleRu,
+    titleEn: version.titleEn,
+    urlRu: version.urlRu,
+    urlEn: version.urlEn
   };
 }
 
@@ -46,19 +70,18 @@ async function handlePost(payload) {
 
     // Untagged legacy posts retain the old one-post/one-discussion behaviour.
     if (!tags.length) {
+      const publication = singlePublication(fullPost || post);
+      const publicationReady = (fullPost?.status || post.status) === 'published';
       const existing = await ArticleDiscussionRepository.getByGhostPostId(post.id);
-      if (existing) return { created: false, topicId: existing.topic_id };
+      if (existing) return { created: false, topicId: existing.topic_id, publication, publicationReady };
       const topic = await ArticleDiscussionRepository.createWithTopic({ title: post.title, authorId: AUTHOR_ID, ...(isEnglish(post)
         ? { ghostPostIdEn: post.id, urlEn: post.url }
         : { ghostPostIdRu: post.id, urlRu: post.url }), publishedAt: post.published_at || null });
       return {
         created: true,
         topicId: topic.topicId,
-        publication: {
-          title: post.title,
-          urlRu: isEnglish(post) ? null : post.url,
-          urlEn: isEnglish(post) ? post.url : null
-        }
+        publication,
+        publicationReady
       };
     }
 
@@ -70,6 +93,8 @@ async function handlePost(payload) {
     }
 
     const version = languageVersion(relatedPosts);
+    const publication = pairedPublication(tag, version);
+    const publicationReady = version.publicationReady;
     const discussions = await ArticleDiscussionRepository.getByGhostPostIds(relatedPosts.map(item => item.id));
     const uniqueDiscussions = [...new Map(discussions.map(item => [item.topic_id, item])).values()];
 
@@ -79,20 +104,15 @@ async function handlePost(payload) {
         created: true,
         linked: true,
         topicId: topic.topicId,
-        publication: {
-          title: version.title,
-          titleRu: version.titleRu,
-          titleEn: version.titleEn,
-          urlRu: version.urlRu,
-          urlEn: version.urlEn
-        }
+        publication,
+        publicationReady
       };
     }
 
     const primary = await selectPrimary(uniqueDiscussions);
     if (uniqueDiscussions.length === 1) {
       await ArticleDiscussionRepository.updateLanguageVersion(primary.topic_id, version);
-      return { created: false, linked: true, topicId: primary.topic_id };
+      return { created: false, linked: true, topicId: primary.topic_id, publication, publicationReady };
     }
     if (uniqueDiscussions.length !== 2) throw new Error(`Discussion tag ${tag} is linked to ${uniqueDiscussions.length} discussion topics`);
 
@@ -100,7 +120,7 @@ async function handlePost(payload) {
     const result = await ArticleDiscussionRepository.mergeTopics({
       primaryTopicId: primary.topic_id, duplicateTopicId: duplicate.topic_id, languageVersion: version
     });
-    return { created: false, linked: true, merged: result.merged, topicId: result.topicId };
+    return { created: false, linked: true, merged: result.merged, topicId: result.topicId, publication, publicationReady };
 }
 
 const enqueuePost = createWebhookQueue(handlePost);

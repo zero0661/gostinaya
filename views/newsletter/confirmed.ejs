@@ -1,0 +1,12 @@
+<section>
+  <article class="newsletter-status">
+    <% if (confirmed) { %>
+      <h1><%= language === 'en' ? 'Subscription confirmed' : 'Подписка подтверждена' %></h1>
+      <p><%= language === 'en' ? 'You will receive new After Login publications in English.' : 'Вы будете получать новые публикации «После логина» на русском языке.' %></p>
+    <% } else { %>
+      <h1><%= language === 'en' ? 'The link is invalid or expired' : 'Ссылка недействительна или устарела' %></h1>
+      <p><%= language === 'en' ? 'Return to the article and request a new confirmation email.' : 'Вернитесь к статье и запросите новое письмо подтверждения.' %></p>
+    <% } %>
+    <p><a class="button" href="<%= returnTo %>"><%= language === 'en' ? 'Return to the site' : 'Вернуться на сайт' %></a></p>
+  </article>
+</section>
