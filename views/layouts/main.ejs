@@ -14,12 +14,28 @@
   const requested = params.get('lang');
   const stored = localStorage.getItem('loungeLanguage');
   const accountLanguage = <%- JSON.stringify(currentGuest?.language === 'en' ? 'en' : 'ru') %>;
+  const rawTitle = <%- JSON.stringify(title || '') %>;
   const lang = ['ru', 'en'].includes(requested)
     ? requested
     : (['ru', 'en'].includes(stored) ? stored : accountLanguage);
+
+  function localizedTitle(value, language) {
+    const parts = String(value || '').split(' / ');
+    if (parts.length === 2 && /[А-Яа-яЁё]/.test(parts[0]) && !/[А-Яа-яЁё]/.test(parts[1])) {
+      return language === 'en' ? parts[1].trim() : parts[0].trim();
+    }
+    return String(value || '').trim();
+  }
+
   document.documentElement.dataset.loungeLang = lang;
   document.documentElement.lang = lang;
   localStorage.setItem('loungeLanguage', lang);
+  document.cookie = `loungeLanguage=${lang}; Path=/gostinaya; Max-Age=31536000; SameSite=Lax`;
+  document.title = `${localizedTitle(rawTitle, lang)} — ${lang === 'en' ? 'The Lounge' : 'Гостиная'}`;
+
+  window.updateLoungeDocumentTitle = function (language) {
+    document.title = `${localizedTitle(rawTitle, language)} — ${language === 'en' ? 'The Lounge' : 'Гостиная'}`;
+  };
 })();
 </script>
 </head>
@@ -76,6 +92,8 @@ function setLoungeLanguage(lang) {
     document.documentElement.dataset.loungeLang = lang;
     document.documentElement.lang = lang;
     localStorage.setItem('loungeLanguage', lang);
+    document.cookie = `loungeLanguage=${lang}; Path=/gostinaya; Max-Age=31536000; SameSite=Lax`;
+    if (window.updateLoungeDocumentTitle) window.updateLoungeDocumentTitle(lang);
     document.querySelectorAll('[data-set-language]').forEach(button => {
         button.setAttribute('aria-pressed', String(button.dataset.setLanguage === lang));
     });
