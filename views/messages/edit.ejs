@@ -1,69 +1,25 @@
 <section class="profile-page room-page topic-page message-edit-page">
-
   <header class="profile-header room-page-header topic-page-header">
-    <p class="profile-eyebrow">
-      Редактирование сообщения /
-      <span>Edit Message</span>
-    </p>
-
-    <h1>
-      Редактировать сообщение /
-      <span class="en-secondary">Edit Message</span>
-    </h1>
-
-    <p>
-      Измените текст сообщения и сохраните изменения.
-      <br>
-      <span>Edit the message and save your changes.</span>
-    </p>
+    <p class="profile-eyebrow"><span data-lang="ru">Редактирование сообщения</span><span data-lang="en">Edit Message</span></p>
+    <h1><span data-lang="ru">Редактировать сообщение</span><span data-lang="en">Edit Message</span></h1>
+    <p><span data-lang="ru">Измените текст сообщения и сохраните изменения.</span><span data-lang="en">Edit the message and save your changes.</span></p>
   </header>
 
   <section class="profile-card room-panel topic-panel topic-composer">
-    <div class="room-panel-header">
-      <div>
-        <h2>
-          Текст сообщения /
-          <span>Message Text</span>
-        </h2>
-      </div>
-    </div>
-
-    <form
-      method="post"
-      action="/gostinaya/message/<%= message.id %>/edit"
-    >
+    <div class="room-panel-header"><div><h2><span data-lang="ru">Текст сообщения</span><span data-lang="en">Message Text</span></h2></div></div>
+    <form method="post" action="/gostinaya/message/<%= message.id %>/edit">
       <label for="body">
-        Сообщение /
-        <span class="en-secondary">Message</span>
-
-        <textarea
-          id="body"
-          name="body"
-          rows="10"
-          maxlength="5000"
-          required
-        ><%= message.body %></textarea>
+        <span data-lang="ru">Сообщение</span><span data-lang="en">Message</span>
+        <textarea id="body" name="body" rows="10" maxlength="5000" required><%= message.body %></textarea>
       </label>
-
       <div class="message-actions">
-        <button type="submit">
-          Сохранить изменения /
-          <span class="en-secondary">Save Changes</span>
-        </button>
-
-        <a href="/gostinaya/topic/<%= message.topic_id %>">
-          Отмена /
-          <span class="en-secondary">Cancel</span>
-        </a>
+        <button type="submit"><span data-lang="ru">Сохранить изменения</span><span data-lang="en">Save Changes</span></button>
+        <a href="/gostinaya/topic/<%= message.topic_id %>"><span data-lang="ru">Отмена</span><span data-lang="en">Cancel</span></a>
       </div>
     </form>
   </section>
 
   <nav class="room-navigation">
-    <a href="/gostinaya/topic/<%= message.topic_id %>">
-      ← Вернуться к теме /
-      <span class="en-secondary">Back to Topic</span>
-    </a>
+    <a href="/gostinaya/topic/<%= message.topic_id %>"><span data-lang="ru">← Вернуться к теме</span><span data-lang="en">← Back to Topic</span></a>
   </nav>
-
 </section>
