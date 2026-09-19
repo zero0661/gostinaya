@@ -312,3 +312,11 @@ html[data-lounge-lang="en"] .sidebar [data-lang="en"] {
     width: 100% !important;
   }
 }
+
+
+/* Authenticated content may still have legacy bilingual span styles.
+   Selected locale always wins. */
+html[data-lounge-lang="ru"] .layout .content [data-lang="en"],
+html[data-lounge-lang="en"] .layout .content [data-lang="ru"] {
+  display: none !important;
+}

@@ -6,18 +6,16 @@
       <span data-lang="en">The Lounge</span>
     </p>
 
-    <h1>
-      <% if (roomKey === 'articles') { %>
-        <span data-lang="ru">Обсуждение статей</span>
-        <span data-lang="en">Article Discussions</span>
-      <% } else if (roomKey === 'news') { %>
-        <span data-lang="ru">Новости проекта</span>
-        <span data-lang="en">Project News</span>
-      <% } else { %>
-        <span data-lang="ru">Темы сообщества</span>
-        <span data-lang="en">Community Topics</span>
-      <% } %>
-    </h1>
+    <% if (roomKey === 'articles') { %>
+      <h1 data-lang="ru">Обсуждение статей</h1>
+      <h1 data-lang="en">Article Discussions</h1>
+    <% } else if (roomKey === 'news') { %>
+      <h1 data-lang="ru">Новости проекта</h1>
+      <h1 data-lang="en">Project News</h1>
+    <% } else { %>
+      <h1 data-lang="ru">Темы сообщества</h1>
+      <h1 data-lang="en">Community Topics</h1>
+    <% } %>
 
     <div>
       <% if (roomKey === 'articles') { %>
@@ -86,13 +84,28 @@
         <div class="article-discussion-list">
           <% articleDiscussions.forEach(discussion => { %>
             <article class="article-discussion-card">
-              <% const sharedImage = discussion.article_ru?.image || discussion.article_en?.image; %>
               <% const isPair = Boolean(discussion.article_ru && discussion.article_en); %>
+              <% const ruImage = discussion.article_ru?.image || discussion.article_en?.image; %>
+              <% const enImage = discussion.article_en?.image || discussion.article_ru?.image; %>
 
-              <% if (sharedImage) { %>
-                <div class="article-shared-image-wrap">
-                  <img src="<%= sharedImage %>" alt="" class="article-shared-image">
-                </div>
+              <% if (isPair) { %>
+                <% if (ruImage) { %>
+                  <div class="article-shared-image-wrap" data-lang="ru">
+                    <img src="<%= ruImage %>" alt="" class="article-shared-image">
+                  </div>
+                <% } %>
+                <% if (enImage) { %>
+                  <div class="article-shared-image-wrap" data-lang="en">
+                    <img src="<%= enImage %>" alt="" class="article-shared-image">
+                  </div>
+                <% } %>
+              <% } else { %>
+                <% const singleImage = discussion.article_ru?.image || discussion.article_en?.image; %>
+                <% if (singleImage) { %>
+                  <div class="article-shared-image-wrap">
+                    <img src="<%= singleImage %>" alt="" class="article-shared-image">
+                  </div>
+                <% } %>
               <% } %>
 
               <div class="article-language-grid article-language-single">
