@@ -6,7 +6,7 @@
 
 html[data-lounge-lang="ru"] [data-lang="ru"],
 html[data-lounge-lang="en"] [data-lang="en"] {
-  display: block;
+  display: revert;
 }
 
 .public-nav [data-lang],
@@ -38,7 +38,9 @@ html[data-lounge-lang="en"] .sidebar [data-lang="en"] {
 .language-switch button {
   appearance: none;
   border: 0;
-  padding: 3px 4px;
+  min-width: 38px;
+  min-height: 38px;
+  padding: 6px 8px;
   background: transparent;
   color: #7f8a99;
   font: inherit;
@@ -53,13 +55,15 @@ html[data-lounge-lang="en"] .sidebar [data-lang="en"] {
 .language-switch button:hover,
 .language-switch button:focus-visible {
   color: #ffffff;
-  outline: none;
+  outline: 2px solid rgba(147, 197, 253, 0.7);
+  outline-offset: 2px;
+  border-radius: 8px;
 }
 
 .authenticated-language-switch {
   width: fit-content;
   margin: 0 0 18px auto;
-  padding: 5px 8px;
+  padding: 2px 6px;
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 999px;
   background: rgba(15, 23, 42, 0.42);
@@ -93,6 +97,29 @@ html[data-lounge-lang="en"] .sidebar [data-lang="en"] {
   margin-top: 10px;
 }
 
+.content,
+.profile-page,
+.profile-card,
+.room-panel,
+.topic-item,
+.notification-item,
+.moderation-item,
+.article-language-card,
+.message-item {
+  min-width: 0;
+}
+
+.content p,
+.content li,
+.content a,
+.content strong,
+.content span,
+.content input,
+.content textarea,
+.content select {
+  overflow-wrap: anywhere;
+}
+
 @media (max-width: 700px) {
   .lounge-language-page {
     padding-left: 8px !important;
@@ -122,7 +149,7 @@ html[data-lounge-lang="en"] .sidebar [data-lang="en"] {
   }
 
   .authenticated-language-switch {
-    margin: 0 0 14px auto;
+    margin: 0 0 12px auto;
   }
 
   .auth-card.public-welcome {
@@ -166,5 +193,104 @@ html[data-lounge-lang="en"] .sidebar [data-lang="en"] {
   .welcome-actions a {
     min-height: 50px !important;
     padding: 10px 14px !important;
+  }
+
+  .content {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  .content .profile-page,
+  .content .room-page,
+  .content .members-page,
+  .content .notifications-page,
+  .content .moderation-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .content .profile-header h1,
+  .content .room-page-header h1,
+  .content .topic-page-header h1 {
+    font-size: clamp(28px, 8vw, 34px) !important;
+    line-height: 1.12 !important;
+  }
+
+  .content .profile-header p,
+  .content .room-page-header p,
+  .content .hall-intro-text,
+  .content .topic-message-body,
+  .content .notification-message,
+  .content .legal-card p,
+  .content .legal-card li {
+    font-size: 16px !important;
+    line-height: 1.55 !important;
+  }
+
+  .content .profile-card,
+  .content .room-panel,
+  .content .hall-intro,
+  .content .hall-first-word,
+  .content .notification-item,
+  .content .moderation-item {
+    padding: 16px !important;
+    border-radius: 14px !important;
+  }
+
+  .content .hall-grid,
+  .content .members-grid,
+  .content .article-language-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .content .hall-card {
+    min-height: 0 !important;
+  }
+
+  .content input,
+  .content select,
+  .content textarea,
+  .content button {
+    font-size: 16px !important;
+  }
+
+  .content button,
+  .content .room-action,
+  .content .hall-first-word-link,
+  .content .notification-open {
+    min-height: 44px;
+  }
+
+  .content .topic-message-header,
+  .content .notification-meta,
+  .content .notification-footer,
+  .content .room-panel-header,
+  .content .moderation-button-row {
+    gap: 10px !important;
+  }
+
+  .content .topic-message-header,
+  .content .notification-footer,
+  .content .room-panel-header {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+  }
+
+  .content .moderation-filter,
+  .content .moderation-actions,
+  .content .moderation-button-row,
+  .content .moderation-resolution {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    width: 100% !important;
+  }
+
+  .content .moderation-filter > *,
+  .content .moderation-actions > *,
+  .content .moderation-button-row > *,
+  .content .moderation-resolution > * {
+    width: 100% !important;
   }
 }
