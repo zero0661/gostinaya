@@ -1,0 +1,143 @@
+/* Lounge language switch and mobile polish */
+
+[data-lang] {
+  display: none;
+}
+
+html[data-lounge-lang="ru"] [data-lang="ru"],
+html[data-lounge-lang="en"] [data-lang="en"] {
+  display: block;
+}
+
+.public-nav [data-lang] {
+  display: none;
+}
+
+html[data-lounge-lang="ru"] .public-nav [data-lang="ru"],
+html[data-lounge-lang="en"] .public-nav [data-lang="en"] {
+  display: inline-flex;
+}
+
+.language-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-left: auto;
+  margin-right: auto;
+  color: #667085;
+  white-space: nowrap;
+}
+
+.language-switch button {
+  appearance: none;
+  border: 0;
+  padding: 3px 4px;
+  background: transparent;
+  color: #7f8a99;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.language-switch button[aria-pressed="true"] {
+  color: #ffffff;
+}
+
+.language-switch button:hover,
+.language-switch button:focus-visible {
+  color: #ffffff;
+  outline: none;
+}
+
+.lounge-language-page .public-welcome h1,
+.lounge-language-page .public-welcome h2,
+.lounge-language-page .public-welcome p,
+.lounge-language-page .public-welcome li,
+.lounge-language-page .welcome-actions a {
+  font-style: normal !important;
+}
+
+.lounge-language-page .public-welcome h1 {
+  margin-bottom: 18px !important;
+}
+
+.lounge-language-page .public-welcome h2 {
+  margin-top: 28px;
+}
+
+.lounge-language-page .public-welcome ul {
+  margin-top: 10px;
+}
+
+@media (max-width: 700px) {
+  .lounge-language-page {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .lounge-language-page .public-nav {
+    width: calc(100% - 8px);
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .lounge-language-page .public-nav > a {
+    flex: 1 1 0;
+    font-size: 13px;
+  }
+
+  .lounge-language-page .public-nav > a:last-child {
+    justify-content: flex-end;
+    text-align: right;
+  }
+
+  .language-switch {
+    flex: 0 0 auto;
+    margin: 0;
+    font-size: 13px;
+  }
+
+  .auth-card.public-welcome {
+    width: calc(100% - 8px) !important;
+    padding: 22px 16px !important;
+    border-radius: 14px !important;
+  }
+
+  .lounge-language-page .public-welcome h1 {
+    font-size: clamp(27px, 8vw, 31px) !important;
+    line-height: 1.08;
+  }
+
+  .lounge-language-page .public-welcome h2 {
+    margin-top: 24px;
+    margin-bottom: 10px;
+    font-size: 21px;
+  }
+
+  .lounge-language-page .public-welcome p,
+  .lounge-language-page .public-welcome li {
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+  }
+
+  .lounge-language-page .public-welcome .auth-intro {
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+    margin-bottom: 18px !important;
+  }
+
+  .lounge-language-page .public-welcome ul {
+    padding-left: 20px;
+  }
+
+  .welcome-actions {
+    gap: 10px !important;
+    margin-top: 26px !important;
+  }
+
+  .welcome-actions a {
+    min-height: 50px !important;
+    padding: 10px 14px !important;
+  }
+}
