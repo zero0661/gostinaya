@@ -482,3 +482,75 @@ html[data-lounge-lang="en"] .layout .content [data-lang="ru"] {
     font-size: 16px !important;
   }
 }
+
+/* ===== Project news editor ===== */
+.news-language-groups {
+  display: grid;
+  gap: 18px;
+  margin: 22px 0;
+}
+
+.news-language-section {
+  min-width: 0;
+  margin: 0;
+  padding: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.28);
+}
+
+.news-language-section legend {
+  padding: 0 8px;
+  color: #e5e7eb;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.news-language-section label {
+  display: block;
+  margin: 0 0 16px;
+}
+
+.news-language-section label:last-child {
+  margin-bottom: 0;
+}
+
+.news-language-section label > span {
+  display: block;
+  margin-bottom: 7px;
+}
+
+.news-language-section input,
+.news-language-section textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 700px) {
+  .news-editor-card {
+    padding: 16px !important;
+  }
+
+  .news-language-groups {
+    gap: 14px;
+    margin: 18px 0;
+  }
+
+  .news-language-section {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .news-language-section legend {
+    font-size: 16px;
+  }
+
+  .news-language-section textarea {
+    min-height: 180px;
+  }
+
+  .news-editor-card .room-primary-action {
+    width: 100% !important;
+    min-height: 48px !important;
+  }
+}
