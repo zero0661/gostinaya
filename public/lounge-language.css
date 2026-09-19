@@ -1,12 +1,10 @@
 /* Lounge language switch and mobile polish */
 
-[data-lang] {
-  display: none;
-}
-
-html[data-lounge-lang="ru"] [data-lang="ru"],
-html[data-lounge-lang="en"] [data-lang="en"] {
-  display: revert;
+/* Hide only the inactive locale. Do not force a display mode on the active
+   locale: existing component CSS should keep control of inline/block/flex. */
+html[data-lounge-lang="ru"] [data-lang="en"],
+html[data-lounge-lang="en"] [data-lang="ru"] {
+  display: none !important;
 }
 
 .public-nav [data-lang],
