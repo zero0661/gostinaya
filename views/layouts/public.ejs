@@ -1,12 +1,28 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-lounge-lang="ru">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <title><%= title %> — Гостиная / The Lounge</title>
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const requested = params.get('lang');
+      const stored = localStorage.getItem('gostinayaLanguage');
+      const browserLanguage = (navigator.language || '').toLowerCase().startsWith('en') ? 'en' : 'ru';
+      const language = requested === 'en' || requested === 'ru'
+        ? requested
+        : (stored === 'en' || stored === 'ru' ? stored : browserLanguage);
+
+      localStorage.setItem('gostinayaLanguage', language);
+      document.documentElement.dataset.loungeLang = language;
+      document.documentElement.lang = language;
+    })();
+  </script>
   <link rel="stylesheet" type="text/css" href="/gostinaya/public/gostinaya.css?v=20260817-1">
   <link rel="stylesheet" type="text/css" href="/gostinaya/public/gostinaya-logo.css?v=20260822-1">
+  <link rel="stylesheet" type="text/css" href="/gostinaya/public/lounge-language.css?v=20260919-1">
 </head>
 
 <body>
@@ -15,28 +31,57 @@
   <img
     class="lounge-banner-image"
     src="/gostinaya/public/lounge-banner-center.jpg"
-    alt="Гостиная проекта После логина"
+    alt="The Lounge / Гостиная"
   >
 
-  <div class="lounge-banner-title" aria-label="После логина — Гостиная">
+  <div class="lounge-banner-title" aria-label="After Login — The Lounge">
     <img
       class="lounge-banner-brand-logo"
       src="/gostinaya/public/after-login-logo-transparent.png"
       alt="После логина / After Login"
     >
-    <span class="lounge-banner-name">Гостиная</span>
-    <small>The Lounge</small>
+    <span class="lounge-banner-name" data-lang="ru">Гостиная</span>
+    <span class="lounge-banner-name" data-lang="en">The Lounge</span>
   </div>
 
-  <blockquote class="lounge-banner-quote">
+  <blockquote class="lounge-banner-quote" data-lang="ru">
     <p>«Любая достаточно развитая технология неотличима от магии»</p>
     <cite>Артур Кларк</cite>
+  </blockquote>
+
+  <blockquote class="lounge-banner-quote" data-lang="en">
+    <p>“Any sufficiently advanced technology is indistinguishable from magic.”</p>
+    <cite>Arthur C. Clarke</cite>
   </blockquote>
 </header>
 
 <main class="public-content">
   <%- body %>
 </main>
+
+<script>
+  (function () {
+    const languageButtons = document.querySelectorAll('[data-set-lang]');
+
+    function applyLanguage(language) {
+      localStorage.setItem('gostinayaLanguage', language);
+      document.documentElement.dataset.loungeLang = language;
+      document.documentElement.lang = language;
+
+      languageButtons.forEach((button) => {
+        button.setAttribute('aria-pressed', button.dataset.setLang === language ? 'true' : 'false');
+      });
+    }
+
+    applyLanguage(document.documentElement.dataset.loungeLang || 'ru');
+
+    languageButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        applyLanguage(button.dataset.setLang);
+      });
+    });
+  })();
+</script>
 
 </body>
 </html>
