@@ -24,7 +24,7 @@ async function transaction(work) {
 
 export default {
   async list() {
-    return all(`SELECT ad.*, t.title, t.pinned,
+    return all(`SELECT ad.*, t.title, t.title_ru, t.title_en, t.pinned,
       (SELECT COUNT(*) FROM discussion_messages m WHERE m.topic_id = ad.topic_id AND m.hidden_at IS NULL) AS messages_count,
       (SELECT MAX(m.created_at) FROM discussion_messages m WHERE m.topic_id = ad.topic_id AND m.hidden_at IS NULL) AS last_message_at,
       (SELECT g.name FROM discussion_messages m JOIN guests g ON g.id = m.author_id WHERE m.topic_id = ad.topic_id AND m.hidden_at IS NULL ORDER BY m.created_at DESC, m.id DESC LIMIT 1) AS last_message_author
@@ -45,12 +45,31 @@ export default {
     return all(`SELECT * FROM article_discussions WHERE ghost_post_id_ru IN (${placeholders}) OR ghost_post_id_en IN (${placeholders})`, [...ghostPostIds, ...ghostPostIds]);
   },
 
-  async updateLanguageVersion(topicId, { ghostPostIdRu = null, ghostPostIdEn = null, urlRu = null, urlEn = null, publishedAt = null }) {
-    return run(`UPDATE article_discussions SET
-      ghost_post_id_ru = COALESCE(?, ghost_post_id_ru), ghost_post_id_en = COALESCE(?, ghost_post_id_en),
-      url_ru = COALESCE(?, url_ru), url_en = COALESCE(?, url_en),
-      published_at = COALESCE(?, published_at), updated_at = CURRENT_TIMESTAMP
-      WHERE topic_id = ?`, [ghostPostIdRu, ghostPostIdEn, urlRu, urlEn, publishedAt, topicId]);
+  async updateLanguageVersion(topicId, {
+    ghostPostIdRu = null,
+    ghostPostIdEn = null,
+    urlRu = null,
+    urlEn = null,
+    publishedAt = null,
+    title = null,
+    titleRu = null,
+    titleEn = null
+  }) {
+    return transaction(async () => {
+      await run(`UPDATE article_discussions SET
+        ghost_post_id_ru = COALESCE(?, ghost_post_id_ru), ghost_post_id_en = COALESCE(?, ghost_post_id_en),
+        url_ru = COALESCE(?, url_ru), url_en = COALESCE(?, url_en),
+        published_at = COALESCE(?, published_at), updated_at = CURRENT_TIMESTAMP
+        WHERE topic_id = ?`, [ghostPostIdRu, ghostPostIdEn, urlRu, urlEn, publishedAt, topicId]);
+
+      await run(`UPDATE discussion_topics SET
+        title = COALESCE(?, title),
+        title_ru = COALESCE(?, title_ru),
+        title_en = COALESCE(?, title_en)
+        WHERE id = ?`, [title, titleRu, titleEn, topicId]);
+
+      return { topicId: Number(topicId) };
+    });
   },
 
   async create({ topicId, ghostPostIdRu = null, ghostPostIdEn = null, urlRu = null, urlEn = null, publishedAt = null }) {
@@ -58,10 +77,20 @@ export default {
       VALUES (?, ?, ?, ?, ?, ?)`, [topicId, ghostPostIdRu, ghostPostIdEn, urlRu, urlEn, publishedAt]);
   },
 
-  async createWithTopic({ title, authorId, ghostPostIdRu = null, ghostPostIdEn = null, urlRu = null, urlEn = null, publishedAt = null }) {
+  async createWithTopic({
+    title,
+    titleRu = null,
+    titleEn = null,
+    authorId,
+    ghostPostIdRu = null,
+    ghostPostIdEn = null,
+    urlRu = null,
+    urlEn = null,
+    publishedAt = null
+  }) {
     return transaction(async () => {
-      const topic = await run(`INSERT INTO discussion_topics (room, title, author_id)
-        VALUES ('articles', ?, ?)`, [title, authorId]);
+      const topic = await run(`INSERT INTO discussion_topics (room, title, title_ru, title_en, author_id)
+        VALUES ('articles', ?, ?, ?, ?)`, [title, titleRu, titleEn, authorId]);
       await run(`INSERT INTO article_discussions
         (topic_id, ghost_post_id_ru, ghost_post_id_en, url_ru, url_en, published_at)
         VALUES (?, ?, ?, ?, ?, ?)`, [
@@ -84,7 +113,7 @@ export default {
       await run('UPDATE discussion_messages SET topic_id = ? WHERE topic_id = ?', [primaryTopicId, duplicateTopicId]);
       await run('UPDATE notifications SET topic_id = ? WHERE topic_id = ?', [primaryTopicId, duplicateTopicId]);
 
-      // There is one read marker per guest/topic.  Keep the marker written most recently,
+      // There is one read marker per guest/topic. Keep the marker written most recently,
       // then remove only the now-redundant marker for the duplicate topic.
       await run(`INSERT INTO discussion_topic_reads (guest_id, topic_id, last_read_message_id, last_read_at)
         SELECT guest_id, ?, last_read_message_id, last_read_at
@@ -104,6 +133,16 @@ export default {
         url_ru = ?, url_en = ?, published_at = ?, updated_at = CURRENT_TIMESTAMP WHERE topic_id = ?`, [
         languageVersion.ghostPostIdRu, languageVersion.ghostPostIdEn,
         languageVersion.urlRu, languageVersion.urlEn, languageVersion.publishedAt, primaryTopicId
+      ]);
+      await run(`UPDATE discussion_topics SET
+        title = COALESCE(?, title),
+        title_ru = COALESCE(?, title_ru),
+        title_en = COALESCE(?, title_en)
+        WHERE id = ?`, [
+        languageVersion.title,
+        languageVersion.titleRu,
+        languageVersion.titleEn,
+        primaryTopicId
       ]);
       await run('DELETE FROM discussion_topics WHERE id = ?', [duplicateTopicId]);
       return { topicId: Number(primaryTopicId), merged: true };
