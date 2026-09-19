@@ -22,6 +22,18 @@
       localStorage.removeItem('gostinayaLanguage');
       document.documentElement.dataset.loungeLang = language;
       document.documentElement.lang = language;
+
+      window.getLoungeLanguage = function () {
+        return document.documentElement.dataset.loungeLang === 'en' ? 'en' : 'ru';
+      };
+
+      window.localizeLoungeMessage = function (value, languageOverride) {
+        const text = String(value || '').trim();
+        const languageToUse = languageOverride || window.getLoungeLanguage();
+        if (!text.includes(' / ')) return text;
+        const parts = text.split(' / ');
+        return languageToUse === 'en' ? parts.slice(1).join(' / ').trim() : parts[0].trim();
+      };
     })();
   </script>
   <link rel="stylesheet" type="text/css" href="/gostinaya/public/gostinaya.css?v=20260817-1">
