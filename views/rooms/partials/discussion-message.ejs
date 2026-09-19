@@ -47,6 +47,7 @@
 
     <div class="reply-form-slot" data-message-id="<%= message.id %>"></div>
 
+    <% const directReplies = repliesByParent.get(Number(message.id)) || repliesByParent.get(String(message.id)) || []; %>
     <% if (directReplies.length) { %>
         <div class="thread-replies">
             <% directReplies.forEach(reply => { %>
