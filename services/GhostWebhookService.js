@@ -74,9 +74,17 @@ async function handlePost(payload) {
       const publicationReady = (fullPost?.status || post.status) === 'published';
       const existing = await ArticleDiscussionRepository.getByGhostPostId(post.id);
       if (existing) return { created: false, topicId: existing.topic_id, publication, publicationReady };
-      const topic = await ArticleDiscussionRepository.createWithTopic({ title: post.title, authorId: AUTHOR_ID, ...(isEnglish(post)
-        ? { ghostPostIdEn: post.id, urlEn: post.url }
-        : { ghostPostIdRu: post.id, urlRu: post.url }), publishedAt: post.published_at || null });
+      const english = isEnglish(post);
+      const topic = await ArticleDiscussionRepository.createWithTopic({
+        title: post.title,
+        titleRu: english ? null : post.title,
+        titleEn: english ? post.title : null,
+        authorId: AUTHOR_ID,
+        ...(english
+          ? { ghostPostIdEn: post.id, urlEn: post.url }
+          : { ghostPostIdRu: post.id, urlRu: post.url }),
+        publishedAt: post.published_at || null
+      });
       return {
         created: true,
         topicId: topic.topicId,
