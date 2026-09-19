@@ -7,10 +7,10 @@
   <form class="moderation-filter" method="get">
     <input type="search" name="q" value="<%= search %>" data-placeholder-ru="Тема или автор" data-placeholder-en="Topic or author" placeholder="Тема или автор">
     <select name="room">
-      <option value="" <%= !room ? 'selected' : '' %>>Все разделы / All sections</option>
-      <option value="articles" <%= room === 'articles' ? 'selected' : '' %>>Обсуждения статей / Article discussions</option>
-      <option value="news" <%= room === 'news' ? 'selected' : '' %>>Новости проекта / Project news</option>
-      <option value="discussions" <%= room === 'discussions' ? 'selected' : '' %>>Темы сообщества / Community topics</option>
+      <option value="" data-label-ru="Все разделы" data-label-en="All sections" <%= !room ? 'selected' : '' %>>All sections</option>
+      <option value="articles" data-label-ru="Обсуждения статей" data-label-en="Article discussions" <%= room === 'articles' ? 'selected' : '' %>>Article discussions</option>
+      <option value="news" data-label-ru="Новости проекта" data-label-en="Project news" <%= room === 'news' ? 'selected' : '' %>>Project news</option>
+      <option value="discussions" data-label-ru="Темы сообщества" data-label-en="Community topics" <%= room === 'discussions' ? 'selected' : '' %>>Community topics</option>
     </select>
     <button type="submit"><span data-lang="ru">Фильтр</span><span data-lang="en">Filter</span></button>
   </form>
@@ -63,4 +63,17 @@
       </a>
     <% }) %>
   </div>
+
+<script>
+(function () {
+  function localizeModerationSelects() {
+    const lang = document.documentElement.dataset.loungeLang === 'en' ? 'en' : 'ru';
+    document.querySelectorAll('option[data-label-ru][data-label-en]').forEach(option => {
+      option.textContent = lang === 'en' ? option.dataset.labelEn : option.dataset.labelRu;
+    });
+  }
+  localizeModerationSelects();
+  document.addEventListener('lounge-language-change', localizeModerationSelects);
+})();
+</script>
 </section>

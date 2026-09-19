@@ -13,6 +13,11 @@
   }; %>
   <% const targetLabelsRu = { account: 'аккаунт', topic: 'тема', message: 'сообщение', report: 'жалоба' }; %>
   <% const targetLabelsEn = { account: 'account', topic: 'topic', message: 'message', report: 'report' }; %>
+  <% function detailsEn(value) {
+    return String(value || '')
+      .replace(/Причина:/g, 'Reason:')
+      .replace(/Тема:/g, 'Topic:');
+  } %>
 
   <header class="profile-header">
     <p class="profile-eyebrow"><span data-lang="ru">Служебный раздел</span><span data-lang="en">Staff area</span></p>
@@ -46,7 +51,10 @@
             <strong><%= item.actor_name %></strong>
             <span data-lang="ru"><%= actionLabelsRu[item.action] || item.action %> · <%= targetLabelsRu[item.target_type] || item.target_type %> №<%= item.target_id %></span>
             <span data-lang="en"><%= actionLabelsEn[item.action] || item.action %> · <%= targetLabelsEn[item.target_type] || item.target_type %> #<%= item.target_id %></span>
-            <small><%= formatMoscowDateTime(item.created_at) %><%= item.details ? ` · ${item.details}` : '' %></small>
+            <small>
+              <span data-lang="ru"><%= formatMoscowDateTime(item.created_at) %><%= item.details ? ` · ${item.details}` : '' %></span>
+              <span data-lang="en"><%= formatMoscowDateTime(item.created_at) %><%= item.details ? ` · ${detailsEn(item.details)}` : '' %></span>
+            </small>
           </article>
         <% }) %>
       </div>

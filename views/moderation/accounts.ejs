@@ -70,7 +70,12 @@
               <form method="post" action="/gostinaya/moderation/accounts/<%= account.id %>/role">
                 <select name="role">
                   <% assignableRoles.forEach(role => { %>
-                    <option value="<%= role %>" <%= role === account.role ? 'selected' : '' %>><%= roleLabelsRu[role] || role %> / <%= roleLabelsEn[role] || role %></option>
+                    <option
+                      value="<%= role %>"
+                      data-label-ru="<%= roleLabelsRu[role] || role %>"
+                      data-label-en="<%= roleLabelsEn[role] || role %>"
+                      <%= role === account.role ? 'selected' : '' %>
+                    ><%= roleLabelsEn[role] || role %></option>
                   <% }) %>
                 </select>
                 <button type="submit"><span data-lang="ru">Изменить роль</span><span data-lang="en">Change role</span></button>
@@ -81,4 +86,17 @@
       </article>
     <% }) %>
   </div>
+
+<script>
+(function () {
+  function localizeModerationSelects() {
+    const lang = document.documentElement.dataset.loungeLang === 'en' ? 'en' : 'ru';
+    document.querySelectorAll('option[data-label-ru][data-label-en]').forEach(option => {
+      option.textContent = lang === 'en' ? option.dataset.labelEn : option.dataset.labelRu;
+    });
+  }
+  localizeModerationSelects();
+  document.addEventListener('lounge-language-change', localizeModerationSelects);
+})();
+</script>
 </section>
