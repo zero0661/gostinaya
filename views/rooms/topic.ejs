@@ -26,9 +26,18 @@
                     <% } %>
                 </div>
 
-                <% const discussionImage = articleDiscussion.article_ru?.image || articleDiscussion.article_en?.image; %>
-                <% if (discussionImage) { %>
-                    <div class="article-discussion-source-image"><img src="<%= discussionImage %>" alt=""></div>
+                <% const discussionImageRu = articleDiscussion.article_ru?.image || articleDiscussion.article_en?.image; %>
+                <% const discussionImageEn = articleDiscussion.article_en?.image || articleDiscussion.article_ru?.image; %>
+
+                <% if (discussionImageRu) { %>
+                    <div class="article-discussion-source-image" data-lang="ru">
+                        <img src="<%= discussionImageRu %>" alt="">
+                    </div>
+                <% } %>
+                <% if (discussionImageEn) { %>
+                    <div class="article-discussion-source-image" data-lang="en">
+                        <img src="<%= discussionImageEn %>" alt="">
+                    </div>
                 <% } %>
             <% } %>
         <% } else { %>
@@ -230,7 +239,13 @@ document.addEventListener('DOMContentLoaded', function () {
     cancelButton.addEventListener('click', function () {
         parentInput.value = '';
         parentInput.setAttribute('value', '');
-        title.textContent = localized('Ответить в тему', 'Reply to Topic');
+        title.textContent = <%- JSON.stringify(
+            topic.room === 'articles'
+                ? 'Оставить комментарий / Leave a Comment'
+                : topic.room === 'news'
+                    ? 'Обсудить новость / Discuss the News'
+                    : 'Ответить в тему / Reply to Topic'
+        ) %>.split(' / ')[document.documentElement.dataset.loungeLang === 'en' ? 1 : 0];
         if (target) { target.textContent = ''; target.hidden = true; }
         cancelButton.hidden = true;
         home.insertAdjacentElement('afterend', composer);
