@@ -1,26 +1,38 @@
-<section class="auth-page">
-  <nav class="public-nav" aria-label="Навигация / Navigation">
-    <a href="/gostinaya">← Добро пожаловать / <span>Welcome</span></a>
-    <a href="https://milenin.pro/">⌂ На сайт проекта / <span>Main website</span></a>
+<section class="auth-page lounge-language-page">
+  <nav class="public-nav" aria-label="Language-aware navigation">
+    <a href="/gostinaya">
+      <span data-lang="ru">← Добро пожаловать</span>
+      <span data-lang="en">← Welcome</span>
+    </a>
+    <a href="https://milenin.pro/">
+      <span data-lang="ru">⌂ На сайт проекта</span>
+      <span data-lang="en">⌂ Main website</span>
+    </a>
   </nav>
 
   <div class="auth-card public-welcome registration-welcome">
-    <p class="auth-kicker">Гостиная / The Lounge</p>
-    <h1>
-      Ссылка недействительна<br>
-      <span>The link is invalid</span>
-    </h1>
+    <div data-lang="ru">
+      <h1>Ссылка недействительна</h1>
+      <p class="auth-intro">
+        Ссылка уже использована, повреждена или срок её действия истёк.
+      </p>
+      <div class="welcome-actions">
+        <a class="welcome-primary" href="/gostinaya/register">
+          Вернуться к регистрации
+        </a>
+      </div>
+    </div>
 
-    <p class="auth-intro">
-      Ссылка уже использована, повреждена или срок её действия истёк.<br>
-      <span>The link has already been used, is damaged, or has expired.</span>
-    </p>
-
-    <div class="welcome-actions">
-      <a class="welcome-primary" href="/gostinaya/register">
-        Вернуться к регистрации<br>
-        <span>Return to registration</span>
-      </a>
+    <div data-lang="en">
+      <h1>The link is invalid</h1>
+      <p class="auth-intro">
+        The link has already been used, is damaged, or has expired.
+      </p>
+      <div class="welcome-actions">
+        <a class="welcome-primary" href="/gostinaya/register">
+          Return to registration
+        </a>
+      </div>
     </div>
   </div>
 </section>
