@@ -17,7 +17,7 @@
   </header>
 
   <form method="post" action="/gostinaya/<%= roomKey %>/new">
-    <section class="profile-card room-pane">
+    <section class="profile-card room-pane <%= roomKey === 'news' ? 'news-editor-card' : '' %>">
       <h2>
         <% if (roomKey === 'news') { %>
           <span data-lang="ru">Новая публикация</span><span data-lang="en">New Announcement</span>
@@ -32,25 +32,39 @@
           <p data-lang="en">Fill in both versions. Members will see only the language they have selected.</p>
         </div>
 
-        <label>
-          <span>RU · Заголовок</span>
-          <input type="text" name="title_ru" maxlength="160" required autofocus>
-        </label>
+        <div class="news-language-groups">
+          <fieldset class="news-language-section">
+            <legend>
+              <span data-lang="ru">Русская версия</span><span data-lang="en">Russian version</span>
+            </legend>
 
-        <label>
-          <span>RU · Текст</span>
-          <textarea name="body_ru" rows="8" maxlength="5000" required></textarea>
-        </label>
+            <label>
+              <span>Заголовок</span>
+              <input type="text" name="title_ru" maxlength="160" required autofocus>
+            </label>
 
-        <label>
-          <span>EN · Title</span>
-          <input type="text" name="title_en" maxlength="160" required>
-        </label>
+            <label>
+              <span>Текст</span>
+              <textarea name="body_ru" rows="8" maxlength="5000" required></textarea>
+            </label>
+          </fieldset>
 
-        <label>
-          <span>EN · Text</span>
-          <textarea name="body_en" rows="8" maxlength="5000" required></textarea>
-        </label>
+          <fieldset class="news-language-section">
+            <legend>
+              <span data-lang="ru">Английская версия</span><span data-lang="en">English version</span>
+            </legend>
+
+            <label>
+              <span>Title</span>
+              <input type="text" name="title_en" maxlength="160" required>
+            </label>
+
+            <label>
+              <span>Text</span>
+              <textarea name="body_en" rows="8" maxlength="5000" required></textarea>
+            </label>
+          </fieldset>
+        </div>
       <% } else { %>
         <label>
           <span data-lang="ru">Заголовок темы</span><span data-lang="en">Topic Title</span>
@@ -69,7 +83,7 @@
         <p><span data-lang="ru">После появления ответов изменение или удаление темы возможно только через модератора.</span><span data-lang="en">After replies appear, the topic can be changed or deleted only by a moderator.</span></p>
       </div>
 
-      <button type="submit">
+      <button type="submit" class="room-primary-action">
         <% if (roomKey === 'news') { %>
           <span data-lang="ru">Опубликовать новость</span><span data-lang="en">Publish News</span>
         <% } else { %>
