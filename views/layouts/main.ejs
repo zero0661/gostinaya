@@ -7,7 +7,7 @@
 <title><%= title %> — Гостиная / The Lounge</title>
 <link rel="stylesheet" type="text/css" href="/gostinaya/public/gostinaya.css?v=20260815-1">
 <link rel="stylesheet" type="text/css" href="/gostinaya/public/gostinaya-logo.css?v=20260822-1">
-<link rel="stylesheet" type="text/css" href="/gostinaya/public/lounge-language.css?v=20260919-2">
+<link rel="stylesheet" type="text/css" href="/gostinaya/public/lounge-language.css?v=20260919-3">
 <script>
 (() => {
   const params = new URLSearchParams(window.location.search);
@@ -27,18 +27,10 @@
 <body>
 
 <header class="lounge-banner">
-    <img
-        class="lounge-banner-image"
-        src="/gostinaya/public/lounge-banner-center.jpg"
-        alt="После логина / After Login"
-    >
+    <img class="lounge-banner-image" src="/gostinaya/public/lounge-banner-center.jpg" alt="После логина / After Login">
 
     <div class="lounge-banner-title">
-        <img
-            class="lounge-banner-brand-logo"
-            src="/gostinaya/public/after-login-logo-transparent.png"
-            alt="После логина / After Login"
-        >
+        <img class="lounge-banner-brand-logo" src="/gostinaya/public/after-login-logo-transparent.png" alt="После логина / After Login">
         <span class="lounge-banner-name" data-lang="ru">Гостиная</span>
         <span class="lounge-banner-name" data-lang="en">The Lounge</span>
     </div>
@@ -56,7 +48,6 @@
 </header>
 
 <div class="layout">
-
     <%- include('../partials/sidebar') %>
 
     <main class="content">
@@ -67,10 +58,19 @@
         </div>
         <%- body %>
     </main>
-
 </div>
 
 <script>
+function applyLanguageDependentAttributes(lang) {
+    document.querySelectorAll('[data-placeholder-ru][data-placeholder-en]').forEach(element => {
+        element.setAttribute('placeholder', lang === 'en' ? element.dataset.placeholderEn : element.dataset.placeholderRu);
+    });
+
+    document.querySelectorAll('[data-title-ru][data-title-en]').forEach(element => {
+        element.setAttribute('title', lang === 'en' ? element.dataset.titleEn : element.dataset.titleRu);
+    });
+}
+
 function setLoungeLanguage(lang) {
     if (!['ru', 'en'].includes(lang)) return;
     document.documentElement.dataset.loungeLang = lang;
@@ -79,6 +79,8 @@ function setLoungeLanguage(lang) {
     document.querySelectorAll('[data-set-language]').forEach(button => {
         button.setAttribute('aria-pressed', String(button.dataset.setLanguage === lang));
     });
+    applyLanguageDependentAttributes(lang);
+    document.dispatchEvent(new CustomEvent('lounge-language-change', { detail: { lang } }));
 }
 
 document.addEventListener('DOMContentLoaded', () => {
