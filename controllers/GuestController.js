@@ -118,6 +118,7 @@ class GuestController {
 
             return res.json({
                 success: true,
+                language: guest.language === 'en' ? 'en' : 'ru',
                 redirect: returnTo || '/gostinaya/hall'
             });
         } catch (err) {
