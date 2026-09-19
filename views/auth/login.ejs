@@ -101,6 +101,11 @@
                 return;
             }
 
+            if (data.language === 'ru' || data.language === 'en') {
+                localStorage.setItem('loungeLanguage', data.language);
+                document.cookie = `loungeLanguage=${data.language}; Path=/gostinaya; Max-Age=31536000; SameSite=Lax`;
+            }
+
             window.location.href = data.redirect || '/gostinaya/hall';
         } catch (error) {
             message.textContent = copy[language].connection;
