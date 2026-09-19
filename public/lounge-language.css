@@ -9,13 +9,19 @@ html[data-lounge-lang="en"] [data-lang="en"] {
   display: block;
 }
 
-.public-nav [data-lang] {
+.public-nav [data-lang],
+.sidebar [data-lang] {
   display: none;
 }
 
 html[data-lounge-lang="ru"] .public-nav [data-lang="ru"],
 html[data-lounge-lang="en"] .public-nav [data-lang="en"] {
   display: inline-flex;
+}
+
+html[data-lounge-lang="ru"] .sidebar [data-lang="ru"],
+html[data-lounge-lang="en"] .sidebar [data-lang="en"] {
+  display: inline;
 }
 
 .language-switch {
@@ -48,6 +54,15 @@ html[data-lounge-lang="en"] .public-nav [data-lang="en"] {
 .language-switch button:focus-visible {
   color: #ffffff;
   outline: none;
+}
+
+.authenticated-language-switch {
+  width: fit-content;
+  margin: 0 0 18px auto;
+  padding: 5px 8px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.42);
 }
 
 .lounge-language-page .public-welcome h1,
@@ -96,6 +111,10 @@ html[data-lounge-lang="en"] .public-nav [data-lang="en"] {
     flex: 0 0 auto;
     margin: 0;
     font-size: 13px;
+  }
+
+  .authenticated-language-switch {
+    margin: 0 0 14px auto;
   }
 
   .auth-card.public-welcome {
