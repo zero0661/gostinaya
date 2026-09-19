@@ -21,6 +21,8 @@
     <% } else { %>
       <div class="members-grid">
         <% members.forEach(member => { %>
+          <% const roleRu = member.role === 'author' ? 'Соавтор' : member.role === 'admin' ? 'Администратор' : member.role === 'moderator' ? 'Модератор' : 'Участник'; %>
+          <% const roleEn = member.role === 'author' ? 'Co-author' : member.role === 'admin' ? 'Administrator' : member.role === 'moderator' ? 'Moderator' : 'Member'; %>
           <article class="member-card">
             <h3><a href="/gostinaya/member/<%= member.id %>"><%= member.name %></a></h3>
             <p class="member-bio">
@@ -31,8 +33,10 @@
               <% } %>
             </p>
             <div class="member-meta">
-              <span>👤 <%= member.role %></span>
-              <span>🌍 <%= member.language %></span>
+              <span data-lang="ru">👤 <%= roleRu %></span>
+              <span data-lang="en">👤 <%= roleEn %></span>
+              <span data-lang="ru">🌍 <%= member.language === 'en' ? 'Английский' : 'Русский' %></span>
+              <span data-lang="en">🌍 <%= member.language === 'en' ? 'English' : 'Russian' %></span>
               <% if (member.location) { %><span>📍 <%= member.location %></span><% } %>
               <span>💬 <%= member.messages_count %></span>
               <span>📝 <%= member.topics_count %></span>
