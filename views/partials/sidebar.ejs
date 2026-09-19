@@ -1,39 +1,48 @@
 <aside class="sidebar">
 
     <nav>
+        <a href="/gostinaya">
+            🏡 <span data-lang="ru">Холл</span><span data-lang="en">Hall</span>
+        </a>
 
-        <a href="/gostinaya">🏡 Холл / Hall</a>
+        <a href="/gostinaya/members">
+            👥 <span data-lang="ru">Участники</span><span data-lang="en">Members</span>
+        </a>
 
-        <a href="/gostinaya/members">👥 Участники / Members</a>
+        <a href="/gostinaya/articles">
+            📚 <span data-lang="ru">Обсуждение статей</span><span data-lang="en">Article Discussions</span>
+        </a>
 
-        <a href="/gostinaya/articles">📚 Обсуждение статей / Article Discussions</a>
-
-        <a href="/gostinaya/news">📣 Новости проекта / Project News</a>
+        <a href="/gostinaya/news">
+            📣 <span data-lang="ru">Новости проекта</span><span data-lang="en">Project News</span>
+        </a>
     
-        <a href="/gostinaya/discussions">💬 Темы сообщества / Community Topics</a>
+        <a href="/gostinaya/discussions">
+            💬 <span data-lang="ru">Темы сообщества</span><span data-lang="en">Community Topics</span>
+        </a>
 
         <hr>
 
-        <a href="/gostinaya/profile">👤 Мой профиль / My Profile</a>
+        <a href="/gostinaya/profile">
+            👤 <span data-lang="ru">Мой профиль</span><span data-lang="en">My Profile</span>
+        </a>
 
-
-<a href="/gostinaya/notifications">
-    🔔 Уведомления / Notifications
-    <% if (typeof notificationUnreadCount !== 'undefined' && notificationUnreadCount > 0) { %>
-        <span class="notification-badge"><%= notificationUnreadCount %></span>
-    <% } %>
-</a>
-
-    <% if (currentGuest && ['admin', 'moderator'].includes(currentGuest.role)) { %>
-        <hr>
-        <a href="/gostinaya/moderation">
-            🛡 Модерация / Moderation
-            <% if (moderationOpenReportCount > 0) { %>
-                <span class="notification-badge"><%= moderationOpenReportCount %></span>
+        <a href="/gostinaya/notifications">
+            🔔 <span data-lang="ru">Уведомления</span><span data-lang="en">Notifications</span>
+            <% if (typeof notificationUnreadCount !== 'undefined' && notificationUnreadCount > 0) { %>
+                <span class="notification-badge"><%= notificationUnreadCount %></span>
             <% } %>
         </a>
-    <% } %>
 
+        <% if (currentGuest && ['admin', 'moderator'].includes(currentGuest.role)) { %>
+            <hr>
+            <a href="/gostinaya/moderation">
+                🛡 <span data-lang="ru">Модерация</span><span data-lang="en">Moderation</span>
+                <% if (moderationOpenReportCount > 0) { %>
+                    <span class="notification-badge"><%= moderationOpenReportCount %></span>
+                <% } %>
+            </a>
+        <% } %>
     </nav>
 
 </aside>
