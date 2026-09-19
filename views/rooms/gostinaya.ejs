@@ -171,7 +171,13 @@
             <h3 data-lang="ru">Здесь пока тихо</h3>
             <h3 data-lang="en">It is quiet here for now</h3>
           <% } %>
-          <p><%= text %></p>
+          <% if (roomKey === 'news') { %>
+            <p data-lang="ru">Здесь появляются новости проекта, которые можно обсудить вместе с участниками Гостиной.</p>
+            <p data-lang="en">Project news appears here and can be discussed with other Lounge members.</p>
+          <% } else { %>
+            <p data-lang="ru">Здесь участники могут создавать собственные темы для обсуждения.</p>
+            <p data-lang="en">Members can start their own discussion topics here.</p>
+          <% } %>
         </div>
       <% } else { %>
         <div class="topic-list">
