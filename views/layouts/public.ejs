@@ -17,11 +17,26 @@
         : (stored === 'en' || stored === 'ru'
             ? stored
             : (legacyStored === 'en' || legacyStored === 'ru' ? legacyStored : browserLanguage));
+      const rawTitle = <%- JSON.stringify(title || '') %>;
 
-      localStorage.setItem('loungeLanguage', language);
-      localStorage.removeItem('gostinayaLanguage');
+      function localizedTitle(value, lang) {
+        const parts = String(value || '').split(' / ');
+        if (parts.length === 2 && /[А-Яа-яЁё]/.test(parts[0]) && !/[А-Яа-яЁё]/.test(parts[1])) {
+          return lang === 'en' ? parts[1].trim() : parts[0].trim();
+        }
+        return String(value || '').trim();
+      }
+
+      function persistLanguage(lang) {
+        localStorage.setItem('loungeLanguage', lang);
+        localStorage.removeItem('gostinayaLanguage');
+        document.cookie = `loungeLanguage=${lang}; Path=/gostinaya; Max-Age=31536000; SameSite=Lax`;
+      }
+
+      persistLanguage(language);
       document.documentElement.dataset.loungeLang = language;
       document.documentElement.lang = language;
+      document.title = `${localizedTitle(rawTitle, language)} — ${language === 'en' ? 'The Lounge' : 'Гостиная'}`;
 
       window.getLoungeLanguage = function () {
         return document.documentElement.dataset.loungeLang === 'en' ? 'en' : 'ru';
@@ -33,6 +48,10 @@
         if (!text.includes(' / ')) return text;
         const parts = text.split(' / ');
         return languageToUse === 'en' ? parts.slice(1).join(' / ').trim() : parts[0].trim();
+      };
+
+      window.updateLoungeDocumentTitle = function (lang) {
+        document.title = `${localizedTitle(rawTitle, lang)} — ${lang === 'en' ? 'The Lounge' : 'Гостиная'}`;
       };
     })();
   </script>
@@ -82,8 +101,10 @@
     function applyLanguage(language) {
       localStorage.setItem('loungeLanguage', language);
       localStorage.removeItem('gostinayaLanguage');
+      document.cookie = `loungeLanguage=${language}; Path=/gostinaya; Max-Age=31536000; SameSite=Lax`;
       document.documentElement.dataset.loungeLang = language;
       document.documentElement.lang = language;
+      if (window.updateLoungeDocumentTitle) window.updateLoungeDocumentTitle(language);
 
       languageButtons.forEach((button) => {
         button.setAttribute('aria-pressed', button.dataset.setLang === language ? 'true' : 'false');
