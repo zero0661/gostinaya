@@ -20,6 +20,14 @@
         <% } else { %>
             <div class="notifications-list">
                 <% notifications.forEach(item => { %>
+                    <%
+                        const storedTextParts = String(item.text || '').split(' / ');
+                        const storedTextRu = storedTextParts[0] || '';
+                        const storedTextEn = storedTextParts.length > 1 ? storedTextParts.slice(1).join(' / ') : storedTextRu;
+                        const actorParts = String(item.actor_name || '').split(' / ');
+                        const actorRu = actorParts[0] || '';
+                        const actorEn = actorParts.length > 1 ? actorParts.slice(1).join(' / ') : actorRu;
+                    %>
                     <article class="notification-item <%= item.read_at ? 'is-read' : 'is-unread' %>">
                         <div class="notification-icon" aria-hidden="true"><%= item.type === 'reply' ? '↩' : item.type === 'publication' ? '✦' : item.type === 'project_news' ? '📣' : item.type === 'new_topic' ? '✎' : '◌' %></div>
                         <div class="notification-content">
@@ -35,9 +43,14 @@
                             </div>
 
                             <p class="notification-message">
-                                <strong><%= item.actor_name || '' %></strong>
-                                <% if (!item.actor_name) { %><strong data-lang="ru">Участник</strong><strong data-lang="en">Member</strong><% } %>
-                                <span><%= item.text %></span>
+                                <% if (item.actor_name) { %>
+                                    <strong data-lang="ru"><%= actorRu %></strong>
+                                    <strong data-lang="en"><%= actorEn %></strong>
+                                <% } else { %>
+                                    <strong data-lang="ru">Участник</strong><strong data-lang="en">Member</strong>
+                                <% } %>
+                                <span data-lang="ru"><%= storedTextRu %></span>
+                                <span data-lang="en"><%= storedTextEn %></span>
                             </p>
 
                             <% if (item.topic_title) { %>
