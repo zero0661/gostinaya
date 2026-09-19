@@ -22,23 +22,11 @@
 
     <form id="login-form" class="auth-form">
       <label for="email">E-mail</label>
-      <input
-        id="email"
-        name="email"
-        type="email"
-        autocomplete="email"
-        required
-      >
+      <input id="email" name="email" type="email" autocomplete="email" required>
 
       <label for="password" data-lang="ru">Пароль</label>
       <label for="password" data-lang="en">Password</label>
-      <input
-        id="password"
-        name="password"
-        type="password"
-        autocomplete="current-password"
-        required
-      >
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
 
       <button type="submit">
         <span data-lang="ru">Войти</span>
@@ -71,7 +59,8 @@
     const form = document.getElementById('login-form');
     const message = document.getElementById('login-message');
     const returnTo = <%- JSON.stringify(returnTo || '') %>;
-    const uiLanguage = () => document.documentElement.dataset.loungeLang === 'en' ? 'en' : 'ru';
+    const uiLanguage = () => window.getLoungeLanguage ? window.getLoungeLanguage() : (document.documentElement.dataset.loungeLang === 'en' ? 'en' : 'ru');
+    const localizeMessage = (value) => window.localizeLoungeMessage ? window.localizeLoungeMessage(value, uiLanguage()) : String(value || '');
     const copy = {
       ru: {
         checking: 'Проверяем данные...',
@@ -101,20 +90,14 @@
         try {
             const response = await fetch('/gostinaya/api/guests/login', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email,
-                    password,
-                    returnTo
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, returnTo })
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-                message.textContent = data.message || copy[language].failed;
+                message.textContent = data.message ? localizeMessage(data.message) : copy[language].failed;
                 return;
             }
 
@@ -145,7 +128,7 @@
             });
 
             const data = await response.json();
-            message.textContent = data.message;
+            message.textContent = localizeMessage(data.message);
         } catch {
             message.textContent = copy[language].connection;
         }
