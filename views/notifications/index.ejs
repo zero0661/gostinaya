@@ -27,8 +27,12 @@
                         const actorParts = String(item.actor_name || '').split(' / ');
                         const actorRu = actorParts[0] || '';
                         const actorEn = actorParts.length > 1 ? actorParts.slice(1).join(' / ') : actorRu;
-                        const topicTitleRu = item.topic_title_ru || item.topic_title || '';
-                        const topicTitleEn = item.topic_title_en || (item.topic_room === 'articles' ? 'Article discussion' : (item.topic_title || ''));
+                        const topicTitleRu = item.topic_title || '';
+                        const topicTitleEn = item.topic_room === 'articles'
+                            ? 'Article discussion'
+                            : item.topic_room === 'news'
+                                ? 'Project news'
+                                : (item.topic_title || '');
                     %>
                     <article class="notification-item <%= item.read_at ? 'is-read' : 'is-unread' %>">
                         <div class="notification-icon" aria-hidden="true"><%= item.type === 'reply' ? '↩' : item.type === 'publication' ? '✦' : item.type === 'project_news' ? '📣' : item.type === 'new_topic' ? '✎' : '◌' %></div>
