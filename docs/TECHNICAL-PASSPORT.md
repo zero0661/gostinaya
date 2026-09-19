@@ -2,11 +2,11 @@
 
 **Назначение документа:** передача проекта разработчику или ИИ, развёртывание на новом сервере, восстановление после аварии и сопровождение без устных пояснений автора.
 
-**Версия паспорта:** 1.5  
+**Версия паспорта:** 1.5.1  
 **Дата фиксации:** 19 сентября 2026 года  
 **Репозиторий Гостиной:** `zero0661/gostinaya`  
 **Production-ветка:** `feature/article-subscriptions`  
-**Зафиксированный runtime-код:** `0dab6caa1f079250fe4915ee20a43732c5be2a98`  
+**Зафиксированный runtime-код:** `88132e76a50ee8aa44eb2d407b5e3cbd58c2842f`  
 **Основной адрес:** `https://milenin.pro`  
 **Гостиная:** `https://milenin.pro/gostinaya/`
 
@@ -131,7 +131,7 @@ flowchart TD
 - EJS + `express-ejs-layouts`;
 - SQLite;
 - `express-session` + `session-file-store`;
-- `bcrypt`, cost factor 12;
+- `bcrypt` `^6.0.0`, cost factor 12;
 - Nodemailer;
 - JWT для Ghost Admin API;
 - PM2;
@@ -522,6 +522,15 @@ cancelled 0
 skipped 0
 ```
 
+После обновления зависимостей:
+
+```text
+npm audit
+found 0 vulnerabilities
+```
+
+`bcrypt` обновлён с ветки 5.x до `6.0.0`. После обновления полный набор тестов сохранил результат `99/99`, а GitHub Actions для commit `88132e76a50ee8aa44eb2d407b5e3cbd58c2842f` завершился успешно.
+
 GitHub Actions:
 
 ```text
@@ -531,6 +540,26 @@ GitHub Actions:
 Также добавлен `tests/ejs-templates.test.js` и расширены проверки legal/moderation/notifications и bilingual Project News.
 
 Предупреждение Node о experimental SQLite API не является падением тестов.
+
+### 20.1. Проверка зависимостей и security-audit
+
+Проверенная последовательность обслуживания npm-зависимостей:
+
+```bash
+npm audit
+npm audit fix
+npm test
+npm audit
+```
+
+Если `npm audit` предлагает `--force` и major-обновление зависимости, не применять `--force` автоматически. Сначала обновить конкретный пакет до нужной версии, затем снова выполнить `npm test` и `npm audit`.
+
+Контрольное состояние на 19 сентября 2026 года:
+
+- `bcrypt` — `6.0.0`;
+- `npm audit` — `0 vulnerabilities`;
+- `npm test` — `99 passed`, `0 failed`;
+- GitHub Actions — `success`.
 
 ---
 
@@ -729,7 +758,7 @@ Rate limit хранится в памяти процесса и сбрасыва
 | 13–20 августа | уведомления, verification, moderation, rate limit, backups, dark mode |
 | 21–23 августа | техпаспорт, баннер, Project News |
 | 15 сентября | отдельный Peter Milenin, EN Audio, Ghost page/author cleanup |
-| 19 сентября | полноценный locale switch RU/EN, профильный preferred language, bilingual Project News, локализация Hall/Profile/Members/Notifications/Moderation/auth/legal, единые RU/EN article discussions, mobile-pass, 99/99 tests, CI |
+| 19 сентября | полноценный locale switch RU/EN, профильный preferred language, bilingual Project News, локализация Hall/Profile/Members/Notifications/Moderation/auth/legal, единые RU/EN article discussions, mobile-pass, 99/99 tests, CI; обновление `bcrypt` до 6.0.0, `npm audit` → 0 vulnerabilities |
 
 ---
 
@@ -767,7 +796,7 @@ project:
 source:
   repository: "https://github.com/zero0661/gostinaya"
   production_branch: "feature/article-subscriptions"
-  runtime_commit: "0dab6caa1f079250fe4915ee20a43732c5be2a98"
+  runtime_commit: "88132e76a50ee8aa44eb2d407b5e3cbd58c2842f"
   runtime: "Node.js >=22"
 
 production:
@@ -800,7 +829,10 @@ quality:
   tests_at_snapshot: 99
   passed_at_snapshot: 99
   failed_at_snapshot: 0
+  npm_audit_vulnerabilities: 0
+  bcrypt_version: "6.0.0"
   ci: ".github/workflows/tests.yml"
+  ci_status_at_snapshot: "success"
 
 required_secrets:
   - SESSION_SECRET
@@ -845,7 +877,7 @@ exact_restore_requires:
 
 ## 32. Текущее состояние на 19 сентября 2026
 
-Production-код Гостиной зафиксирован на runtime commit `0dab6caa1f079250fe4915ee20a43732c5be2a98` ветки `feature/article-subscriptions`.
+Production-код Гостиной зафиксирован на runtime commit `88132e76a50ee8aa44eb2d407b5e3cbd58c2842f` ветки `feature/article-subscriptions`.
 
 Проверено:
 
@@ -853,6 +885,9 @@ Production-код Гостиной зафиксирован на runtime commit 
 - `127.0.0.1:3001` слушает;
 - `/health` отвечает `200 OK` и `Gostinaya is alive`;
 - 99 из 99 тестов проходят;
+- `npm audit` показывает `0 vulnerabilities`;
+- `bcrypt` обновлён до `6.0.0`;
+- GitHub Actions для runtime commit завершился со статусом `success`;
 - RU/EN интерфейс переключается;
 - preferred language сохраняется в профиле и применяется после повторного входа;
 - RU/EN версии статьи используют одну общую дискуссию;
@@ -861,4 +896,4 @@ Production-код Гостиной зафиксирован на runtime commit 
 - уведомления не подставляют заголовок связанной статьи на чужом языке;
 - mobile navigation и основные экраны проверены на iPhone.
 
-Это состояние считать канонической точкой паспорта 1.5.
+Это состояние считать канонической точкой паспорта 1.5.1.
