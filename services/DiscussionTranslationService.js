@@ -3,11 +3,23 @@ import TranslationRepository from '../repositories/TranslationRepository.js';
 
 function detectLanguage(text) {
   const value = String(text || '');
-  const cyrillic = (value.match(/[А-Яа-яЁё]/g) || []).length;
-  const latin = (value.match(/[A-Za-z]/g) || []).length;
+  const tokens = value.match(/[A-Za-zА-Яа-яЁё0-9]+/g) || [];
+  let cyrillicTokens = 0;
+  let latinTokens = 0;
 
-  if (cyrillic === 0 && latin === 0) return null;
-  return cyrillic >= latin ? 'ru' : 'en';
+  for (const token of tokens) {
+    if (/[А-Яа-яЁё]/.test(token)) cyrillicTokens += 1;
+    if (/[A-Za-z]/.test(token)) latinTokens += 1;
+  }
+
+  if (cyrillicTokens === 0 && latinTokens === 0) return null;
+
+  if (cyrillicTokens === latinTokens) {
+    const firstLetter = value.match(/[A-Za-zА-Яа-яЁё]/)?.[0] || '';
+    return /[А-Яа-яЁё]/.test(firstLetter) ? 'ru' : 'en';
+  }
+
+  return cyrillicTokens > latinTokens ? 'ru' : 'en';
 }
 
 function sourceHash(text) {
