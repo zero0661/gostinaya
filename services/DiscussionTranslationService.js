@@ -36,7 +36,7 @@ async function requestTranslation(text, targetLang) {
   }
 
   const targetName = targetLang === 'en' ? 'English' : 'Russian';
-  const model = process.env.TRANSLATION_MODEL || 'gpt-5.4-mini';
+  const model = process.env.TRANSLATION_MODEL || 'gpt-5.6-luna';
 
   const response = await fetch('https://api.openai.com/v1/responses', {
     method: 'POST',
