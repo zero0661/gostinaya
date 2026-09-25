@@ -2,11 +2,11 @@
 
 **Назначение документа:** передача проекта разработчику или ИИ, развёртывание на новом сервере, восстановление после аварии и сопровождение без устных пояснений автора.
 
-**Версия паспорта:** 1.5.1  
-**Дата фиксации:** 19 сентября 2026 года  
+**Версия паспорта:** 1.6.0  
+**Дата фиксации:** 25 сентября 2026 года  
 **Репозиторий Гостиной:** `zero0661/gostinaya`  
 **Production-ветка:** `feature/article-subscriptions`  
-**Зафиксированный runtime-код:** `88132e76a50ee8aa44eb2d407b5e3cbd58c2842f`  
+**Зафиксированный runtime-код:** `50a7ff52f36b7c7f61de3424af61cbefb5fe605a`  
 **Основной адрес:** `https://milenin.pro`  
 **Гостиная:** `https://milenin.pro/gostinaya/`
 
@@ -95,6 +95,7 @@ flowchart TD
     L --> S[(SQLite gostinaya.db)]
     L --> F[Файловые сессии]
     L --> P[SMTP]
+    L --> O[OpenAI Responses API]
 ```
 
 ### 4.1. Подтверждённая production-схема
@@ -136,7 +137,8 @@ flowchart TD
 - JWT для Ghost Admin API;
 - PM2;
 - `node:test`;
-- GitHub Actions CI.
+- GitHub Actions CI;
+- OpenAI Responses API для автоматического RU/EN-перевода обсуждений.
 
 ### 5.2. Основной сайт
 
@@ -194,6 +196,9 @@ MAIL_FROM="После логина <no-reply@example.org>"
 GHOST_ADMIN_API_KEY=<id:secret>
 GHOST_WEBHOOK_SECRET=<long-random-secret>
 
+OPENAI_API_KEY=<openai-api-key>
+TRANSLATION_MODEL=gpt-5.6-luna
+
 GOSTINAYA_DB_PATH=/root/gostinaya/database/gostinaya.db
 GOSTINAYA_BACKUP_DIR=/root/gostinaya/database/backups
 GOSTINAYA_ROOT=/root/gostinaya
@@ -207,6 +212,8 @@ CUSDIS_IMPORT_DATA_PATH=<absolute-path-if-needed>
 3. После изменения env использовать `pm2 restart gostinaya --update-env`.
 4. При смене `SESSION_SECRET` пользователи войдут заново.
 5. SMTP должен проходить SPF/DKIM/DMARC-проверки.
+6. `OPENAI_API_KEY` используется только сервером и не должен попадать в Git или клиентский JavaScript.
+7. `TRANSLATION_MODEL` необязателен; при отсутствии используется `gpt-5.6-luna`.
 
 ---
 
@@ -220,6 +227,7 @@ CUSDIS_IMPORT_DATA_PATH=<absolute-path-if-needed>
 | Статьи | `/gostinaya/articles`, `/gostinaya/article/:ghostPostId` |
 | Новости | `/gostinaya/news` |
 | Темы | `/gostinaya/discussions`, `/topic/:id` |
+| Перевод обсуждений | `GET /gostinaya/translations/topic/:id?lang=ru|en` |
 | Жалобы | `POST /gostinaya/reports` |
 | Модерация | `/gostinaya/moderation/*` |
 | Ghost webhooks | `/gostinaya/webhooks/ghost/post-published`, `post-updated` |
@@ -298,7 +306,8 @@ SMTP для этих функций — production-зависимость.
 - `notifications`;
 - `discussion_topic_reads`;
 - `moderation_reports`;
-- `moderation_actions`.
+- `moderation_actions`;
+- `discussion_translations` — кэш автоматических переводов заголовков и сообщений.
 
 Для точного восстановления использовать проверенную копию `gostinaya.db` и затем:
 
@@ -321,10 +330,43 @@ npm run backup:verify -- /absolute/path/to/gostinaya.db
 - `<html lang>` меняется вместе с интерфейсом;
 - активная локаль не отображается серым «вторым переводом»;
 - статический UI размечен через `data-lang="ru"` / `data-lang="en"`;
-- пользовательские сообщения, комментарии, имена и свободный текст не переводятся автоматически;
+- заголовки community topics и пользовательские сообщения в обсуждениях автоматически переводятся на выбранный язык;
+- исходный текст никогда не перезаписывается: перевод хранится отдельно;
+- если исходный текст уже на выбранном языке, API не вызывается;
 - один код, одна база, один набор маршрутов.
 
-### 12.1. Предпочитаемый язык аккаунта
+### 12.1. Автоматический перевод обсуждений
+
+С 25 сентября 2026 года переключатель `RU / EN` переводит не только оболочку Гостиной, но и содержание общей дискуссии.
+
+Проверенное production-поведение:
+
+1. русская тема при `EN` показывает переведённый английский заголовок и все видимые сообщения, включая вложенные ответы;
+2. при возврате на `RU` русские оригиналы показываются без повторного перевода;
+3. английское сообщение при `RU` переводится на русский по той же схеме;
+4. перевод выполняется сервером через OpenAI Responses API;
+5. результат сохраняется в `discussion_translations` и повторно используется, пока исходный текст не изменился;
+6. кэш привязан к типу сущности, ID, SHA-256 исходного текста и целевому языку;
+7. скрытые модерацией сообщения в translation response не включаются;
+8. названия продуктов и имена на латинице внутри русского текста не должны ошибочно менять язык всего сообщения. Регрессионный тест покрывает пример `Фильм Soulm8te`.
+
+Миграция:
+
+```bash
+npm run migrate:translations
+```
+
+Основные файлы:
+
+```text
+database/migrate-translations.js
+repositories/TranslationRepository.js
+routes/translations.js
+services/DiscussionTranslationService.js
+tests/discussion-translation.test.js
+```
+
+### 12.2. Предпочитаемый язык аккаунта
 
 В `guests.language` хранится `ru` или `en`.
 
@@ -349,7 +391,7 @@ npm run backup:verify -- /absolute/path/to/gostinaya.db
 - RU-интерфейс показывает RU metadata;
 - EN-интерфейс показывает EN metadata;
 - сообщения общие;
-- пользовательский текст не переводится;
+- пользовательский текст хранится в одном оригинале и при необходимости автоматически переводится на активный RU/EN-язык;
 - одиночные legacy-публикации не исчезают из-за несовпадения языка оболочки.
 
 Пары связываются через internal tag Ghost вида:
@@ -512,11 +554,11 @@ npm test
 
 Она запускает тесты на `node:test`.
 
-Контрольный production-прогон 19 сентября 2026:
+Контрольный production-прогон 25 сентября 2026:
 
 ```text
-tests 99
-pass 99
+tests 102
+pass 102
 fail 0
 cancelled 0
 skipped 0
@@ -529,7 +571,7 @@ npm audit
 found 0 vulnerabilities
 ```
 
-`bcrypt` обновлён с ветки 5.x до `6.0.0`. После обновления полный набор тестов сохранил результат `99/99`, а GitHub Actions для commit `88132e76a50ee8aa44eb2d407b5e3cbd58c2842f` завершился успешно.
+`bcrypt` обновлён с ветки 5.x до `6.0.0`. После обновления полный набор тестов проходит полностью. После добавления автоматического перевода и исправления определения языка для смешанных RU/EN-заголовков GitHub Actions для PR #6 завершился успешно: `102/102`, `0 failed`. Production runtime-код — `50a7ff52f36b7c7f61de3424af61cbefb5fe605a`.
 
 GitHub Actions:
 
@@ -554,11 +596,11 @@ npm audit
 
 Если `npm audit` предлагает `--force` и major-обновление зависимости, не применять `--force` автоматически. Сначала обновить конкретный пакет до нужной версии, затем снова выполнить `npm test` и `npm audit`.
 
-Контрольное состояние на 19 сентября 2026 года:
+Контрольное состояние на 25 сентября 2026 года:
 
 - `bcrypt` — `6.0.0`;
 - `npm audit` — `0 vulnerabilities`;
-- `npm test` — `99 passed`, `0 failed`;
+- `npm test` — `102 passed`, `0 failed`;
 - GitHub Actions — `success`.
 
 ---
@@ -759,6 +801,7 @@ Rate limit хранится в памяти процесса и сбрасыва
 | 21–23 августа | техпаспорт, баннер, Project News |
 | 15 сентября | отдельный Peter Milenin, EN Audio, Ghost page/author cleanup |
 | 19 сентября | полноценный locale switch RU/EN, профильный preferred language, bilingual Project News, локализация Hall/Profile/Members/Notifications/Moderation/auth/legal, единые RU/EN article discussions, mobile-pass, 99/99 tests, CI; обновление `bcrypt` до 6.0.0, `npm audit` → 0 vulnerabilities |
+| 25 сентября | автоматический перевод community topics и всех веток обсуждений RU↔EN через OpenAI Responses API; SQLite-кэш `discussion_translations`; миграция `migrate:translations`; исправление mixed-language detection для заголовков вроде `Фильм Soulm8te`; production-проверка на реальной теме; CI 102/102 |
 
 ---
 
@@ -796,7 +839,7 @@ project:
 source:
   repository: "https://github.com/zero0661/gostinaya"
   production_branch: "feature/article-subscriptions"
-  runtime_commit: "88132e76a50ee8aa44eb2d407b5e3cbd58c2842f"
+  runtime_commit: "50a7ff52f36b7c7f61de3424af61cbefb5fe605a"
   runtime: "Node.js >=22"
 
 production:
@@ -822,12 +865,15 @@ localization:
   interface_languages: [ru, en]
   account_language_field: "guests.language"
   article_pair_discussion: "shared"
-  user_content_auto_translation: false
+  user_content_auto_translation: true
+  translation_provider: "openai_responses"
+  translation_model_default: "gpt-5.6-luna"
+  translation_cache_table: "discussion_translations"
 
 quality:
   test_command: "npm test"
-  tests_at_snapshot: 99
-  passed_at_snapshot: 99
+  tests_at_snapshot: 102
+  passed_at_snapshot: 102
   failed_at_snapshot: 0
   npm_audit_vulnerabilities: 0
   bcrypt_version: "6.0.0"
@@ -844,6 +890,7 @@ required_secrets:
   - MAIL_FROM
   - GHOST_ADMIN_API_KEY
   - GHOST_WEBHOOK_SECRET
+  - OPENAI_API_KEY
 
 exact_restore_requires:
   - gostinaya_sqlite_backup
@@ -869,26 +916,30 @@ exact_restore_requires:
 - [ ] `.env` сохранён отдельно и защищён.
 - [ ] Nginx/DNS inventory сохранён.
 - [ ] RU/EN article pair ведёт в одну тему.
+- [ ] RU/EN переключатель переводит заголовок community topic и все видимые сообщения/ветки; обратное переключение возвращает оригинал.
 - [ ] Preferred language сохраняется через профиль и работает после повторного входа.
 - [ ] Project News, Notifications и Moderation проверены на RU и EN.
 - [ ] Mobile menu и основные экраны проверены на iPhone.
 
 ---
 
-## 32. Текущее состояние на 19 сентября 2026
+## 32. Текущее состояние на 25 сентября 2026
 
-Production-код Гостиной зафиксирован на runtime commit `88132e76a50ee8aa44eb2d407b5e3cbd58c2842f` ветки `feature/article-subscriptions`.
+Production-код Гостиной зафиксирован на runtime commit `50a7ff52f36b7c7f61de3424af61cbefb5fe605a` ветки `feature/article-subscriptions`.
 
 Проверено:
 
 - приложение запускается через PM2;
 - `127.0.0.1:3001` слушает;
 - `/health` отвечает `200 OK` и `Gostinaya is alive`;
-- 99 из 99 тестов проходят;
+- 102 из 102 тестов проходят;
 - `npm audit` показывает `0 vulnerabilities`;
 - `bcrypt` обновлён до `6.0.0`;
 - GitHub Actions для runtime commit завершился со статусом `success`;
 - RU/EN интерфейс переключается;
+- community topics и все видимые сообщения/вложенные ответы автоматически переводятся на выбранный язык через OpenAI Responses API;
+- переводы кэшируются в SQLite и не изменяют исходные сообщения;
+- mixed-language заголовки вроде `Фильм Soulm8te` корректно распознаются как русские;
 - preferred language сохраняется в профиле и применяется после повторного входа;
 - RU/EN версии статьи используют одну общую дискуссию;
 - Hall показывает локализованный заголовок последней статьи;
@@ -896,4 +947,4 @@ Production-код Гостиной зафиксирован на runtime commit 
 - уведомления не подставляют заголовок связанной статьи на чужом языке;
 - mobile navigation и основные экраны проверены на iPhone.
 
-Это состояние считать канонической точкой паспорта 1.5.1.
+Это состояние считать канонической точкой паспорта 1.6.0.
