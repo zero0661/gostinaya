@@ -24,6 +24,13 @@
       Introduce yourself and tell us a little about yourself. We will send an e-mail confirmation link after registration.
     </p>
 
+    <div class="registration-privacy-note" data-lang="ru">
+      <strong>О ваших данных.</strong> Соединение с Гостиной защищено HTTPS/TLS, пароли хранятся только в виде хэша. Мы не продаём данные и не используем их для рекламного профилирования. <a href="/gostinaya/privacy" target="_blank" rel="noopener">Подробнее об обработке данных</a>.
+    </div>
+    <div class="registration-privacy-note" data-lang="en">
+      <strong>About your data.</strong> Your connection to the Lounge is protected by HTTPS/TLS, and passwords are stored only as hashes. We do not sell your data or use it for advertising profiles. <a href="/gostinaya/privacy?lang=en" target="_blank" rel="noopener">Read more about data processing</a>.
+    </div>
+
     <form id="register-form" class="auth-form">
       <label for="name" data-lang="ru">Имя</label>
       <label for="name" data-lang="en">Name</label>
@@ -102,6 +109,20 @@
   #register-form select,
   #register-form textarea {
     font-size: 18px !important;
+  }
+
+  .registration-privacy-note {
+    margin: 18px 0 24px;
+    padding: 14px 16px;
+    border: 1px solid rgba(148, 163, 184, 0.32);
+    border-radius: 12px;
+    background: rgba(148, 163, 184, 0.08);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .registration-privacy-note a {
+    font-weight: 600;
   }
 
   #register-form .auth-consent {
