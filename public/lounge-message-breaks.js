@@ -12,6 +12,16 @@
 
     elements.forEach(element => {
       element.querySelectorAll('br').forEach(br => {
+        const previous = br.previousSibling;
+        if (
+          previous &&
+          previous.nodeType === Node.TEXT_NODE &&
+          previous.nodeValue?.endsWith('\n')
+        ) {
+          br.remove();
+          return;
+        }
+
         br.replaceWith(document.createTextNode('\n'));
       });
     });
