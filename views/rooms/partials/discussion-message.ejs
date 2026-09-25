@@ -10,7 +10,7 @@
     </header>
 
     <div class="topic-message-body">
-        <p><%- linkifyText(message.body) %></p>
+        <p data-translation-message-id="<%= message.id %>"><%- linkifyText(message.body) %></p>
     </div>
 
     <% if (!message.hidden_at) { %>
