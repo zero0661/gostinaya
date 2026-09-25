@@ -3,7 +3,7 @@ import TranslationRepository from '../repositories/TranslationRepository.js';
 
 function detectLanguage(text) {
   const value = String(text || '');
-  const tokens = value.match(/[A-Za-zА-Яа-яЁё]+/g) || [];
+  const tokens = value.match(/[A-Za-zА-Яа-яЁё0-9]+/g) || [];
   let cyrillicTokens = 0;
   let latinTokens = 0;
 
