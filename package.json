@@ -15,6 +15,7 @@
     "migrate:moderation": "node database/migrate-moderation.js",
     "migrate:newsletter-deliveries": "node database/migrate-newsletter-deliveries.js",
     "migrate:bilingual-news": "node database/migrate-bilingual-news.js",
+    "migrate:translations": "node database/migrate-translations.js",
     "backup:create": "node scripts/backup-gostinaya.js",
     "backup:verify": "node scripts/verify-gostinaya-backup.js",
     "role:set": "node scripts/set-guest-role.js",

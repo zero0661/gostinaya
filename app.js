@@ -16,6 +16,7 @@ import { createArticleDiscussionRedirectHandler } from './controllers/ArticleDis
 import requireGuest from './middleware/requireGuest.js';
 import moderationRouter from './routes/moderation.js';
 import reportsRouter from './routes/reports.js';
+import translationsRouter from './routes/translations.js';
 import express from 'express';
 import expressLayouts from 'express-ejs-layouts';
 import path from 'path';
@@ -600,8 +601,8 @@ app.get('/gostinaya/notifications/:id/open', async (req, res, next) => {
 });
 
 app.use('/gostinaya/moderation', moderationRouter);
+app.use('/gostinaya/api/translations', translationsRouter);
 app.use('/gostinaya/reports', reportPublicationRateLimit, reportsRouter);
-
 
 app.post('/gostinaya/logout', (req, res, next) => {
     req.session.destroy((error) => {
@@ -613,7 +614,6 @@ app.post('/gostinaya/logout', (req, res, next) => {
         res.redirect('/gostinaya/login');
     });
 });
-
 
 app.get('/gostinaya/reset-password', (req, res) => {
   res.render('auth/reset-password', {
@@ -1080,8 +1080,6 @@ app.get('/gostinaya/:room', requireGuest, async (req, res, next) => {
                     })
                 );
 
-                // Do not render a discussion button without an article. Such
-                // rows can remain from old test webhooks or deleted Ghost posts.
                 enrichedArticleDiscussions.push(...enrichedBatch.filter(
                     discussion => discussion.article_ru || discussion.article_en
                 ));
