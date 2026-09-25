@@ -1,12 +1,63 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-lounge-lang="ru">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <title><%= title %> — Гостиная / The Lounge</title>
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const requested = params.get('lang');
+      const stored = localStorage.getItem('loungeLanguage');
+      const legacyStored = localStorage.getItem('gostinayaLanguage');
+      const browserLanguage = (navigator.language || '').toLowerCase().startsWith('en') ? 'en' : 'ru';
+      const language = requested === 'en' || requested === 'ru'
+        ? requested
+        : (stored === 'en' || stored === 'ru'
+            ? stored
+            : (legacyStored === 'en' || legacyStored === 'ru' ? legacyStored : browserLanguage));
+      const rawTitle = <%- JSON.stringify(title || '') %>;
+
+      function localizedTitle(value, lang) {
+        const parts = String(value || '').split(' / ');
+        if (parts.length === 2 && /[А-Яа-яЁё]/.test(parts[0]) && !/[А-Яа-яЁё]/.test(parts[1])) {
+          return lang === 'en' ? parts[1].trim() : parts[0].trim();
+        }
+        return String(value || '').trim();
+      }
+
+      function persistLanguage(lang) {
+        localStorage.setItem('loungeLanguage', lang);
+        localStorage.removeItem('gostinayaLanguage');
+        document.cookie = `loungeLanguage=${lang}; Path=/gostinaya; Max-Age=31536000; SameSite=Lax`;
+      }
+
+      persistLanguage(language);
+      document.documentElement.dataset.loungeLang = language;
+      document.documentElement.lang = language;
+      document.title = `${localizedTitle(rawTitle, language)} — ${language === 'en' ? 'The Lounge' : 'Гостиная'}`;
+
+      window.getLoungeLanguage = function () {
+        return document.documentElement.dataset.loungeLang === 'en' ? 'en' : 'ru';
+      };
+
+      window.localizeLoungeMessage = function (value, languageOverride) {
+        const text = String(value || '').trim();
+        const languageToUse = languageOverride || window.getLoungeLanguage();
+        if (!text.includes(' / ')) return text;
+        const parts = text.split(' / ');
+        return languageToUse === 'en' ? parts.slice(1).join(' / ').trim() : parts[0].trim();
+      };
+
+      window.updateLoungeDocumentTitle = function (lang) {
+        document.title = `${localizedTitle(rawTitle, lang)} — ${lang === 'en' ? 'The Lounge' : 'Гостиная'}`;
+      };
+    })();
+  </script>
   <link rel="stylesheet" type="text/css" href="/gostinaya/public/gostinaya.css?v=20260817-1">
   <link rel="stylesheet" type="text/css" href="/gostinaya/public/gostinaya-logo.css?v=20260822-1">
+  <link rel="stylesheet" type="text/css" href="/gostinaya/public/lounge-language.css?v=20260919-5">
 </head>
 
 <body>
@@ -15,28 +66,60 @@
   <img
     class="lounge-banner-image"
     src="/gostinaya/public/lounge-banner-center.jpg"
-    alt="Гостиная проекта После логина"
+    alt="The Lounge / Гостиная"
   >
 
-  <div class="lounge-banner-title" aria-label="После логина — Гостиная">
+  <div class="lounge-banner-title" aria-label="After Login — The Lounge">
     <img
       class="lounge-banner-brand-logo"
       src="/gostinaya/public/after-login-logo-transparent.png"
       alt="После логина / After Login"
     >
-    <span class="lounge-banner-name">Гостиная</span>
-    <small>The Lounge</small>
+    <span class="lounge-banner-name" data-lang="ru">Гостиная</span>
+    <span class="lounge-banner-name" data-lang="en">The Lounge</span>
   </div>
 
-  <blockquote class="lounge-banner-quote">
+  <blockquote class="lounge-banner-quote" data-lang="ru">
     <p>«Любая достаточно развитая технология неотличима от магии»</p>
     <cite>Артур Кларк</cite>
+  </blockquote>
+
+  <blockquote class="lounge-banner-quote" data-lang="en">
+    <p>“Any sufficiently advanced technology is indistinguishable from magic.”</p>
+    <cite>Arthur C. Clarke</cite>
   </blockquote>
 </header>
 
 <main class="public-content">
   <%- body %>
 </main>
+
+<script>
+  (function () {
+    const languageButtons = document.querySelectorAll('[data-set-lang]');
+
+    function applyLanguage(language) {
+      localStorage.setItem('loungeLanguage', language);
+      localStorage.removeItem('gostinayaLanguage');
+      document.cookie = `loungeLanguage=${language}; Path=/gostinaya; Max-Age=31536000; SameSite=Lax`;
+      document.documentElement.dataset.loungeLang = language;
+      document.documentElement.lang = language;
+      if (window.updateLoungeDocumentTitle) window.updateLoungeDocumentTitle(language);
+
+      languageButtons.forEach((button) => {
+        button.setAttribute('aria-pressed', button.dataset.setLang === language ? 'true' : 'false');
+      });
+    }
+
+    applyLanguage(document.documentElement.dataset.loungeLang || 'ru');
+
+    languageButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        applyLanguage(button.dataset.setLang);
+      });
+    });
+  })();
+</script>
 
 </body>
 </html>

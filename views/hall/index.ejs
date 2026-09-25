@@ -1,237 +1,130 @@
 <section class="profile-page hall-page">
   <header class="profile-header hall-header">
-    <p class="profile-eyebrow">
-      Гостиная <span>/ The Lounge</span>
-    </p>
-
-    <h1>
-      Холл <span>/ Hall</span>
-    </h1>
-
+    <p class="profile-eyebrow"><span data-lang="ru">Гостиная</span><span data-lang="en">The Lounge</span></p>
+    <h1 data-lang="ru">Холл</h1>
+    <h1 data-lang="en">Hall</h1>
     <p>
-      Добро пожаловать в Гостиную. Здесь начинается навигация по пространству проекта.<br>
-      <span>Welcome to the Lounge. Start exploring the project community here.</span>
+      <span data-lang="ru">Добро пожаловать в Гостиную. Здесь начинается навигация по пространству проекта.</span>
+      <span data-lang="en">Welcome to the Lounge. Start exploring the project community here.</span>
     </p>
   </header>
 
   <section class="hall-intro" aria-labelledby="hall-welcome-title">
     <p class="hall-intro-greeting" id="hall-welcome-title">
-      Добро пожаловать, <strong><%= guest && guest.name ? guest.name : "участник" %></strong>
-      <span class="en-secondary">Welcome, <strong><%= guest && guest.name ? guest.name : "member" %></strong></span>
+      <span data-lang="ru">Добро пожаловать, <strong><%= guest && guest.name ? guest.name : "участник" %></strong></span>
+      <span data-lang="en">Welcome, <strong><%= guest && guest.name ? guest.name : "member" %></strong></span>
     </p>
-
     <p class="hall-intro-text">
-      Гостиная — тихое место для своих. Это не форум и не социальная сеть: здесь нет лайков, рейтингов и гонки за активностью. Здесь продолжают мысли после чтения статей, делятся историями, задают вопросы и разговаривают без спешки.
-      <span class="en-secondary">The Lounge is a quiet place among friends. It is neither a forum nor a social network: there are no likes, rankings, or race for activity. Here we continue the thoughts sparked by articles, share stories, ask questions, and talk without hurry.</span>
+      <span data-lang="ru">Гостиная — тихое место для своих. Это не форум и не социальная сеть: здесь нет лайков, рейтингов и гонки за активностью. Здесь продолжают мысли после чтения статей, делятся историями, задают вопросы и разговаривают без спешки.</span>
+      <span data-lang="en">The Lounge is a quiet place among friends. It is neither a forum nor a social network: there are no likes, rankings, or race for activity. Here we continue the thoughts sparked by articles, share stories, ask questions, and talk without hurry.</span>
     </p>
   </section>
 
   <section class="hall-first-word" aria-labelledby="hall-first-word-title">
     <div class="hall-first-word-copy">
-      <h2 id="hall-first-word-title">
-        Первое слово
-        <span class="en-secondary">/ The First Word</span>
-      </h2>
-      <p>
-        Сейчас я думаю о…
-        <span class="en-secondary">Right now I am thinking about…</span>
-      </p>
-      <small>
-        Продолжите эту фразу и начните новый разговор.
-        <span class="en-secondary">Complete this sentence and start a new conversation.</span>
-      </small>
+      <h2 id="hall-first-word-title"><span data-lang="ru">Первое слово</span><span data-lang="en">The First Word</span></h2>
+      <p><span data-lang="ru">Сейчас я думаю о…</span><span data-lang="en">Right now I am thinking about…</span></p>
+      <small><span data-lang="ru">Продолжите эту фразу и начните новый разговор.</span><span data-lang="en">Complete this sentence and start a new conversation.</span></small>
     </div>
-
-    <a class="hall-first-word-link" href="/gostinaya/discussions/new">
-      Создать тему
-      <span class="en-secondary">Start a Topic</span>
-    </a>
+    <a class="hall-first-word-link" href="/gostinaya/discussions/new"><span data-lang="ru">Создать тему</span><span data-lang="en">Start a Topic</span></a>
   </section>
 
   <div class="hall-grid">
-
     <% const articleStats = roomStats?.articles; %>
-
     <a class="profile-card hall-card" href="/gostinaya/articles">
       <span class="hall-card-icon">📚</span>
-
-      <h2>
-        Обсуждение статей
-        <span>/ Article Discussions</span>
-      </h2>
-
-      <p class="hall-card-description">
-        Все статьи проекта и разговоры вокруг них.<br>
-        <span>Project articles and the conversations around them.</span>
-      </p>
-
+      <h2><span data-lang="ru">Обсуждение статей</span><span data-lang="en">Article Discussions</span></h2>
+      <p class="hall-card-description"><span data-lang="ru">Все статьи проекта и разговоры вокруг них.</span><span data-lang="en">Project articles and the conversations around them.</span></p>
       <div class="hall-card-stats">
-        <span>
-          💬 <%= articleStats?.topics || 0 %> тем /
-          <em><%= articleStats?.topics || 0 %> topics</em>
-        </span>
-
-        <span>
-          ✉️ <%= articleStats?.messages || 0 %> сообщений /
-          <em><%= articleStats?.messages || 0 %> messages</em>
-        </span>
+        <span data-lang="ru">💬 <%= articleStats?.topics || 0 %> тем</span>
+        <span data-lang="en">💬 <%= articleStats?.topics || 0 %> topics</span>
+        <span data-lang="ru">✉️ <%= articleStats?.messages || 0 %> сообщений</span>
+        <span data-lang="en">✉️ <%= articleStats?.messages || 0 %> messages</span>
       </div>
-
       <% if (articleStats?.lastTopicTitle) { %>
         <div class="hall-card-latest">
-          <span class="hall-card-latest-label">
-            Последняя статья / Latest article
-          </span>
+          <span class="hall-card-latest-label" data-lang="ru">Последняя статья</span>
+          <span class="hall-card-latest-label" data-lang="en">Latest article</span>
+          <% if (latestArticle?.ru?.title) { %>
+            <strong data-lang="ru"><%= latestArticle.ru.title %></strong>
+          <% } else { %>
+            <strong data-lang="ru"><%= articleStats.lastTopicTitle %></strong>
+          <% } %>
 
-          <strong><%= articleStats.lastTopicTitle %></strong>
+          <% if (latestArticle?.en?.title) { %>
+            <strong data-lang="en"><%= latestArticle.en.title %></strong>
+          <% } else { %>
+            <strong data-lang="en"><%= articleStats.lastTopicTitle %></strong>
+          <% } %>
 
-          <span>
-            <%= articleStats.lastAuthor %> ·
-            <%= articleStats.lastActivityAt %>
-          </span>
+          <span data-lang="ru"><%= String(articleStats.lastAuthor || '').replace(/\s*\/\s*Editorial\s*$/i, '') %> · <%= articleStats.lastActivityAt %></span>
+          <span data-lang="en"><%= String(articleStats.lastAuthor || '').replace(/^Редакция\s*\/\s*/i, '') %> · <%= articleStats.lastActivityAt %></span>
         </div>
       <% } else { %>
-        <div class="hall-card-latest hall-card-latest-empty">
-          Статей пока нет. / No articles yet.
-        </div>
+        <div class="hall-card-latest hall-card-latest-empty"><span data-lang="ru">Статей пока нет.</span><span data-lang="en">No articles yet.</span></div>
       <% } %>
-
-      <span class="hall-card-link">
-        Открыть статьи / View articles →
-      </span>
+      <span class="hall-card-link"><span data-lang="ru">Открыть статьи →</span><span data-lang="en">View articles →</span></span>
     </a>
-
 
     <% const newsStats = roomStats?.news; %>
-
     <a class="profile-card hall-card hall-card-news" href="/gostinaya/news">
       <span class="hall-card-icon">📣</span>
-
-      <h2>
-        Новости проекта
-        <span>/ Project News</span>
-      </h2>
-
-      <p class="hall-card-description">
-        Новые материалы, аудиоверсии, объявления и изменения проекта.<br>
-        <span>New materials, audio editions, announcements and project updates.</span>
-      </p>
-
+      <h2><span data-lang="ru">Новости проекта</span><span data-lang="en">Project News</span></h2>
+      <p class="hall-card-description"><span data-lang="ru">Новые материалы, аудиоверсии, объявления и изменения проекта.</span><span data-lang="en">New materials, audio editions, announcements and project updates.</span></p>
       <div class="hall-card-stats">
-        <span>
-          💬 <%= newsStats?.topics || 0 %> новостей /
-          <em><%= newsStats?.topics || 0 %> news items</em>
-        </span>
-
-        <span>
-          ✉️ <%= newsStats?.messages || 0 %> сообщений /
-          <em><%= newsStats?.messages || 0 %> messages</em>
-        </span>
+        <span data-lang="ru">💬 <%= newsStats?.topics || 0 %> новостей</span>
+        <span data-lang="en">💬 <%= newsStats?.topics || 0 %> news items</span>
+        <span data-lang="ru">✉️ <%= newsStats?.messages || 0 %> сообщений</span>
+        <span data-lang="en">✉️ <%= newsStats?.messages || 0 %> messages</span>
       </div>
-
       <% if (newsStats?.lastTopicTitle) { %>
         <div class="hall-card-latest">
-          <span class="hall-card-latest-label">
-            Последняя новость / Latest news
-          </span>
-
+          <span class="hall-card-latest-label" data-lang="ru">Последняя новость</span>
+          <span class="hall-card-latest-label" data-lang="en">Latest news</span>
           <strong><%= newsStats.lastTopicTitle %></strong>
-
-          <span>
-            <%= newsStats.lastAuthor %> ·
-            <%= newsStats.lastActivityAt %>
-          </span>
+          <span><%= newsStats.lastAuthor %> · <%= newsStats.lastActivityAt %></span>
         </div>
       <% } else { %>
-        <div class="hall-card-latest hall-card-latest-empty">
-          Новостей пока нет. / No news yet.
-        </div>
+        <div class="hall-card-latest hall-card-latest-empty"><span data-lang="ru">Новостей пока нет.</span><span data-lang="en">No news yet.</span></div>
       <% } %>
-
-      <span class="hall-card-link">
-        Открыть новости / View news →
-      </span>
+      <span class="hall-card-link"><span data-lang="ru">Открыть новости →</span><span data-lang="en">View news →</span></span>
     </a>
-
 
     <% const topicStats = roomStats?.discussions; %>
-
     <a class="profile-card hall-card" href="/gostinaya/discussions">
       <span class="hall-card-icon">💬</span>
-
-      <h2>
-        Темы сообщества
-        <span>/ Community Topics</span>
-      </h2>
-
-      <p class="hall-card-description">
-        Разговоры, вопросы и идеи участников Гостиной.<br>
-        <span>Conversations, questions and ideas from Lounge members.</span>
-      </p>
-
+      <h2><span data-lang="ru">Темы сообщества</span><span data-lang="en">Community Topics</span></h2>
+      <p class="hall-card-description"><span data-lang="ru">Разговоры, вопросы и идеи участников Гостиной.</span><span data-lang="en">Conversations, questions and ideas from Lounge members.</span></p>
       <div class="hall-card-stats">
-        <span>
-          💬 <%= topicStats?.topics || 0 %> тем /
-          <em><%= topicStats?.topics || 0 %> topics</em>
-        </span>
-
-        <span>
-          ✉️ <%= topicStats?.messages || 0 %> сообщений /
-          <em><%= topicStats?.messages || 0 %> messages</em>
-        </span>
+        <span data-lang="ru">💬 <%= topicStats?.topics || 0 %> тем</span>
+        <span data-lang="en">💬 <%= topicStats?.topics || 0 %> topics</span>
+        <span data-lang="ru">✉️ <%= topicStats?.messages || 0 %> сообщений</span>
+        <span data-lang="en">✉️ <%= topicStats?.messages || 0 %> messages</span>
       </div>
-
       <% if (topicStats?.lastTopicTitle) { %>
         <div class="hall-card-latest">
-          <span class="hall-card-latest-label">
-            Последняя тема / Latest topic
-          </span>
-
+          <span class="hall-card-latest-label" data-lang="ru">Последняя тема</span>
+          <span class="hall-card-latest-label" data-lang="en">Latest topic</span>
           <strong><%= topicStats.lastTopicTitle %></strong>
-
-          <span>
-            <%= topicStats.lastAuthor %> ·
-            <%= topicStats.lastActivityAt %>
-          </span>
+          <span><%= topicStats.lastAuthor %> · <%= topicStats.lastActivityAt %></span>
         </div>
       <% } else { %>
-        <div class="hall-card-latest hall-card-latest-empty">
-          Тем пока нет. / No topics yet.
-        </div>
+        <div class="hall-card-latest hall-card-latest-empty"><span data-lang="ru">Тем пока нет.</span><span data-lang="en">No topics yet.</span></div>
       <% } %>
-
-      <span class="hall-card-link">
-        Открыть темы / View topics →
-      </span>
+      <span class="hall-card-link"><span data-lang="ru">Открыть темы →</span><span data-lang="en">View topics →</span></span>
     </a>
-
 
     <a class="profile-card hall-card hall-card-members" href="/gostinaya/members">
       <span class="hall-card-icon">👥</span>
-
-      <h2>
-        Участники
-        <span>/ Members</span>
-      </h2>
-
-      <p class="hall-card-description">
-        Люди, которые уже присоединились к Гостиной.<br>
-        <span>People who have already joined the Lounge.</span>
-      </p>
-
+      <h2><span data-lang="ru">Участники</span><span data-lang="en">Members</span></h2>
+      <p class="hall-card-description"><span data-lang="ru">Люди, которые уже присоединились к Гостиной.</span><span data-lang="en">People who have already joined the Lounge.</span></p>
       <div class="hall-card-latest">
-        <span class="hall-card-latest-label">
-          Сообщество / Community
-        </span>
-
-        <strong>Познакомьтесь с участниками</strong>
-        <span>Meet the members of the Lounge.</span>
+        <span class="hall-card-latest-label" data-lang="ru">Сообщество</span>
+        <span class="hall-card-latest-label" data-lang="en">Community</span>
+        <strong data-lang="ru">Познакомьтесь с участниками</strong>
+        <strong data-lang="en">Meet the members of the Lounge</strong>
       </div>
-
-      <span class="hall-card-link">
-        Открыть список / View members →
-      </span>
+      <span class="hall-card-link"><span data-lang="ru">Открыть список →</span><span data-lang="en">View members →</span></span>
     </a>
-
   </div>
 </section>

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { linkifyText } from '../utils/linkifyText.js';
+import { linkifyText, normalizeMessageWhitespace } from '../utils/linkifyText.js';
 
 test('turns http and https addresses into safe external links', () => {
   const html = linkifyText('Сайт: https://milenin.pro/poslie-titrov/ и http://example.com');
@@ -26,8 +26,15 @@ test('escapes user html and never turns non-http schemes into links', () => {
   assert.doesNotMatch(html, /href=/);
 });
 
-test('preserves line breaks for pre-wrap message rendering', () => {
+test('preserves single line breaks for message rendering', () => {
   const html = linkifyText('Первая строка\nhttps://milenin.pro/');
 
   assert.match(html, /Первая строка\n<a class="message-link"/);
+});
+
+test('collapses repeated and whitespace-only line breaks for compact message display', () => {
+  assert.equal(
+    normalizeMessageWhitespace('Абзац один\r\n\r\n   \r\nАбзац два'),
+    'Абзац один\nАбзац два'
+  );
 });

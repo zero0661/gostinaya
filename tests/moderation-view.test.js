@@ -10,25 +10,33 @@ test('sidebar exposes moderation only to staff roles', async () => {
   const source = await fs.readFile(path.join(dirname, '..', 'views', 'partials', 'sidebar.ejs'), 'utf8');
   assert.match(source, /\['admin', 'moderator'\]\.includes\(currentGuest\.role\)/);
   assert.match(source, /\/gostinaya\/moderation/);
+  assert.match(source, /data-lang="ru"/);
+  assert.match(source, /data-lang="en"/);
 });
 
-test('discussion messages expose reports and preserve a hidden placeholder', async () => {
+test('discussion messages expose localized reports and preserve a hidden placeholder', async () => {
   const source = await fs.readFile(path.join(dirname, '..', 'views', 'rooms', 'partials', 'discussion-message.ejs'), 'utf8');
-  assert.match(source, /Пожаловаться \/ Report/);
+  assert.match(source, /Пожаловаться/);
+  assert.match(source, /Report/);
+  assert.match(source, /data-lang="ru"/);
+  assert.match(source, /data-lang="en"/);
   assert.match(source, /action="\/gostinaya\/reports"/);
   assert.match(source, /message\.hidden_at/);
   assert.match(source, /directReplies\.length/);
 });
 
-test('moderation discussion pages use compact Russian controls and honest article metadata', async () => {
+test('moderation discussion pages keep compact controls and honest article metadata in both interface languages', async () => {
   const list = await fs.readFile(path.join(dirname, '..', 'views', 'moderation', 'discussions.ejs'), 'utf8');
   const topic = await fs.readFile(path.join(dirname, '..', 'views', 'moderation', 'discussion.ejs'), 'utf8');
   const css = await fs.readFile(path.join(dirname, '..', 'public', 'gostinaya.css'), 'utf8');
 
-  assert.match(list, /Обсуждение статьи · создано автоматически/);
-  assert.match(list, /Тема сообщества · Автор:/);
+  assert.match(list, /Обсуждение статьи/);
+  assert.match(list, /Article discussion/);
+  assert.match(list, /Тема сообщества/);
+  assert.match(list, /Community topic/);
   assert.doesNotMatch(list, /Редакция \/ Editorial/);
-  assert.doesNotMatch(topic, /Topic controls|Pin|Close|Hide/);
+  assert.match(topic, /data-lang="ru"/);
+  assert.match(topic, /data-lang="en"/);
   assert.match(css, /\.moderation-button-row button,[\s\S]*?width: auto !important;/);
   assert.match(css, /\.moderation-button-row \{[\s\S]*?grid-template-columns: max-content max-content minmax\(360px, 1fr\)/);
   assert.match(css, /\.moderation-hide-action \{[\s\S]*?grid-template-columns: minmax\(220px, 320px\) max-content/);

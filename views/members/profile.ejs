@@ -1,57 +1,57 @@
 <section class="profile-page member-profile-page">
+  <%
+    const roleLabelsRu = { admin: 'Администратор', administrator: 'Администратор', moderator: 'Модератор', member: 'Участник' };
+    const roleLabelsEn = { admin: 'Administrator', administrator: 'Administrator', moderator: 'Moderator', member: 'Member' };
+    const languageLabelsRu = { ru: 'Русский', en: 'Английский', Russian: 'Русский', English: 'Английский' };
+    const languageLabelsEn = { ru: 'Russian', en: 'English', Russian: 'Russian', English: 'English' };
+    const memberRoleKey = String(member.role || '').toLowerCase();
+    const pluralRu = (count, one, few, many) => {
+      const n = Math.abs(Number(count)) % 100;
+      const n1 = n % 10;
+      if (n > 10 && n < 20) return many;
+      if (n1 > 1 && n1 < 5) return few;
+      if (n1 === 1) return one;
+      return many;
+    };
+  %>
 
   <header class="profile-header member-profile-header">
-    <p class="profile-eyebrow">
-      Гостиная <span>/ The Lounge</span>
-    </p>
-
+    <p class="profile-eyebrow"><span data-lang="ru">Гостиная</span><span data-lang="en">The Lounge</span></p>
     <h1><%= member.name %></h1>
-
     <p>
-      <%= member.bio || 'Пока участник ничего о себе не рассказал.' %>
-      <% if (!member.bio) { %>
-        <br><span>This member has not shared anything about themselves yet.</span>
+      <% if (member.bio) { %>
+        <%= member.bio %>
+      <% } else { %>
+        <span data-lang="ru">Пока участник ничего о себе не рассказал.</span>
+        <span data-lang="en">This member has not shared anything about themselves yet.</span>
       <% } %>
     </p>
   </header>
 
   <section class="profile-card member-profile-meta">
-    <div class="topic-meta">
-      <span>👤 <%= member.role %></span>
-      <span>🌍 <%= member.language %></span>
-
-      <% if (member.location) { %>
-        <span>📍 <%= member.location %></span>
-      <% } %>
-
-      <span>📝 <%= member.topics_count %> тем</span>
-      <span>💬 <%= member.messages_count %> сообщений</span>
-      <span>📅 <%= formatMoscowDateTime(member.created_at) %></span>
+    <div class="topic-meta member-profile-meta-list">
+      <span>👤 <span data-lang="ru"><%= roleLabelsRu[memberRoleKey] || member.role %></span><span data-lang="en"><%= roleLabelsEn[memberRoleKey] || member.role %></span></span>
+      <span>🌍 <span data-lang="ru"><%= languageLabelsRu[member.language] || member.language %></span><span data-lang="en"><%= languageLabelsEn[member.language] || member.language %></span></span>
+      <% if (member.location) { %><span>📍 <%= member.location %></span><% } %>
+      <span data-lang="ru">📝 <%= member.topics_count %> <%= pluralRu(member.topics_count, 'тема', 'темы', 'тем') %></span>
+      <span data-lang="en">📝 <%= member.topics_count %> <%= Number(member.topics_count) === 1 ? 'topic' : 'topics' %></span>
+      <span data-lang="ru">💬 <%= member.messages_count %> <%= pluralRu(member.messages_count, 'сообщение', 'сообщения', 'сообщений') %></span>
+      <span data-lang="en">💬 <%= member.messages_count %> <%= Number(member.messages_count) === 1 ? 'message' : 'messages' %></span>
+      <span>📅 <time datetime="<%= String(member.created_at).replace(' ', 'T') %>Z" data-member-time><%= formatMoscowDateTime(member.created_at) %></time></span>
     </div>
   </section>
 
   <section class="profile-card member-profile-section">
-    <h2>
-      Последние темы <span>/ Recent Topics</span>
-    </h2>
-
+    <h2><span data-lang="ru">Последние темы</span><span data-lang="en">Recent Topics</span></h2>
     <% if (!topics.length) { %>
-      <div class="room-empty">
-        <p>
-          Тем пока нет.
-          <span>No topics yet.</span>
-        </p>
-      </div>
+      <div class="room-empty"><p><span data-lang="ru">Тем пока нет.</span><span data-lang="en">No topics yet.</span></p></div>
     <% } else { %>
       <div class="topic-list">
         <% topics.forEach(topic => { %>
           <a class="topic-card-link" href="/gostinaya/topic/<%= topic.id %>">
             <article class="topic-item topic-card">
               <h3><%= topic.title %></h3>
-
-              <div class="topic-meta">
-                <span>📅 <%= formatMoscowDateTime(topic.created_at) %></span>
-              </div>
+              <div class="topic-meta"><span>📅 <time datetime="<%= String(topic.created_at).replace(' ', 'T') %>Z" data-member-time><%= formatMoscowDateTime(topic.created_at) %></time></span></div>
             </article>
           </a>
         <% }) %>
@@ -60,29 +60,17 @@
   </section>
 
   <section class="profile-card member-profile-section">
-    <h2>
-      Последние сообщения <span>/ Recent Messages</span>
-    </h2>
-
+    <h2><span data-lang="ru">Последние сообщения</span><span data-lang="en">Recent Messages</span></h2>
     <% if (!messages.length) { %>
-      <div class="room-empty">
-        <p>
-          Сообщений пока нет.
-          <span>No messages yet.</span>
-        </p>
-      </div>
+      <div class="room-empty"><p><span data-lang="ru">Сообщений пока нет.</span><span data-lang="en">No messages yet.</span></p></div>
     <% } else { %>
       <div class="topic-list">
         <% messages.forEach(message => { %>
           <a class="topic-card-link" href="/gostinaya/topic/<%= message.topic_id %>">
             <article class="topic-item topic-card">
               <h3><%= message.title %></h3>
-
               <p class="topic-preview"><%- linkifyText(message.body) %></p>
-
-              <div class="topic-meta">
-                <span>📅 <%= formatMoscowDateTime(message.created_at) %></span>
-              </div>
+              <div class="topic-meta"><span>📅 <time datetime="<%= String(message.created_at).replace(' ', 'T') %>Z" data-member-time><%= formatMoscowDateTime(message.created_at) %></time></span></div>
             </article>
           </a>
         <% }) %>
@@ -91,9 +79,21 @@
   </section>
 
   <nav class="members-navigation">
-    <a href="/gostinaya/members">
-      ← Все участники / <span>All Members</span>
-    </a>
+    <a href="/gostinaya/members"><span data-lang="ru">← Все участники</span><span data-lang="en">← All Members</span></a>
   </nav>
-
 </section>
+
+<script>
+function formatMemberTimes() {
+  const locale = document.documentElement.dataset.loungeLang === 'en' ? 'en-GB' : 'ru-RU';
+  document.querySelectorAll('[data-member-time]').forEach((element) => {
+    const date = new Date(element.getAttribute('datetime'));
+    if (Number.isNaN(date.getTime())) return;
+    element.textContent = new Intl.DateTimeFormat(locale, {
+      day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+    }).format(date);
+  });
+}
+document.addEventListener('DOMContentLoaded', formatMemberTimes);
+document.addEventListener('lounge-language-change', formatMemberTimes);
+</script>

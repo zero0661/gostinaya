@@ -10,10 +10,13 @@ import NotificationService from './services/NotificationService.js';
 import ModerationRepository from './repositories/ModerationRepository.js';
 import EmailVerificationService from './services/EmailVerificationService.js';
 import PasswordResetService from './services/PasswordResetService.js';
+import NewsletterSignupService from './services/NewsletterSignupService.js';
+import NewsletterDeliveryService from './services/NewsletterDeliveryService.js';
 import { createArticleDiscussionRedirectHandler } from './controllers/ArticleDiscussionController.js';
 import requireGuest from './middleware/requireGuest.js';
 import moderationRouter from './routes/moderation.js';
 import reportsRouter from './routes/reports.js';
+import translationsRouter from './routes/translations.js';
 import express from 'express';
 import expressLayouts from 'express-ejs-layouts';
 import path from 'path';
@@ -38,7 +41,8 @@ import {
     registrationRateLimit,
     reportPublicationRateLimit,
     topicPublicationRateLimit,
-    verificationResendRateLimit
+    verificationResendRateLimit,
+    newsletterSignupRateLimit
 } from './middleware/rateLimit.js';
 
 dotenv.config();
@@ -187,6 +191,16 @@ async function handleGhostPostWebhook(req, res) {
       }
     }
 
+    const isPublishedEvent = req.path.endsWith('/post-published');
+    if (isPublishedEvent && result.publicationReady && result.publication) {
+      try {
+        result.newsletterDelivery = await NewsletterDeliveryService.deliverPublication(result.publication);
+      } catch (newsletterError) {
+        console.error('Newsletter delivery error:', newsletterError);
+        result.newsletterDelivery = { ok: false, error: 'delivery-failed' };
+      }
+    }
+
     return res.status(200).json({
       ok: true,
       ...result
@@ -203,6 +217,89 @@ async function handleGhostPostWebhook(req, res) {
 
 app.post('/gostinaya/webhooks/ghost/post-published', handleGhostPostWebhook);
 app.post('/gostinaya/webhooks/ghost/post-updated', handleGhostPostWebhook);
+
+app.post('/gostinaya/api/newsletter/subscribe', newsletterSignupRateLimit, async (req, res) => {
+  try {
+    const result = await NewsletterSignupService.issue({
+      email: req.body?.email,
+      language: req.body?.language,
+      returnTo: req.body?.returnTo
+    });
+    const statusCode = result.status === 'already-subscribed' ? 200 : 202;
+    return res.status(statusCode).json({
+      ok: true,
+      language: result.language,
+      status: result.status
+    });
+  } catch (error) {
+    if (error.message === 'INVALID_EMAIL') return res.status(400).json({ ok: false, error: 'invalid-email' });
+    console.error('Newsletter signup error:', error);
+    return res.status(500).json({ ok: false, error: 'delivery-failed' });
+  }
+});
+
+app.get('/gostinaya/newsletter/confirm', async (req, res) => {
+  try {
+    const result = await NewsletterSignupService.confirm(req.query.token);
+    const language = result?.language === 'en' ? 'en' : 'ru';
+    if (result) {
+      const target = new URL(result.returnTo, process.env.APP_URL || 'https://milenin.pro');
+      target.searchParams.set('newsletter', 'confirmed');
+      return res.redirect(303, `${target.pathname}${target.search}${target.hash}`);
+    }
+    return res.status(400).render('newsletter/confirmed', {
+      title: language === 'en' ? 'Subscription confirmed' : 'Подписка подтверждена',
+      layout: 'layouts/newsletter',
+      confirmed: false,
+      language,
+      returnTo: language === 'en' ? '/en/' : '/'
+    });
+  } catch (error) {
+    console.error('Newsletter confirmation error:', error);
+    return res.status(500).render('newsletter/confirmed', {
+      title: 'Subscription error / Ошибка подписки', layout: 'layouts/newsletter', confirmed: false, language: 'ru', returnTo: '/'
+    });
+  }
+});
+
+app.get('/gostinaya/newsletter/unsubscribe', async (req, res) => {
+  try {
+    const result = await NewsletterSignupService.previewUnsubscribe(req.query.token);
+    const language = result?.language === 'en' ? 'en' : 'ru';
+    return res.status(result ? 200 : 400).render('newsletter/unsubscribe', {
+      title: language === 'en' ? 'Unsubscribe' : 'Отписка',
+      layout: 'layouts/newsletter',
+      valid: Boolean(result),
+      complete: false,
+      language,
+      token: result ? req.query.token : ''
+    });
+  } catch (error) {
+    return res.status(500).render('newsletter/unsubscribe', {
+      title: 'Unsubscribe error / Ошибка отписки', layout: 'layouts/newsletter', valid: false, complete: false, language: 'ru', token: ''
+    });
+  }
+});
+
+app.post('/gostinaya/newsletter/unsubscribe', async (req, res) => {
+  try {
+    const result = await NewsletterSignupService.unsubscribe(req.body?.token);
+    const language = result?.language === 'en' ? 'en' : 'ru';
+    return res.status(result ? 200 : 400).render('newsletter/unsubscribe', {
+      title: language === 'en' ? 'Unsubscribed' : 'Подписка отменена',
+      layout: 'layouts/newsletter',
+      valid: Boolean(result),
+      complete: Boolean(result),
+      language,
+      token: ''
+    });
+  } catch (error) {
+    console.error('Newsletter unsubscribe error:', error);
+    return res.status(500).render('newsletter/unsubscribe', {
+      title: 'Unsubscribe error / Ошибка отписки', layout: 'layouts/newsletter', valid: false, complete: false, language: 'ru', token: ''
+    });
+  }
+});
 
 app.get('/health', (req, res) => {
   res.status(200).send('Gostinaya is alive');
@@ -281,15 +378,42 @@ app.get('/gostinaya/welcome', requireGuest, (req, res) => {
 
 app.get('/gostinaya/hall', requireGuest, async (req, res, next) => {
   try {
-    const [recentActivity, roomStats] = await Promise.all([
+    const [recentActivity, roomStats, articleDiscussions] = await Promise.all([
         DiscussionRepository.getRecentActivity(15),
-        DiscussionRepository.getRoomStats()
+        DiscussionRepository.getRoomStats(),
+        ArticleDiscussionRepository.list()
     ]);
+
+    let latestArticle = null;
+
+    const latestDiscussion = [...articleDiscussions]
+        .sort((a, b) => {
+            const dateA = new Date(a.published_at || a.created_at || 0).getTime();
+            const dateB = new Date(b.published_at || b.created_at || 0).getTime();
+            return dateB - dateA;
+        })[0];
+
+    if (latestDiscussion) {
+        try {
+            const articlePair = await ArticleMetadataService.getPair(
+                latestDiscussion.url_ru,
+                latestDiscussion.url_en
+            );
+
+            latestArticle = {
+                ru: articlePair.ru,
+                en: articlePair.en
+            };
+        } catch (error) {
+            console.error('Could not load latest article metadata for Hall:', error.message);
+        }
+    }
 
     res.render('hall/index', {
       title: 'Холл / Hall',
       recentActivity,
       roomStats,
+      latestArticle,
       guest: req.session.guest
     });
   } catch (error) {
@@ -477,8 +601,8 @@ app.get('/gostinaya/notifications/:id/open', async (req, res, next) => {
 });
 
 app.use('/gostinaya/moderation', moderationRouter);
+app.use('/gostinaya/api/translations', translationsRouter);
 app.use('/gostinaya/reports', reportPublicationRateLimit, reportsRouter);
-
 
 app.post('/gostinaya/logout', (req, res, next) => {
     req.session.destroy((error) => {
@@ -490,7 +614,6 @@ app.post('/gostinaya/logout', (req, res, next) => {
         res.redirect('/gostinaya/login');
     });
 });
-
 
 app.get('/gostinaya/reset-password', (req, res) => {
   res.render('auth/reset-password', {
@@ -814,8 +937,7 @@ app.post('/gostinaya/:room/new', topicPublicationRateLimit, async (req, res, nex
 
     const roomKey = req.params.room;
     const room = rooms[roomKey];
-    const title = String(req.body.title || '').trim().slice(0, 160);
-    const body = String(req.body.body || '').trim().slice(0, 5000);
+    const isNews = roomKey === 'news';
 
     if (!room) {
         return res.status(404).send('Комната не найдена');
@@ -829,20 +951,49 @@ app.post('/gostinaya/:room/new', topicPublicationRateLimit, async (req, res, nex
         return res.status(403).send('Новости проекта публикуют администратор и модераторы');
     }
 
-    if (!title) {
-        return res.status(400).send('Заголовок темы обязателен');
-    }
+    const titleRu = String(req.body.title_ru || '').trim().slice(0, 160);
+    const titleEn = String(req.body.title_en || '').trim().slice(0, 160);
+    const bodyRu = String(req.body.body_ru || '').trim().slice(0, 5000);
+    const bodyEn = String(req.body.body_en || '').trim().slice(0, 5000);
 
-    if (!body) {
-        return res.status(400).send('Первое сообщение обязательно');
+    const title = isNews
+        ? (titleRu || titleEn)
+        : String(req.body.title || '').trim().slice(0, 160);
+
+    const body = isNews
+        ? (bodyRu || bodyEn)
+        : String(req.body.body || '').trim().slice(0, 5000);
+
+    if (isNews) {
+        if (!titleRu || !titleEn || !bodyRu || !bodyEn) {
+            return res.status(400).send(
+                'Для новости нужны русская и английская версии заголовка и текста / Both Russian and English versions are required'
+            );
+        }
+    } else {
+        if (!title) {
+            return res.status(400).send('Заголовок темы обязателен');
+        }
+
+        if (!body) {
+            return res.status(400).send('Первое сообщение обязательно');
+        }
     }
 
     try {
-        const result = await DiscussionRepository.createTopic(
-            roomKey,
-            title,
-            req.session.guest.id
-        );
+        const result = isNews
+            ? await DiscussionRepository.createBilingualNewsTopic({
+                titleRu,
+                titleEn,
+                bodyRu,
+                bodyEn,
+                authorId: req.session.guest.id
+            })
+            : await DiscussionRepository.createTopic(
+                roomKey,
+                title,
+                req.session.guest.id
+            );
 
         await DiscussionRepository.createMessage(
             result.lastID,
@@ -929,8 +1080,6 @@ app.get('/gostinaya/:room', requireGuest, async (req, res, next) => {
                     })
                 );
 
-                // Do not render a discussion button without an article. Such
-                // rows can remain from old test webhooks or deleted Ghost posts.
                 enrichedArticleDiscussions.push(...enrichedBatch.filter(
                     discussion => discussion.article_ru || discussion.article_en
                 ));

@@ -244,6 +244,34 @@ export default {
         );
     },
 
+    async createBilingualNewsTopic({ titleRu, titleEn, bodyRu, bodyEn, authorId }) {
+        const fallbackTitle = titleRu || titleEn;
+
+        return run(
+            `
+            INSERT INTO discussion_topics
+            (room, title, title_ru, title_en, body_ru, body_en, author_id)
+            VALUES ('news', ?, ?, ?, ?, ?, ?)
+            `,
+            [fallbackTitle, titleRu || null, titleEn || null, bodyRu || null, bodyEn || null, authorId]
+        );
+    },
+
+    async updateBilingualNewsTopic(id, authorId, { titleRu, titleEn, bodyRu, bodyEn }) {
+        const fallbackTitle = titleRu || titleEn;
+
+        return run(
+            `
+            UPDATE discussion_topics
+            SET title = ?, title_ru = ?, title_en = ?, body_ru = ?, body_en = ?
+            WHERE id = ?
+              AND author_id = ?
+              AND room = 'news'
+            `,
+            [fallbackTitle, titleRu || null, titleEn || null, bodyRu || null, bodyEn || null, id, authorId]
+        );
+    },
+
     async createMessage(topicId, authorId, body, parentMessageId = null) {
         return run(
             `
@@ -283,7 +311,6 @@ export default {
     }
 ,
 
-  
 async updateTopic(id, authorId, title) {
     return run(
         `

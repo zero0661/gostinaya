@@ -1,153 +1,105 @@
-
 <section class="profile-page room-page topic-page">
 
     <% if (reported) { %>
-        <p class="profile-success">Жалоба передана модератору. <span>/ Your report was sent to a moderator.</span></p>
+        <p class="profile-success"><span data-lang="ru">Жалоба передана модератору.</span><span data-lang="en">Your report was sent to a moderator.</span></p>
     <% } %>
 
     <header class="profile-header room-page-header topic-page-header">
-
         <% if (topic.room === 'articles') { %>
-
             <h1 class="article-discussion-page-title">
-                Здесь обсуждается статья
-                <span>/ This discussion is about the article</span>
+                <span data-lang="ru">Здесь обсуждается статья</span>
+                <span data-lang="en">This discussion is about the article</span>
             </h1>
 
             <% if (articleDiscussion) { %>
                 <div class="article-discussion-source-links">
-
-                    <% if (
-                        articleDiscussion.url_ru &&
-                        articleDiscussion.article_ru?.title
-                    ) { %>
-                        <a
-                            href="<%= articleDiscussion.url_ru %>"
-                            target="_blank"
-                            rel="noopener"
-                        >
-                            <%= articleDiscussion.article_ru.title %>
-                        </a>
+                    <% if (articleDiscussion.url_ru && articleDiscussion.article_ru?.title) { %>
+                        <a data-lang="ru" href="<%= articleDiscussion.url_ru %>" target="_blank" rel="noopener"><%= articleDiscussion.article_ru.title %></a>
+                    <% } else if (articleDiscussion.url_en && articleDiscussion.article_en?.title) { %>
+                        <a data-lang="ru" href="<%= articleDiscussion.url_en %>" target="_blank" rel="noopener"><%= articleDiscussion.article_en.title %></a>
                     <% } %>
 
-                    <% if (
-                        articleDiscussion.url_en &&
-                        articleDiscussion.article_en?.title
-                    ) { %>
-                        <a
-                            href="<%= articleDiscussion.url_en %>"
-                            target="_blank"
-                            rel="noopener"
-                        >
-                            <%= articleDiscussion.article_en.title %>
-                        </a>
+                    <% if (articleDiscussion.url_en && articleDiscussion.article_en?.title) { %>
+                        <a data-lang="en" href="<%= articleDiscussion.url_en %>" target="_blank" rel="noopener"><%= articleDiscussion.article_en.title %></a>
+                    <% } else if (articleDiscussion.url_ru && articleDiscussion.article_ru?.title) { %>
+                        <a data-lang="en" href="<%= articleDiscussion.url_ru %>" target="_blank" rel="noopener"><%= articleDiscussion.article_ru.title %></a>
                     <% } %>
-
                 </div>
 
-                <% const discussionImage =
-                    articleDiscussion.article_ru?.image ||
-                    articleDiscussion.article_en?.image; %>
+                <% const discussionImageRu = articleDiscussion.article_ru?.image || articleDiscussion.article_en?.image; %>
+                <% const discussionImageEn = articleDiscussion.article_en?.image || articleDiscussion.article_ru?.image; %>
 
-                <% if (discussionImage) { %>
-                    <div class="article-discussion-source-image">
-                        <img
-                            src="<%= discussionImage %>"
-                            alt=""
-                        >
+                <% if (discussionImageRu) { %>
+                    <div class="article-discussion-source-image" data-lang="ru">
+                        <img src="<%= discussionImageRu %>" alt="">
                     </div>
                 <% } %>
-
+                <% if (discussionImageEn) { %>
+                    <div class="article-discussion-source-image" data-lang="en">
+                        <img src="<%= discussionImageEn %>" alt="">
+                    </div>
+                <% } %>
             <% } %>
-
         <% } else { %>
-
             <p class="profile-eyebrow">
                 <% if (topic.room === 'news') { %>
-                    Новость проекта / <span>Project News</span>
+                    <span data-lang="ru">Новость проекта</span><span data-lang="en">Project News</span>
                 <% } else { %>
-                    Тема сообщества / <span>Community Topic</span>
+                    <span data-lang="ru">Тема сообщества</span><span data-lang="en">Community Topic</span>
                 <% } %>
             </p>
-
-            <h1><%= topic.title %></h1>
-
+            <h1 id="translated-topic-title"><%= topic.title %></h1>
             <p>
-                <%= topic.room === 'news' ? 'Автор новости' : 'Автор темы' %>:
-                <a href="/gostinaya/member/<%= topic.author_id %>">
-                    <%= topic.author %>
-                </a>
-                <br>
-                <span>
-                    <%= topic.room === 'news' ? 'News author' : 'Topic author' %>:
-                    <a href="/gostinaya/member/<%= topic.author_id %>">
-                        <%= topic.author %>
-                    </a>
-                </span>
+                <span data-lang="ru"><%= topic.room === 'news' ? 'Автор новости' : 'Автор темы' %>: <a href="/gostinaya/member/<%= topic.author_id %>"><%= topic.author %></a></span>
+                <span data-lang="en"><%= topic.room === 'news' ? 'News author' : 'Topic author' %>: <a href="/gostinaya/member/<%= topic.author_id %>"><%= topic.author %></a></span>
             </p>
-
         <% } %>
-
     </header>
 
     <% if (topic.closed) { %>
         <div class="topic-closed-notice" role="status">
-            <strong>🔒 Тема закрыта модератором.</strong>
-            <span>Новые ответы недоступны.</span>
-            <em>This topic has been closed by a moderator. New replies are disabled.</em>
+            <strong data-lang="ru">🔒 Тема закрыта модератором.</strong>
+            <strong data-lang="en">🔒 This topic has been closed by a moderator.</strong>
+            <span data-lang="ru">Новые ответы недоступны.</span>
+            <span data-lang="en">New replies are disabled.</span>
         </div>
     <% } %>
 
     <% if (topic.room !== 'articles') { %>
     <section class="profile-card room-panel topic-panel topic-opening-panel">
-        <div class="room-panel-header">
-            <div>
-                <h2>
-                    <% if (topic.room === 'news') { %>
-                        Новость / <span>News</span>
-                    <% } else { %>
-                        Первое сообщение / <span>Opening Message</span>
-                    <% } %>
-                </h2>
-            </div>
-        </div>
+        <div class="room-panel-header"><div><h2>
+            <% if (topic.room === 'news') { %><span data-lang="ru">Новость</span><span data-lang="en">News</span><% } else { %><span data-lang="ru">Первое сообщение</span><span data-lang="en">Opening Message</span><% } %>
+        </h2></div></div>
 
         <% if (messages.length) { %>
             <article class="message-item topic-first-message">
                 <header>
-                    <strong>
-                        <a href="/gostinaya/member/<%= messages[0].author_id %>">
-                            <%= messages[0].author %>
-                        </a>
-                    </strong>
-
+                    <strong><a href="/gostinaya/member/<%= messages[0].author_id %>"><%= messages[0].author %></a></strong>
                     <span><%= formatMoscowDateTime(messages[0].created_at) %></span>
                 </header>
-
-                <p class="<%= messages[0].hidden_at ? 'moderated-placeholder' : '' %>"><%- linkifyText(messages[0].body) %></p>
+                <p data-translation-message-id="<%= messages[0].id %>" class="<%= messages[0].hidden_at ? 'moderated-placeholder' : '' %>"><%- linkifyText(messages[0].body) %></p>
 
                 <% if (!messages[0].hidden_at && Number(currentUserId) === Number(topic.author_id)) { %>
                     <div class="message-actions">
                         <a href="/gostinaya/topic/<%= topic.id %>/edit">
-                            <%= topic.room === 'news' ? 'Изменить заголовок новости' : 'Изменить название темы' %> /
-                            <span class="en-secondary"><%= topic.room === 'news' ? 'Edit News Title' : 'Edit Topic Title' %></span>
+                            <span data-lang="ru"><%= topic.room === 'news' ? 'Изменить заголовок новости' : 'Изменить название темы' %></span>
+                            <span data-lang="en"><%= topic.room === 'news' ? 'Edit News Title' : 'Edit Topic Title' %></span>
                         </a>
-
                         <a href="/gostinaya/message/<%= messages[0].id %>/edit">
-                            <%= topic.room === 'news' ? 'Редактировать текст новости' : 'Редактировать текст темы' %> /
-                            <span class="en-secondary"><%= topic.room === 'news' ? 'Edit News Text' : 'Edit Opening Message' %></span>
+                            <span data-lang="ru"><%= topic.room === 'news' ? 'Редактировать текст новости' : 'Редактировать текст темы' %></span>
+                            <span data-lang="en"><%= topic.room === 'news' ? 'Edit News Text' : 'Edit Opening Message' %></span>
                         </a>
                     </div>
                 <% } %>
 
                 <% if (!messages[0].hidden_at) { %>
                 <details class="report-control">
-                    <summary>Пожаловаться / Report</summary>
+                    <summary><span data-lang="ru">Пожаловаться</span><span data-lang="en">Report</span></summary>
                     <form method="post" action="/gostinaya/reports">
                         <input type="hidden" name="topic_id" value="<%= topic.id %>">
                         <input type="hidden" name="message_id" value="<%= messages[0].id %>">
-                        <textarea name="reason" maxlength="500" rows="3" placeholder="Что произошло? / What happened?" required></textarea>
-                        <button type="submit">Отправить / Send</button>
+                        <textarea name="reason" maxlength="500" rows="3" data-placeholder-ru="Что произошло?" data-placeholder-en="What happened?" required></textarea>
+                        <button type="submit"><span data-lang="ru">Отправить</span><span data-lang="en">Send</span></button>
                     </form>
                 </details>
                 <% } %>
@@ -157,221 +109,147 @@
     <% } %>
 
     <%
-        const discussionMessages =
-            topic.room === 'articles'
-                ? messages
-                : messages.slice(1);
-
-        const topLevelMessages = discussionMessages.filter(
-            message => !message.parent_message_id
-        );
-
+        const discussionMessages = topic.room === 'articles' ? messages : messages.slice(1);
+        const topLevelMessages = discussionMessages.filter(message => !message.parent_message_id);
         const repliesByParent = new Map();
-
         discussionMessages.forEach(message => {
             if (!message.parent_message_id) return;
-
             const parentId = Number(message.parent_message_id);
-
-            if (!repliesByParent.has(parentId)) {
-                repliesByParent.set(parentId, []);
-            }
-
+            if (!repliesByParent.has(parentId)) repliesByParent.set(parentId, []);
             repliesByParent.get(parentId).push(message);
         });
-
         function countThreadReplies(messageId) {
-            const directReplies =
-                repliesByParent.get(Number(messageId)) || [];
-
-            return directReplies.reduce(
-                (total, reply) =>
-                    total + 1 + countThreadReplies(reply.id),
-                0
-            );
+            const directReplies = repliesByParent.get(Number(messageId)) || [];
+            return directReplies.reduce((total, reply) => total + 1 + countThreadReplies(reply.id), 0);
         }
     %>
 
     <section class="profile-card room-panel topic-panel topic-replies-panel">
-        <div class="room-panel-header">
-            <div>
-                <h2>
-                    <% if (topic.room === 'articles') { %>
-                        Комментарии /
-                        <span>Comments</span>
-                    <% } else if (topic.room === 'news') { %>
-                        Обсуждение новости /
-                        <span>News Discussion</span>
-                    <% } else { %>
-                        Ответы /
-                        <span>Replies</span>
-                    <% } %>
-                </h2>
-
-                <p>
-                    <% if (topic.room === 'articles') { %>
-                        Обсуждение публикации участниками Гостиной.
-                        <span>The Lounge members discuss the publication here.</span>
-                    <% } else if (topic.room === 'news') { %>
-                        Мнения и вопросы участников о новости проекта.
-                        <span>Members share thoughts and questions about this project news.</span>
-                    <% } else { %>
-                        Продолжение разговора участников.
-                        <span>The members’ conversation continues here.</span>
-                    <% } %>
-                </p>
-            </div>
-        </div>
+        <div class="room-panel-header"><div>
+            <h2>
+                <% if (topic.room === 'articles') { %><span data-lang="ru">Комментарии</span><span data-lang="en">Comments</span>
+                <% } else if (topic.room === 'news') { %><span data-lang="ru">Обсуждение новости</span><span data-lang="en">News Discussion</span>
+                <% } else { %><span data-lang="ru">Ответы</span><span data-lang="en">Replies</span><% } %>
+            </h2>
+            <p>
+                <% if (topic.room === 'articles') { %><span data-lang="ru">Обсуждение публикации участниками Гостиной.</span><span data-lang="en">The Lounge members discuss the publication here.</span>
+                <% } else if (topic.room === 'news') { %><span data-lang="ru">Мнения и вопросы участников о новости проекта.</span><span data-lang="en">Members share thoughts and questions about this project news.</span>
+                <% } else { %><span data-lang="ru">Продолжение разговора участников.</span><span data-lang="en">The members’ conversation continues here.</span><% } %>
+            </p>
+        </div></div>
 
         <% if (!topLevelMessages.length) { %>
             <div class="room-empty topic-empty">
                 <h3>
-                    <% if (topic.room === 'articles') { %>
-                        Комментариев пока нет /
-                        <span>No Comments Yet</span>
-                    <% } else { %>
-                        Пока никто не ответил /
-                        <span>No Replies Yet</span>
-                    <% } %>
+                    <% if (topic.room === 'articles') { %><span data-lang="ru">Комментариев пока нет</span><span data-lang="en">No Comments Yet</span>
+                    <% } else { %><span data-lang="ru">Пока никто не ответил</span><span data-lang="en">No Replies Yet</span><% } %>
                 </h3>
-
                 <p>
-                    <% if (topic.room === 'articles') { %>
-                        Вы можете оставить первый комментарий к статье.
-                        <span>You can leave the first comment on the article.</span>
-                    <% } else { %>
-                        Вы можете стать первым участником разговора.
-                        <span>You can be the first to join the conversation.</span>
-                    <% } %>
+                    <% if (topic.room === 'articles') { %><span data-lang="ru">Вы можете оставить первый комментарий к статье.</span><span data-lang="en">You can leave the first comment on the article.</span>
+                    <% } else { %><span data-lang="ru">Вы можете стать первым участником разговора.</span><span data-lang="en">You can be the first to join the conversation.</span><% } %>
                 </p>
             </div>
         <% } else { %>
             <div class="topic-message-list">
                 <% topLevelMessages.forEach(message => { %>
-                    <%- include('partials/discussion-message', {
-                        message,
-                        parentAuthor: null,
-                        repliesByParent,
-                        countThreadReplies,
-                        currentUserId,
-                        topicId: topic.id
-                    }) %>
+                    <%- include('partials/discussion-message', { message, parentAuthor: null, repliesByParent, countThreadReplies, currentUserId, topicId: topic.id }) %>
                 <% }) %>
             </div>
         <% } %>
     </section>
 
     <% if (!topic.closed) { %>
-
         <div id="reply-form-home"></div>
-
-        <section
-            class="profile-card room-panel topic-panel topic-composer"
-            id="reply-composer"
-        >
-            <div class="room-panel-header">
-                <div>
-                    <h2 id="reply-form-title">
-                        <% if (topic.room === 'articles') { %>
-                            Оставить комментарий /
-                            <span>Leave a Comment</span>
-                        <% } else if (topic.room === 'news') { %>
-                            Обсудить новость /
-                            <span>Discuss the News</span>
-                        <% } else { %>
-                            Ответить в тему /
-                            <span>Reply to Topic</span>
-                        <% } %>
-                    </h2>
-                </div>
-            </div>
+        <section class="profile-card room-panel topic-panel topic-composer" id="reply-composer">
+            <div class="room-panel-header"><div><h2 id="reply-form-title">
+                <% if (topic.room === 'articles') { %><span data-lang="ru">Оставить комментарий</span><span data-lang="en">Leave a Comment</span>
+                <% } else if (topic.room === 'news') { %><span data-lang="ru">Обсудить новость</span><span data-lang="en">Discuss the News</span>
+                <% } else { %><span data-lang="ru">Ответить в тему</span><span data-lang="en">Reply to Topic</span><% } %>
+            </h2></div></div>
 
             <p id="reply-target" class="reply-target" hidden></p>
-
-            <form
-                method="post"
-                action="/gostinaya/topic/<%= topic.id %>/messages"
-            >
-                <input
-                    type="hidden"
-                    name="parent_message_id"
-                    id="parent-message-id"
-                    value=""
-                >
-
+            <form method="post" action="/gostinaya/topic/<%= topic.id %>/messages">
+                <input type="hidden" name="parent_message_id" id="parent-message-id" value="">
                 <label>
-                    Сообщение /
-                    <span class="en-secondary">Message</span>
-
-                    <textarea
-                        name="body"
-                        rows="7"
-                        maxlength="5000"
-                        required
-                    ></textarea>
+                    <span data-lang="ru">Сообщение</span><span data-lang="en">Message</span>
+                    <textarea name="body" rows="7" maxlength="5000" required></textarea>
                 </label>
-
                 <div class="message-actions">
-                    <button type="submit">
-                        Опубликовать сообщение /
-                        <span class="en-secondary">Post Message</span>
-                    </button>
-
-                    <button
-                        type="button"
-                        id="cancel-reply"
-                        hidden
-                    >
-                        Отменить ответ /
-                        <span class="en-secondary">Cancel Reply</span>
-                    </button>
+                    <button type="submit"><span data-lang="ru">Опубликовать сообщение</span><span data-lang="en">Post Message</span></button>
+                    <button type="button" id="cancel-reply" hidden><span data-lang="ru">Отменить ответ</span><span data-lang="en">Cancel Reply</span></button>
                 </div>
             </form>
         </section>
-
     <% } %>
 
     <nav class="room-navigation">
         <a href="/gostinaya/<%= topic.room %>">
-            <% if (topic.room === 'articles') { %>
-                ← Вернуться к обсуждению статей /
-                <span class="en-secondary">Back to Article Discussions</span>
-            <% } else if (topic.room === 'news') { %>
-                ← Вернуться к новостям проекта /
-                <span class="en-secondary">Back to Project News</span>
-            <% } else { %>
-                ← Вернуться к темам /
-                <span class="en-secondary">Back to Topics</span>
-            <% } %>
+            <% if (topic.room === 'articles') { %><span data-lang="ru">← Вернуться к обсуждению статей</span><span data-lang="en">← Back to Article Discussions</span>
+            <% } else if (topic.room === 'news') { %><span data-lang="ru">← Вернуться к новостям проекта</span><span data-lang="en">← Back to Project News</span>
+            <% } else { %><span data-lang="ru">← Вернуться к темам</span><span data-lang="en">← Back to Topics</span><% } %>
         </a>
     </nav>
-
 </section>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const hashTarget = window.location.hash
-        ? document.querySelector(window.location.hash)
-        : null;
-
+    const hashTarget = window.location.hash ? document.querySelector(window.location.hash) : null;
     if (hashTarget) {
         let parent = hashTarget.parentElement;
-
-        while (parent) {
-            if (parent.tagName === 'DETAILS') {
-                parent.open = true;
-            }
-
-            parent = parent.parentElement;
-        }
-
-        requestAnimationFrame(function () {
-            hashTarget.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
-            });
-        });
+        while (parent) { if (parent.tagName === 'DETAILS') parent.open = true; parent = parent.parentElement; }
+        requestAnimationFrame(function () { hashTarget.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
     }
+
+    const topicId = <%- JSON.stringify(topic.id) %>;
+    let translationSequence = 0;
+
+    function escapeHtml(value) {
+        return String(value || '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
+
+    function linkifyTranslatedText(value) {
+        const escaped = escapeHtml(value);
+        return escaped.replace(
+            /(https?:\/\/[^\s<]+)/g,
+            '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+        ).replace(/\n/g, '<br>');
+    }
+
+    async function applyDiscussionTranslation(lang) {
+        const sequence = ++translationSequence;
+
+        try {
+            const response = await fetch(`/gostinaya/api/translations/topic/${topicId}?lang=${encodeURIComponent(lang)}`, {
+                headers: { Accept: 'application/json' },
+                credentials: 'same-origin'
+            });
+
+            if (!response.ok) return;
+            const payload = await response.json();
+            if (sequence !== translationSequence || payload.lang !== lang) return;
+
+            const title = document.getElementById('translated-topic-title');
+            if (title && payload.topic?.title) title.textContent = payload.topic.title;
+
+            (payload.messages || []).forEach(message => {
+                const element = document.querySelector(`[data-translation-message-id="${message.id}"]`);
+                if (element) element.innerHTML = linkifyTranslatedText(message.body);
+            });
+        } catch (error) {
+            console.error('Could not translate discussion:', error);
+        }
+    }
+
+    document.addEventListener('lounge-language-change', function (event) {
+        applyDiscussionTranslation(event.detail?.lang === 'en' ? 'en' : 'ru');
+    });
+
+    applyDiscussionTranslation(document.documentElement.dataset.loungeLang === 'en' ? 'en' : 'ru');
 
     const composer = document.getElementById('reply-composer');
     const home = document.getElementById('reply-form-home');
@@ -379,99 +257,49 @@ document.addEventListener('DOMContentLoaded', function () {
     const title = document.getElementById('reply-form-title');
     const target = document.getElementById('reply-target');
     const cancelButton = document.getElementById('cancel-reply');
+    const textarea = composer ? composer.querySelector('textarea[name="body"]') : null;
+    if (!composer || !home || !parentInput || !title || !cancelButton) return;
 
-    const textarea = composer
-        ? composer.querySelector('textarea[name="body"]')
-        : null;
-
-    if (
-        !composer ||
-        !home ||
-        !parentInput ||
-        !title ||
-        !cancelButton
-    ) {
-        return;
-    }
-
-    function setBilingualText(element, russianText, englishText) {
-        element.textContent = russianText + ' / ';
-
-        const english = document.createElement('span');
-        english.className = 'en-secondary';
-        english.textContent = englishText;
-
-        element.appendChild(english);
+    function localized(ru, en) {
+        return document.documentElement.dataset.loungeLang === 'en' ? en : ru;
     }
 
     document.querySelectorAll('.reply-button').forEach(function (button) {
         button.addEventListener('click', function () {
             const messageId = button.dataset.messageId;
-            const author = button.dataset.author || 'участнику';
-
-            const slot = document.querySelector(
-                '.reply-form-slot[data-message-id="' +
-                messageId +
-                '"]'
-            );
-
+            const author = button.dataset.author || localized('участнику', 'member');
+            const slot = document.querySelector('.reply-form-slot[data-message-id="' + messageId + '"]');
             if (!slot) return;
 
             parentInput.value = String(messageId);
             parentInput.setAttribute('value', String(messageId));
-
-            setBilingualText(
-                title,
-                'Ответ участнику ' + author,
-                'Reply to ' + author
-            );
-
+            title.textContent = localized('Ответ участнику ' + author, 'Reply to ' + author);
             if (target) {
-                setBilingualText(
-                    target,
-                    'Вы отвечаете участнику ' + author,
-                    'You are replying to ' + author
-                );
-
+                target.textContent = localized('Вы отвечаете участнику ' + author, 'You are replying to ' + author);
                 target.hidden = false;
             }
-
             cancelButton.hidden = false;
             slot.appendChild(composer);
-
             if (textarea) textarea.focus();
         });
     });
 
     const replyForm = composer.querySelector('form');
-
-    if (replyForm) {
-        replyForm.addEventListener('submit', function () {
-            parentInput.value =
-                parentInput.getAttribute('value') ||
-                parentInput.value ||
-                '';
-        });
-    }
+    if (replyForm) replyForm.addEventListener('submit', function () { parentInput.value = parentInput.getAttribute('value') || parentInput.value || ''; });
 
     cancelButton.addEventListener('click', function () {
         parentInput.value = '';
         parentInput.setAttribute('value', '');
-
-        setBilingualText(
-            title,
-            'Ответить в тему',
-            'Reply to Topic'
-        );
-
-        if (target) {
-            target.textContent = '';
-            target.hidden = true;
-        }
-
+        title.textContent = <%- JSON.stringify(
+            topic.room === 'articles'
+                ? 'Оставить комментарий / Leave a Comment'
+                : topic.room === 'news'
+                    ? 'Обсудить новость / Discuss the News'
+                    : 'Ответить в тему / Reply to Topic'
+        ) %>.split(' / ')[document.documentElement.dataset.loungeLang === 'en' ? 1 : 0];
+        if (target) { target.textContent = ''; target.hidden = true; }
         cancelButton.hidden = true;
         home.insertAdjacentElement('afterend', composer);
-
         if (textarea) textarea.focus();
     });
 });

@@ -1,149 +1,128 @@
-<section class="auth-page">
-  <nav class="public-nav" aria-label="Навигация / Navigation">
-    <a href="/gostinaya">← Добро пожаловать / <span>Welcome</span></a>
-    <a href="https://milenin.pro/">⌂ На сайт проекта / <span>Main website</span></a>
+<section class="auth-page lounge-language-page">
+  <nav class="public-nav" aria-label="Navigation">
+    <a href="/gostinaya" data-lang="ru">← Добро пожаловать</a>
+    <a href="/gostinaya?lang=en" data-lang="en">← Welcome</a>
+
+    <div class="language-switch" role="group" aria-label="Language">
+      <button type="button" data-set-lang="ru" aria-pressed="false">RU</button>
+      <span aria-hidden="true">/</span>
+      <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+    </div>
+
+    <a href="https://milenin.pro/" data-lang="ru">⌂ На сайт проекта</a>
+    <a href="https://milenin.pro/en/" data-lang="en">⌂ Main website</a>
   </nav>
 
   <div class="auth-card">
+    <h1 data-lang="ru">Постучать в дверь</h1>
+    <h1 data-lang="en">Knock on the Door</h1>
 
-    <p class="auth-kicker">Гостиная / The Lounge</p>
-
-    <h1>
-      Постучать в дверь<br>
-      <span>Knock on the Door</span>
-    </h1>
-
-    <p class="auth-intro">
-      Представьтесь и расскажите немного о себе. После регистрации мы пришлём ссылку для подтверждения e-mail.<br>
+    <p class="auth-intro" data-lang="ru">
+      Представьтесь и расскажите немного о себе. После регистрации мы пришлём ссылку для подтверждения e-mail.
+    </p>
+    <p class="auth-intro" data-lang="en">
       Introduce yourself and tell us a little about yourself. We will send an e-mail confirmation link after registration.
     </p>
 
-    <form id="register-form" class="auth-form">
+    <div class="registration-privacy-note" data-lang="ru">
+      <strong>О ваших данных.</strong> Соединение с Гостиной защищено HTTPS/TLS. Пароли не хранятся в открытом виде — только в виде хэшей. Мы не продаём данные и не используем их для рекламного профилирования. <a href="/gostinaya/privacy" target="_blank" rel="noopener">Подробнее об обработке данных</a>.
+    </div>
+    <div class="registration-privacy-note" data-lang="en">
+      <strong>About your data.</strong> Your connection to the Lounge is protected by HTTPS/TLS, and passwords are stored only as hashes. We do not sell your data or use it for advertising profiles. <a href="/gostinaya/privacy?lang=en" target="_blank" rel="noopener">Read more about data processing</a>.
+    </div>
 
-      <label for="name">
-        Имя<br>
-        <span>Name</span>
-      </label>
-      <input
-        id="name"
-        name="name"
-        type="text"
-        autocomplete="name"
-        required
-      >
+    <form id="register-form" class="auth-form">
+      <label for="name" data-lang="ru">Имя</label>
+      <label for="name" data-lang="en">Name</label>
+      <input id="name" name="name" type="text" autocomplete="name" required>
 
       <label for="email">E-mail</label>
-      <input
-        id="email"
-        name="email"
-        type="email"
-        autocomplete="email"
-        required
-      >
+      <input id="email" name="email" type="email" autocomplete="email" required>
 
-      <label for="country">
-        Страна<br>
-        <span>Country</span>
-      </label>
+      <label for="country" data-lang="ru">Страна</label>
+      <label for="country" data-lang="en">Country</label>
       <input id="country" name="country" type="text" autocomplete="country-name" maxlength="80" required>
 
-      <label for="city">
-        Город<br>
-        <span>City</span>
-      </label>
+      <label for="city" data-lang="ru">Город</label>
+      <label for="city" data-lang="en">City</label>
       <input id="city" name="city" type="text" autocomplete="address-level2" maxlength="80" required>
 
-      <label for="language">
-        Язык общения<br>
-        <span>Language</span>
-      </label>
+      <label for="language" data-lang="ru">Язык общения</label>
+      <label for="language" data-lang="en">Language</label>
       <select id="language" name="language" required>
-        <option value="">Выберите / Select</option>
-        <option value="ru">Русский / Russian</option>
-        <option value="en">English / Английский</option>
+        <option value="" data-option-ru="Выберите" data-option-en="Select">Выберите</option>
+        <option value="ru">Русский</option>
+        <option value="en">English</option>
       </select>
 
-      <label for="joinReason">
-        Что привело вас на сайт «После логина»?<br>
-        <span>What brought you to After Login?</span>
-      </label>
+      <label for="joinReason" data-lang="ru">Что привело вас на сайт «После логина»?</label>
+      <label for="joinReason" data-lang="en">What brought you to After Login?</label>
       <textarea id="joinReason" name="joinReason" maxlength="1000" rows="4" required></textarea>
 
-      <label for="currentTopic">
-        Какая тема вам сегодня ближе?<br>
-        <span>Which topic feels closest to you today?</span>
-      </label>
+      <label for="currentTopic" data-lang="ru">Какая тема вам сегодня ближе?</label>
+      <label for="currentTopic" data-lang="en">Which topic feels closest to you today?</label>
       <textarea id="currentTopic" name="currentTopic" maxlength="1000" rows="4" required></textarea>
 
-      <label for="password">
-        Пароль<br>
-        <span>Password</span>
-      </label>
-      <input
-        id="password"
-        name="password"
-        type="password"
-        autocomplete="new-password"
-        minlength="8"
-        required
-      >
-<label for="confirmPassword">
-  Повторите пароль<br>
-  <span>Confirm password</span>
-</label>
-<input
-  id="confirmPassword"
-  name="confirmPassword"
-  type="password"
-  autocomplete="new-password"
-  minlength="8"
-  required
->
-      <div class="auth-consent">
-        <input id="acceptsRules" name="acceptsRules" type="checkbox" required>
-        <label for="acceptsRules">
-          Я принимаю <a href="/gostinaya/rules" target="_blank" rel="noopener">Правила Гостиной</a>.<br>
-          <em>I accept the <a href="/gostinaya/rules" target="_blank" rel="noopener">Lounge Rules</a>.</em>
-        </label>
+      <label for="password" data-lang="ru">Пароль</label>
+      <label for="password" data-lang="en">Password</label>
+      <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+
+      <label for="confirmPassword" data-lang="ru">Повторите пароль</label>
+      <label for="confirmPassword" data-lang="en">Confirm password</label>
+      <input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" required>
+
+      <div class="auth-consent" data-lang="ru">
+        <input id="acceptsRulesRu" name="acceptsRulesRu" type="checkbox">
+        <label for="acceptsRulesRu">Я принимаю <a href="/gostinaya/rules" target="_blank" rel="noopener">Правила Гостиной</a>.</label>
+      </div>
+      <div class="auth-consent" data-lang="en">
+        <input id="acceptsRulesEn" name="acceptsRulesEn" type="checkbox">
+        <label for="acceptsRulesEn">I accept the <a href="/gostinaya/rules?lang=en" target="_blank" rel="noopener">Lounge Rules</a>.</label>
       </div>
 
-      <div class="auth-consent">
-        <input id="acceptsPrivacy" name="acceptsPrivacy" type="checkbox" required>
-        <label for="acceptsPrivacy">
-          Я согласен с <a href="/gostinaya/privacy" target="_blank" rel="noopener">условиями обработки данных</a> для создания и работы аккаунта.<br>
-          <em>I accept the <a href="/gostinaya/privacy" target="_blank" rel="noopener">data processing terms</a> required to create and operate my account.</em>
-        </label>
+      <div class="auth-consent" data-lang="ru">
+        <input id="acceptsPrivacyRu" name="acceptsPrivacyRu" type="checkbox">
+        <label for="acceptsPrivacyRu">Я согласен с <a href="/gostinaya/privacy" target="_blank" rel="noopener">условиями обработки данных</a> для создания и работы аккаунта.</label>
+      </div>
+      <div class="auth-consent" data-lang="en">
+        <input id="acceptsPrivacyEn" name="acceptsPrivacyEn" type="checkbox">
+        <label for="acceptsPrivacyEn">I accept the <a href="/gostinaya/privacy?lang=en" target="_blank" rel="noopener">data processing terms</a> required to create and operate my account.</label>
       </div>
 
       <button type="submit">
-        Зарегистрироваться<br>
-        <span>Register</span>
+        <span data-lang="ru">Зарегистрироваться</span>
+        <span data-lang="en">Register</span>
       </button>
 
       <p id="register-message" class="auth-message" aria-live="polite"></p>
     </form>
 
     <div class="auth-links">
-      <span>
-        Уже зарегистрированы?<br>
-        Already have an account?
-      </span>
-
-      <a href="/gostinaya/login<%= returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : '' %>">
-        Войти<br>
-        Sign in
-      </a>
+      <p data-lang="ru">Уже зарегистрированы? <a href="/gostinaya/login<%= returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : '' %>">Войти</a></p>
+      <p data-lang="en">Already have an account? <a href="/gostinaya/login<%= returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : '' %>">Sign in</a></p>
     </div>
-
   </div>
 </section>
 
 <style>
-  /* Registration readability: keep the form geometry, enlarge only its text and consent controls. */
   #register-form input:not([type="checkbox"]),
   #register-form select,
   #register-form textarea {
     font-size: 18px !important;
+  }
+
+  .registration-privacy-note {
+    margin: 18px 0 24px;
+    padding: 14px 16px;
+    border: 1px solid rgba(148, 163, 184, 0.32);
+    border-radius: 12px;
+    background: rgba(148, 163, 184, 0.08);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .registration-privacy-note a {
+    font-weight: 600;
   }
 
   #register-form .auth-consent {
@@ -161,37 +140,81 @@
     font-size: 16px !important;
     line-height: 1.5 !important;
   }
-
-  #register-form .auth-consent em {
-    font-size: 15px !important;
-    line-height: 1.45 !important;
-  }
 </style>
 
 <script>
   const form = document.getElementById('register-form');
   const message = document.getElementById('register-message');
   const returnTo = <%- JSON.stringify(returnTo || '') %>;
+  const languageSelect = document.getElementById('language');
+  const uiLanguage = () => window.getLoungeLanguage ? window.getLoungeLanguage() : (document.documentElement.dataset.loungeLang === 'en' ? 'en' : 'ru');
+  const localizeMessage = (value, language) => window.localizeLoungeMessage ? window.localizeLoungeMessage(value, language) : String(value || '');
+  const copy = {
+    ru: {
+      select: 'Выберите',
+      creating: 'Создаём учётную запись...',
+      mismatch: 'Пароли не совпадают.',
+      failed: 'Не удалось зарегистрироваться.',
+      sending: 'Отправляем письмо для подтверждения…',
+      connection: 'Не удалось связаться с сервером.'
+    },
+    en: {
+      select: 'Select',
+      creating: 'Creating your account...',
+      mismatch: 'Passwords do not match.',
+      failed: 'Registration failed.',
+      sending: 'Sending the confirmation e-mail…',
+      connection: 'Could not connect to the server.'
+    }
+  };
+
+  function syncRegistrationLanguage() {
+    const language = uiLanguage();
+    const firstOption = languageSelect.options[0];
+    firstOption.textContent = language === 'en' ? firstOption.dataset.optionEn : firstOption.dataset.optionRu;
+
+    if (!languageSelect.value) {
+      languageSelect.value = language;
+    }
+  }
+
+  syncRegistrationLanguage();
+  document.querySelectorAll('[data-set-lang]').forEach((button) => {
+    button.addEventListener('click', () => requestAnimationFrame(syncRegistrationLanguage));
+  });
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
+    const language = uiLanguage();
     const submitButton = form.querySelector('button[type="submit"]');
     submitButton.disabled = true;
-
-    message.textContent = 'Создаём учётную запись... / Creating your account...';
+    message.textContent = copy[language].creating;
 
     const formData = new FormData(form);
+    const password = formData.get('password');
+    const confirmPassword = formData.get('confirmPassword');
 
-const password = formData.get('password');
-const confirmPassword = formData.get('confirmPassword');
+    if (password !== confirmPassword) {
+      message.textContent = copy[language].mismatch;
+      submitButton.disabled = false;
+      return;
+    }
 
-if (password !== confirmPassword) {
-  message.textContent =
-    'Пароли не совпадают. / Passwords do not match.';
-  submitButton.disabled = false;
-  return;
-}
+    const acceptsRules = language === 'en'
+      ? document.getElementById('acceptsRulesEn').checked
+      : document.getElementById('acceptsRulesRu').checked;
+    const acceptsPrivacy = language === 'en'
+      ? document.getElementById('acceptsPrivacyEn').checked
+      : document.getElementById('acceptsPrivacyRu').checked;
+
+    if (!acceptsRules || !acceptsPrivacy) {
+      message.textContent = language === 'en'
+        ? 'Please accept the Lounge Rules and data processing terms.'
+        : 'Примите Правила Гостиной и условия обработки данных.';
+      submitButton.disabled = false;
+      return;
+    }
 
     const payload = {
       name: formData.get('name'),
@@ -199,35 +222,30 @@ if (password !== confirmPassword) {
       password: formData.get('password'),
       country: formData.get('country'),
       city: formData.get('city'),
-      language: formData.get('language'),
+      language: formData.get('language') || language,
       joinReason: formData.get('joinReason'),
       currentTopic: formData.get('currentTopic'),
       returnTo,
-      acceptsRules: formData.get('acceptsRules') === 'on',
-      acceptsPrivacy: formData.get('acceptsPrivacy') === 'on'
+      acceptsRules,
+      acceptsPrivacy
     };
 
     try {
       const response = await fetch('/gostinaya/api/guests/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(payload)
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        message.textContent =
-          data.error ||
-          'Не удалось зарегистрироваться. / Registration failed.';
+        message.textContent = data.error ? localizeMessage(data.error, language) : copy[language].failed;
         submitButton.disabled = false;
         return;
       }
 
-      message.textContent =
-        'Отправляем письмо для подтверждения… / Sending the confirmation e-mail…';
+      message.textContent = copy[language].sending;
 
       if (data.redirect) {
         window.location.href = data.redirect;
@@ -235,10 +253,8 @@ if (password !== confirmPassword) {
       }
 
       window.location.href = '/gostinaya/welcome';
-
     } catch (error) {
-      message.textContent =
-        'Не удалось связаться с сервером. / Could not connect to the server.';
+      message.textContent = copy[language].connection;
       submitButton.disabled = false;
     }
   });

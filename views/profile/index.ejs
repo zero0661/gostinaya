@@ -1,231 +1,204 @@
-<section class="profile-page">
+<section class="profile-page profile-page-polished">
 
     <%
         const joinedDate = guest.created_at
-            ? new Date(
-                guest.created_at.replace(' ', 'T') + 'Z'
-              ).toLocaleDateString('ru-RU', {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric'
+            ? new Date(guest.created_at.replace(' ', 'T') + 'Z').toLocaleDateString('ru-RU', {
+                day: 'numeric', month: 'long', year: 'numeric'
               })
             : '—';
-
-  const joinedDateEn = guest.created_at
-    ? new Date(
-        guest.created_at.replace(' ', 'T') + 'Z'
-      ).toLocaleDateString('en-GB', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-      })
-    : '—';
+        const joinedDateEn = guest.created_at
+            ? new Date(guest.created_at.replace(' ', 'T') + 'Z').toLocaleDateString('en-GB', {
+                day: 'numeric', month: 'long', year: 'numeric'
+              })
+            : '—';
+        const roleRu = guest.role === 'author' ? 'Соавтор' : guest.role === 'admin' ? 'Администратор' : guest.role === 'moderator' ? 'Модератор' : 'Участник';
+        const roleEn = guest.role === 'author' ? 'Co-author' : guest.role === 'admin' ? 'Administrator' : guest.role === 'moderator' ? 'Moderator' : 'Member';
     %>
 
     <header class="profile-header">
-    <p class="profile-eyebrow">Мой профиль / <span>My Profile</span></p>
-    <h1><%= guest.name %></h1>
-    <p>Ваше личное пространство в Гостиной.<br><span>Your personal space in the Lounge.</span></p>
-</header>
+        <p class="profile-eyebrow"><span data-lang="ru">Мой профиль</span><span data-lang="en">My Profile</span></p>
+        <h1><%= guest.name %></h1>
+        <p data-lang="ru">Ваше личное пространство в Гостиной.</p>
+        <p data-lang="en">Your personal space in the Lounge.</p>
+    </header>
 
     <% if (saved) { %>
         <p class="profile-success" id="profile-success">
-            Настройки сохранены.<br><span>Settings saved successfully.</span>
+            <span data-lang="ru">Настройки сохранены.</span>
+            <span data-lang="en">Settings saved successfully.</span>
         </p>
-
         <script>
-            window.history.replaceState(
-                {},
-                document.title,
-                '/gostinaya/profile'
-            );
-
+            window.history.replaceState({}, document.title, '/gostinaya/profile');
             window.setTimeout(() => {
                 const notice = document.getElementById('profile-success');
-
                 if (notice) {
                     notice.style.opacity = '0';
                     notice.style.transform = 'translateY(-6px)';
-
                     window.setTimeout(() => notice.remove(), 300);
                 }
             }, 4000);
         </script>
     <% } %>
 
-    <form method="post" action="/gostinaya/profile">
-
-        <section class="profile-card">
-            <h2>Профиль участника<br><span>Profile</span></h2>
+    <form method="post" action="/gostinaya/profile" id="profile-form">
+        <section class="profile-card profile-main-card">
+            <h2><span data-lang="ru">Профиль участника</span><span data-lang="en">Profile</span></h2>
 
             <label>
-                Имя<br><span>Name</span>
-                <input
-                    type="text"
-                    name="name"
-                    value="<%= guest.name %>"
-                    maxlength="80"
-                    required
-                >
+                <span data-lang="ru">Имя</span><span data-lang="en">Name</span>
+                <input type="text" name="name" value="<%= guest.name %>" maxlength="80" required>
             </label>
 
             <label>
-                E-mail<br><span>E-mail</span>
-                <input
-                    type="email"
-                    value="<%= guest.email %>"
-                    disabled
-                >
+                E-mail
+                <input type="email" value="<%= guest.email %>" disabled>
             </label>
 
             <label>
-                Откуда вы?<br><span>Where are you from?</span>
-                <input
-                    type="text"
-                    name="location"
-                    value="<%= guest.location %>"
-                    maxlength="120"
-                    placeholder="Город, страна или «не скажу»"
-                >
+                <span data-lang="ru">Откуда вы?</span><span data-lang="en">Where are you from?</span>
+                <input type="text" name="location" value="<%= guest.location %>" maxlength="120" data-placeholder-ru="Город, страна или «не скажу»" data-placeholder-en="City, country, or prefer not to say">
             </label>
 
             <label>
-                Язык общения<br><span>Language</span>
+                <span data-lang="ru">Предпочитаемый язык</span><span data-lang="en">Preferred language</span>
                 <select name="language">
-                    <option value="ru" <%= guest.language === 'ru' ? 'selected' : '' %>>
-                        Русский
-                    </option>
-                    <option value="en" <%= guest.language === 'en' ? 'selected' : '' %>>
-                        English
-                    </option>
+                    <option value="ru" <%= guest.language === 'ru' ? 'selected' : '' %> data-label-ru="Русский" data-label-en="Russian">Русский</option>
+                    <option value="en" <%= guest.language === 'en' ? 'selected' : '' %> data-label-ru="Английский" data-label-en="English">English</option>
                 </select>
             </label>
 
             <label>
-                О себе<br><span>About</span>
-                <textarea
-                    name="bio"
-                    maxlength="1000"
-                    rows="6"
-                    placeholder="Несколько слов, которыми вы хотите представиться"
-                ><%= guest.bio %></textarea>
+                <span data-lang="ru">О себе</span><span data-lang="en">About</span>
+                <textarea name="bio" maxlength="1000" rows="5" data-placeholder-ru="Несколько слов, которыми вы хотите представиться" data-placeholder-en="A few words you would like to use to introduce yourself"><%= guest.bio %></textarea>
             </label>
         </section>
 
         <section class="profile-card">
-            <h2>Уведомления<br><span>Notifications</span></h2>
+            <h2><span data-lang="ru">Уведомления</span><span data-lang="en">Notifications</span></h2>
 
-            <p class="notification-preferences-intro">
-                Выберите события, которые будут появляться в вашем личном кабинете.<br>
-                <span>Choose which events will appear in your personal account.</span>
-            </p>
+            <p class="notification-preferences-intro" data-lang="ru">Выберите события, которые будут появляться в вашем личном кабинете.</p>
+            <p class="notification-preferences-intro" data-lang="en">Choose which events will appear in your personal account.</p>
 
             <label>
-                <input
-                    type="checkbox"
-                    name="notify_replies"
-                    <%= guest.notify_replies ? 'checked' : '' %>
-                >
-                Ответы на мои сообщения <span>/ Replies to my messages</span>
+                <input type="checkbox" name="notify_replies" <%= guest.notify_replies ? 'checked' : '' %>>
+                <span data-lang="ru">Ответы на мои сообщения</span><span data-lang="en">Replies to my messages</span>
             </label>
 
             <label>
-                <input
-                    type="checkbox"
-                    name="notify_followed_discussions"
-                    <%= guest.notify_followed_discussions ? 'checked' : '' %>
-                >
-                Новые сообщения в обсуждениях, за которыми я слежу <span>/ New messages in followed discussions</span>
+                <input type="checkbox" name="notify_followed_discussions" <%= guest.notify_followed_discussions ? 'checked' : '' %>>
+                <span data-lang="ru">Новые сообщения в обсуждениях, за которыми я слежу</span><span data-lang="en">New messages in followed discussions</span>
             </label>
 
             <label>
-                <input
-                    type="checkbox"
-                    name="notify_all_article_discussions"
-                    <%= guest.notify_all_article_discussions ? 'checked' : '' %>
-                >
-                Все новые сообщения во всех обсуждениях статей <span>/ All new messages in every article discussion</span>
+                <input type="checkbox" name="notify_all_article_discussions" <%= guest.notify_all_article_discussions ? 'checked' : '' %>>
+                <span data-lang="ru">Все новые сообщения во всех обсуждениях статей</span><span data-lang="en">All new messages in every article discussion</span>
             </label>
 
             <label>
-                <input
-                    type="checkbox"
-                    name="notify_publications"
-                    <%= guest.notify_publications ? 'checked' : '' %>
-                >
-                Новые публикации проекта <span>/ New project publications</span>
+                <input type="checkbox" name="notify_publications" <%= guest.notify_publications ? 'checked' : '' %>>
+                <span data-lang="ru">Новые публикации проекта</span><span data-lang="en">New project publications</span>
             </label>
 
             <label>
-                <input
-                    type="checkbox"
-                    name="notify_new_topics"
-                    <%= guest.notify_new_topics ? 'checked' : '' %>
-                >
-                Новые темы в Гостиной <span>/ New topics in the Lounge</span>
+                <input type="checkbox" name="notify_new_topics" <%= guest.notify_new_topics ? 'checked' : '' %>>
+                <span data-lang="ru">Новые темы в Гостиной</span><span data-lang="en">New topics in the Lounge</span>
             </label>
 
             <div class="notification-delivery">
-                <h3>Доставка на почту <span>/ E-mail delivery</span></h3>
-                <p>
-                    Дополнительно дублировать выбранные уведомления на e-mail.<br>
-                    <span>Also send the selected notifications by e-mail.</span>
-                </p>
+                <h3><span data-lang="ru">Доставка на почту</span><span data-lang="en">E-mail delivery</span></h3>
+                <p data-lang="ru">Дополнительно дублировать выбранные уведомления на e-mail.</p>
+                <p data-lang="en">Also send the selected notifications by e-mail.</p>
 
                 <label>
-                    <input
-                        type="checkbox"
-                        name="notify_email"
-                        <%= guest.notify_email ? 'checked' : '' %>
-                    >
-                    Получать уведомления также на e-mail <span>/ Also receive notifications by e-mail</span>
+                    <input type="checkbox" name="notify_email" <%= guest.notify_email ? 'checked' : '' %>>
+                    <span data-lang="ru">Получать уведомления также на e-mail</span><span data-lang="en">Also receive notifications by e-mail</span>
                 </label>
             </div>
 
-            <button type="submit">
-                Сохранить изменения / <span class="en-secondary">Save Changes</span>
-            </button>
+            <button type="submit"><span data-lang="ru">Сохранить изменения</span><span data-lang="en">Save Changes</span></button>
         </section>
-
     </form>
 
     <section class="profile-card">
-        <h2>Сведения об аккаунте<br><span>Account information</span></h2>
-
+        <h2><span data-lang="ru">Сведения об аккаунте</span><span data-lang="en">Account information</span></h2>
         <dl class="profile-details">
             <div>
-                <dt>Роль<br><span>Role</span></dt>
-                <dd>
-          <%= guest.role === 'author'
-            ? 'Соавтор'
-            : guest.role === 'admin'
-              ? 'Администратор'
-              : guest.role === 'moderator'
-                ? 'Модератор'
-              : 'Участник' %> /
-          <span class="en-secondary"><%= guest.role === 'author'
-            ? 'Co-author'
-            : guest.role === 'admin'
-              ? 'Administrator'
-              : guest.role === 'moderator'
-                ? 'Moderator'
-              : 'Member' %></span>
-        </dd>
+                <dt><span data-lang="ru">Роль</span><span data-lang="en">Role</span></dt>
+                <dd><span data-lang="ru"><%= roleRu %></span><span data-lang="en"><%= roleEn %></span></dd>
             </div>
-
             <div>
-                <dt>В Гостиной с<br><span>Member since</span></dt>
-                <dd><%= joinedDate %> / <span class="en-secondary"><%= joinedDateEn %></span></dd>
+                <dt><span data-lang="ru">В Гостиной с</span><span data-lang="en">Member since</span></dt>
+                <dd><span data-lang="ru"><%= joinedDate %></span><span data-lang="en"><%= joinedDateEn %></span></dd>
             </div>
         </dl>
     </section>
 
     <nav class="profile-navigation">
-        <a href="/gostinaya/hall">← Вернуться в Холл / <span>Back to Hall</span></a>
-
+        <a href="/gostinaya/hall"><span data-lang="ru">← Вернуться в Холл</span><span data-lang="en">← Back to Hall</span></a>
         <form method="post" action="/gostinaya/logout">
-            <button type="submit">Выйти из аккаунта / <span>Sign out</span></button>
+            <button type="submit"><span data-lang="ru">Выйти из аккаунта</span><span data-lang="en">Sign out</span></button>
         </form>
     </nav>
 
 </section>
+
+<style>
+.profile-page-polished .profile-main-card input:disabled {
+    color: #98a2b3;
+    -webkit-text-fill-color: #98a2b3;
+    opacity: 1;
+}
+.profile-page-polished .profile-main-card textarea::placeholder,
+.profile-page-polished .profile-main-card input::placeholder {
+    color: #98a2b3;
+    opacity: 1;
+}
+@media (max-width: 700px) {
+    .profile-page-polished .profile-header {
+        margin-bottom: 20px;
+    }
+    .profile-page-polished .profile-main-card {
+        padding: 16px !important;
+    }
+    .profile-page-polished .profile-main-card h2 {
+        margin-bottom: 16px;
+    }
+    .profile-page-polished .profile-main-card label {
+        margin-bottom: 14px;
+    }
+    .profile-page-polished .profile-main-card input[type="text"],
+    .profile-page-polished .profile-main-card input[type="email"],
+    .profile-page-polished .profile-main-card select,
+    .profile-page-polished .profile-main-card textarea {
+        margin-top: 6px;
+        padding: 10px 12px;
+    }
+    .profile-page-polished .profile-main-card textarea {
+        min-height: 112px;
+    }
+}
+</style>
+
+<script>
+(function () {
+    function localizeLanguageOptions() {
+        const lang = document.documentElement.dataset.loungeLang === 'en' ? 'en' : 'ru';
+        document.querySelectorAll('option[data-label-ru][data-label-en]').forEach(option => {
+            option.textContent = lang === 'en' ? option.dataset.labelEn : option.dataset.labelRu;
+        });
+    }
+
+    const profileForm = document.getElementById('profile-form');
+    if (profileForm) {
+        profileForm.addEventListener('submit', () => {
+            const languageSelect = profileForm.elements.language;
+            const language = languageSelect?.value === 'en' ? 'en' : 'ru';
+            localStorage.setItem('loungeLanguage', language);
+            document.cookie = `loungeLanguage=${language}; Path=/gostinaya; Max-Age=31536000; SameSite=Lax`;
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', localizeLanguageOptions);
+    document.addEventListener('lounge-language-change', localizeLanguageOptions);
+})();
+</script>

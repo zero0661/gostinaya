@@ -1,14 +1,17 @@
 <section class="profile-page moderation-page">
-  <% const roleLabels = { guest: 'Участник', author: 'Соавтор', moderator: 'Модератор', admin: 'Администратор', system: 'Система', legacy: 'Служебный' }; %>
+  <% const roleLabelsRu = { guest: 'Участник', author: 'Соавтор', moderator: 'Модератор', admin: 'Администратор', system: 'Система', legacy: 'Служебный' }; %>
+  <% const roleLabelsEn = { guest: 'Member', author: 'Co-author', moderator: 'Moderator', admin: 'Administrator', system: 'System', legacy: 'Service' }; %>
+
   <header class="profile-header">
-    <p class="profile-eyebrow"><a href="/gostinaya/moderation">Модерация</a></p>
-    <h1>Аккаунты</h1>
-    <p>Здесь доступны служебные данные аккаунтов и ответы, которые участники дали при регистрации. Эти сведения видят только модераторы.</p>
+    <p class="profile-eyebrow"><a href="/gostinaya/moderation"><span data-lang="ru">Модерация</span><span data-lang="en">Moderation</span></a></p>
+    <h1><span data-lang="ru">Аккаунты</span><span data-lang="en">Accounts</span></h1>
+    <p data-lang="ru">Здесь доступны служебные данные аккаунтов и ответы, которые участники дали при регистрации. Эти сведения видят только модераторы.</p>
+    <p data-lang="en">This page contains account administration data and the answers members provided during registration. Only moderators can see this information.</p>
   </header>
 
   <form class="moderation-filter" method="get">
-    <input type="search" name="q" value="<%= search %>" placeholder="Имя или e-mail">
-    <button type="submit">Найти</button>
+    <input type="search" name="q" value="<%= search %>" data-placeholder-ru="Имя или e-mail" data-placeholder-en="Name or e-mail" placeholder="Имя или e-mail">
+    <button type="submit"><span data-lang="ru">Найти</span><span data-lang="en">Search</span></button>
   </form>
 
   <div class="moderation-list">
@@ -17,22 +20,36 @@
         <div class="moderation-item-main">
           <h2><%= account.name %> <span>#<%= account.id %></span></h2>
           <p><%= account.email %></p>
-          <p><strong><%= roleLabels[account.role] || account.role %></strong> · <%= account.email_verified_at ? 'e-mail подтверждён' : 'e-mail не подтверждён' %></p>
-          <p><strong>Регистрация:</strong> <%= account.created_at %> · <strong>Язык:</strong> <%= account.language || '—' %></p>
-          <p><strong>Страна:</strong> <%= account.country || '—' %> · <strong>Город:</strong> <%= account.city || account.location || '—' %></p>
+          <p>
+            <strong data-lang="ru"><%= roleLabelsRu[account.role] || account.role %></strong>
+            <strong data-lang="en"><%= roleLabelsEn[account.role] || account.role %></strong>
+            ·
+            <span data-lang="ru"><%= account.email_verified_at ? 'e-mail подтверждён' : 'e-mail не подтверждён' %></span>
+            <span data-lang="en"><%= account.email_verified_at ? 'e-mail verified' : 'e-mail not verified' %></span>
+          </p>
+          <p>
+            <span data-lang="ru"><strong>Регистрация:</strong> <%= account.created_at %> · <strong>Язык:</strong> <%= account.language || '—' %></span>
+            <span data-lang="en"><strong>Registered:</strong> <%= account.created_at %> · <strong>Language:</strong> <%= account.language || '—' %></span>
+          </p>
+          <p>
+            <span data-lang="ru"><strong>Страна:</strong> <%= account.country || '—' %> · <strong>Город:</strong> <%= account.city || account.location || '—' %></span>
+            <span data-lang="en"><strong>Country:</strong> <%= account.country || '—' %> · <strong>City:</strong> <%= account.city || account.location || '—' %></span>
+          </p>
 
           <% if (account.join_reason || account.current_topic) { %>
             <div class="moderation-registration-answers">
-              <h3>Ответы при регистрации</h3>
-              <p><strong>Почему вам интересен проект «После логина»?</strong><br><%= account.join_reason || 'Ответ не указан.' %></p>
-              <p><strong>Что вас сейчас особенно занимает или о чём хотелось бы поговорить?</strong><br><%= account.current_topic || 'Ответ не указан.' %></p>
+              <h3><span data-lang="ru">Ответы при регистрации</span><span data-lang="en">Registration answers</span></h3>
+              <p data-lang="ru"><strong>Почему вам интересен проект «После логина»?</strong><br><%= account.join_reason || 'Ответ не указан.' %></p>
+              <p data-lang="en"><strong>Why are you interested in After Login?</strong><br><%= account.join_reason || 'No answer provided.' %></p>
+              <p data-lang="ru"><strong>Что вас сейчас особенно занимает или о чём хотелось бы поговорить?</strong><br><%= account.current_topic || 'Ответ не указан.' %></p>
+              <p data-lang="en"><strong>What is especially on your mind right now, or what would you like to discuss?</strong><br><%= account.current_topic || 'No answer provided.' %></p>
             </div>
           <% } else { %>
-            <p><em>Ответы регистрационной анкеты не указаны.</em></p>
+            <p><em data-lang="ru">Ответы регистрационной анкеты не указаны.</em><em data-lang="en">No registration questionnaire answers were provided.</em></p>
           <% } %>
 
           <% if (account.is_blocked) { %>
-            <p class="moderation-warning">Заблокирован: <%= account.blocked_reason %></p>
+            <p class="moderation-warning"><span data-lang="ru">Заблокирован: <%= account.blocked_reason %></span><span data-lang="en">Blocked: <%= account.blocked_reason %></span></p>
           <% } %>
         </div>
 
@@ -40,12 +57,12 @@
           <div class="moderation-actions">
             <% if (account.is_blocked) { %>
               <form method="post" action="/gostinaya/moderation/accounts/<%= account.id %>/unblock">
-                <button type="submit">Разблокировать</button>
+                <button type="submit"><span data-lang="ru">Разблокировать</span><span data-lang="en">Unblock</span></button>
               </form>
             <% } else if (!['admin', 'moderator', 'system', 'legacy'].includes(account.role) || currentGuest.role === 'admin') { %>
               <form method="post" action="/gostinaya/moderation/accounts/<%= account.id %>/block">
-                <input name="reason" maxlength="500" placeholder="Причина" required>
-                <button class="danger" type="submit">Заблокировать</button>
+                <input name="reason" maxlength="500" data-placeholder-ru="Причина" data-placeholder-en="Reason" placeholder="Причина" required>
+                <button class="danger" type="submit"><span data-lang="ru">Заблокировать</span><span data-lang="en">Block</span></button>
               </form>
             <% } %>
 
@@ -53,10 +70,15 @@
               <form method="post" action="/gostinaya/moderation/accounts/<%= account.id %>/role">
                 <select name="role">
                   <% assignableRoles.forEach(role => { %>
-                    <option value="<%= role %>" <%= role === account.role ? 'selected' : '' %>><%= roleLabels[role] || role %></option>
+                    <option
+                      value="<%= role %>"
+                      data-label-ru="<%= roleLabelsRu[role] || role %>"
+                      data-label-en="<%= roleLabelsEn[role] || role %>"
+                      <%= role === account.role ? 'selected' : '' %>
+                    ><%= roleLabelsEn[role] || role %></option>
                   <% }) %>
                 </select>
-                <button type="submit">Изменить роль</button>
+                <button type="submit"><span data-lang="ru">Изменить роль</span><span data-lang="en">Change role</span></button>
               </form>
             <% } %>
           </div>
@@ -64,4 +86,17 @@
       </article>
     <% }) %>
   </div>
+
+<script>
+(function () {
+  function localizeModerationSelects() {
+    const lang = document.documentElement.dataset.loungeLang === 'en' ? 'en' : 'ru';
+    document.querySelectorAll('option[data-label-ru][data-label-en]').forEach(option => {
+      option.textContent = lang === 'en' ? option.dataset.labelEn : option.dataset.labelRu;
+    });
+  }
+  localizeModerationSelects();
+  document.addEventListener('lounge-language-change', localizeModerationSelects);
+})();
+</script>
 </section>

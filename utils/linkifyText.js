@@ -10,8 +10,15 @@ export function escapeHtml(value) {
     .replaceAll("'", '&#039;');
 }
 
+export function normalizeMessageWhitespace(value) {
+  return String(value ?? '')
+    .replace(/\r\n?/g, '\n')
+    .replace(/[\t ]+\n/g, '\n')
+    .replace(/\n{2,}/g, '\n');
+}
+
 export function linkifyText(value) {
-  const text = String(value ?? '');
+  const text = normalizeMessageWhitespace(value);
   let html = '';
   let cursor = 0;
 

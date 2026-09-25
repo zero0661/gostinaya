@@ -1,43 +1,60 @@
 <section class="profile-page moderation-page">
-  <% const actionLabels = {
+  <% const actionLabelsRu = {
     account_blocked: 'Заблокирован аккаунт', account_unblocked: 'Разблокирован аккаунт', account_role_changed: 'Изменена роль',
     topic_pinned: 'Закреплена тема', topic_unpinned: 'Откреплена тема', topic_closed: 'Закрыта тема', topic_reopened: 'Открыта тема',
     topic_hidden: 'Скрыта тема', topic_restored: 'Восстановлена тема', message_hidden: 'Скрыто сообщение', message_restored: 'Восстановлено сообщение',
     report_resolved: 'Жалоба решена', report_dismissed: 'Жалоба отклонена'
   }; %>
-  <% const targetLabels = { account: 'аккаунт', topic: 'тема', message: 'сообщение', report: 'жалоба' }; %>
+  <% const actionLabelsEn = {
+    account_blocked: 'Account blocked', account_unblocked: 'Account unblocked', account_role_changed: 'Role changed',
+    topic_pinned: 'Topic pinned', topic_unpinned: 'Topic unpinned', topic_closed: 'Topic closed', topic_reopened: 'Topic reopened',
+    topic_hidden: 'Topic hidden', topic_restored: 'Topic restored', message_hidden: 'Message hidden', message_restored: 'Message restored',
+    report_resolved: 'Report resolved', report_dismissed: 'Report dismissed'
+  }; %>
+  <% const targetLabelsRu = { account: 'аккаунт', topic: 'тема', message: 'сообщение', report: 'жалоба' }; %>
+  <% const targetLabelsEn = { account: 'account', topic: 'topic', message: 'message', report: 'report' }; %>
+  <% function detailsEn(value) {
+    return String(value || '')
+      .replace(/Причина:/g, 'Reason:')
+      .replace(/Тема:/g, 'Topic:');
+  } %>
+
   <header class="profile-header">
-    <p class="profile-eyebrow">Служебный раздел</p>
-    <h1>Модерация</h1>
-    <p>Управление порядком в Гостиной и прозрачный журнал действий.</p>
+    <p class="profile-eyebrow"><span data-lang="ru">Служебный раздел</span><span data-lang="en">Staff area</span></p>
+    <h1><span data-lang="ru">Модерация</span><span data-lang="en">Moderation</span></h1>
+    <p><span data-lang="ru">Управление порядком в Гостиной и прозрачный журнал действий.</span><span data-lang="en">Community moderation and a transparent action log.</span></p>
   </header>
 
   <nav class="moderation-tabs">
-    <a href="/gostinaya/moderation/accounts">Аккаунты</a>
-    <a href="/gostinaya/moderation/discussions">Обсуждения</a>
-    <a href="/gostinaya/moderation/reports">Жалобы</a>
-    <a href="/gostinaya/moderation/log">Журнал</a>
+    <a href="/gostinaya/moderation/accounts"><span data-lang="ru">Аккаунты</span><span data-lang="en">Accounts</span></a>
+    <a href="/gostinaya/moderation/discussions"><span data-lang="ru">Обсуждения</span><span data-lang="en">Discussions</span></a>
+    <a href="/gostinaya/moderation/reports"><span data-lang="ru">Жалобы</span><span data-lang="en">Reports</span></a>
+    <a href="/gostinaya/moderation/log"><span data-lang="ru">Журнал</span><span data-lang="en">Log</span></a>
   </nav>
 
   <div class="moderation-stats">
-    <article><strong><%= dashboard.accounts %></strong><span>Аккаунты</span></article>
-    <article><strong><%= dashboard.blocked %></strong><span>Заблокированы</span></article>
-    <article><strong><%= dashboard.topics %></strong><span>Темы</span></article>
-    <article><strong><%= dashboard.openReports %></strong><span>Открытые жалобы</span></article>
-    <article><strong><%= dashboard.hiddenTopics + dashboard.hiddenMessages %></strong><span>Скрытые материалы</span></article>
+    <article><strong><%= dashboard.accounts %></strong><span data-lang="ru">Аккаунты</span><span data-lang="en">Accounts</span></article>
+    <article><strong><%= dashboard.blocked %></strong><span data-lang="ru">Заблокированы</span><span data-lang="en">Blocked</span></article>
+    <article><strong><%= dashboard.topics %></strong><span data-lang="ru">Темы</span><span data-lang="en">Topics</span></article>
+    <article><strong><%= dashboard.openReports %></strong><span data-lang="ru">Открытые жалобы</span><span data-lang="en">Open reports</span></article>
+    <article><strong><%= dashboard.hiddenTopics + dashboard.hiddenMessages %></strong><span data-lang="ru">Скрытые материалы</span><span data-lang="en">Hidden items</span></article>
   </div>
 
   <section class="profile-card moderation-panel">
-    <h2>Последние действия</h2>
+    <h2><span data-lang="ru">Последние действия</span><span data-lang="en">Recent actions</span></h2>
     <% if (!dashboard.actions.length) { %>
-      <p>Журнал пока пуст.</p>
+      <p><span data-lang="ru">Журнал пока пуст.</span><span data-lang="en">The log is empty.</span></p>
     <% } else { %>
       <div class="moderation-log-list">
         <% dashboard.actions.forEach(item => { %>
           <article>
             <strong><%= item.actor_name %></strong>
-            <span><%= actionLabels[item.action] || item.action %> · <%= targetLabels[item.target_type] || item.target_type %> №<%= item.target_id %></span>
-            <small><%= formatMoscowDateTime(item.created_at) %><%= item.details ? ` · ${item.details}` : '' %></small>
+            <span data-lang="ru"><%= actionLabelsRu[item.action] || item.action %> · <%= targetLabelsRu[item.target_type] || item.target_type %> №<%= item.target_id %></span>
+            <span data-lang="en"><%= actionLabelsEn[item.action] || item.action %> · <%= targetLabelsEn[item.target_type] || item.target_type %> #<%= item.target_id %></span>
+            <small>
+              <span data-lang="ru"><%= formatMoscowDateTime(item.created_at) %><%= item.details ? ` · ${item.details}` : '' %></span>
+              <span data-lang="en"><%= formatMoscowDateTime(item.created_at) %><%= item.details ? ` · ${detailsEn(item.details)}` : '' %></span>
+            </small>
           </article>
         <% }) %>
       </div>

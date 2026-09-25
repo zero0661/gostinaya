@@ -83,7 +83,8 @@ export default {
             SELECT
                 n.*,
                 actor.name AS actor_name,
-                t.title AS topic_title
+                t.title AS topic_title,
+                t.room AS topic_room
             FROM notifications n
             LEFT JOIN guests actor
                 ON actor.id = n.actor_id

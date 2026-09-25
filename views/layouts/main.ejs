@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-lounge-lang="ru">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,52 +7,146 @@
 <title><%= title %> — Гостиная / The Lounge</title>
 <link rel="stylesheet" type="text/css" href="/gostinaya/public/gostinaya.css?v=20260815-1">
 <link rel="stylesheet" type="text/css" href="/gostinaya/public/gostinaya-logo.css?v=20260822-1">
+<link rel="stylesheet" type="text/css" href="/gostinaya/public/lounge-language.css?v=20260919-6">
+<link rel="stylesheet" type="text/css" href="/gostinaya/public/lounge-mobile-detail.css?v=20260919-1">
+<link rel="stylesheet" type="text/css" href="/gostinaya/public/lounge-message-spacing.css?v=20260925-1">
+<script>
+(() => {
+  const params = new URLSearchParams(window.location.search);
+  const requested = params.get('lang');
+  const stored = localStorage.getItem('loungeLanguage');
+  const accountLanguage = <%- JSON.stringify(currentGuest?.language === 'en' ? 'en' : 'ru') %>;
+  const rawTitle = <%- JSON.stringify(title || '') %>;
+  const lang = ['ru', 'en'].includes(requested)
+    ? requested
+    : (['ru', 'en'].includes(stored) ? stored : accountLanguage);
+
+  function localizedTitle(value, language) {
+    const parts = String(value || '').split(' / ');
+    if (parts.length === 2 && /[А-Яа-яЁё]/.test(parts[0]) && !/[А-Яа-яЁё]/.test(parts[1])) {
+      return language === 'en' ? parts[1].trim() : parts[0].trim();
+    }
+    return String(value || '').trim();
+  }
+
+  document.documentElement.dataset.loungeLang = lang;
+  document.documentElement.lang = lang;
+  localStorage.setItem('loungeLanguage', lang);
+  document.cookie = `loungeLanguage=${lang}; Path=/gostinaya; Max-Age=31536000; SameSite=Lax`;
+  document.title = `${localizedTitle(rawTitle, lang)} — ${lang === 'en' ? 'The Lounge' : 'Гостиная'}`;
+
+  window.updateLoungeDocumentTitle = function (language) {
+    document.title = `${localizedTitle(rawTitle, language)} — ${language === 'en' ? 'The Lounge' : 'Гостиная'}`;
+  };
+})();
+</script>
 </head>
 
 <body>
 
 <header class="lounge-banner">
-    <img
-        class="lounge-banner-image"
-        src="/gostinaya/public/lounge-banner-center.jpg"
-        alt="Гостиная проекта После логина"
-    >
+    <img class="lounge-banner-image" src="/gostinaya/public/lounge-banner-center.jpg" alt="После логина / After Login">
 
-    <div class="lounge-banner-title" aria-label="После логина — Гостиная">
-        <img
-            class="lounge-banner-brand-logo"
-            src="/gostinaya/public/after-login-logo-transparent.png"
-            alt="После логина / After Login"
-        >
-        <span class="lounge-banner-name">Гостиная</span>
-        <small>The Lounge</small>
+    <div class="lounge-banner-title">
+        <img class="lounge-banner-brand-logo" src="/gostinaya/public/after-login-logo-transparent.png" alt="После логина / After Login">
+        <span class="lounge-banner-name" data-lang="ru">Гостиная</span>
+        <span class="lounge-banner-name" data-lang="en">The Lounge</span>
     </div>
 
     <blockquote class="lounge-banner-quote">
-        <p>«Любая достаточно развитая технология неотличима от магии»</p>
-        <cite>Артур Кларк</cite>
+        <div data-lang="ru">
+            <p>«Любая достаточно развитая технология неотличима от магии»</p>
+            <cite>Артур Кларк</cite>
+        </div>
+        <div data-lang="en">
+            <p>“Any sufficiently advanced technology is indistinguishable from magic.”</p>
+            <cite>Arthur C. Clarke</cite>
+        </div>
     </blockquote>
 </header>
 
 <div class="layout">
+    <button
+        class="mobile-nav-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="lounge-sidebar"
+    >
+        <span aria-hidden="true">☰</span>
+        <span data-lang="ru">Меню</span>
+        <span data-lang="en">Menu</span>
+    </button>
 
     <%- include('../partials/sidebar') %>
 
     <main class="content">
+        <div class="authenticated-language-switch language-switch" aria-label="Language">
+            <button type="button" data-set-language="ru">RU</button>
+            <span aria-hidden="true">/</span>
+            <button type="button" data-set-language="en">EN</button>
+        </div>
         <%- body %>
     </main>
-
 </div>
 
-
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const sidebar = document.querySelector('.sidebar');
+function applyLanguageDependentAttributes(lang) {
+    document.querySelectorAll('[data-placeholder-ru][data-placeholder-en]').forEach(element => {
+        element.setAttribute('placeholder', lang === 'en' ? element.dataset.placeholderEn : element.dataset.placeholderRu);
+    });
 
+    document.querySelectorAll('[data-title-ru][data-title-en]').forEach(element => {
+        element.setAttribute('title', lang === 'en' ? element.dataset.titleEn : element.dataset.titleRu);
+    });
+}
+
+function setLoungeLanguage(lang) {
+    if (!['ru', 'en'].includes(lang)) return;
+    document.documentElement.dataset.loungeLang = lang;
+    document.documentElement.lang = lang;
+    localStorage.setItem('loungeLanguage', lang);
+    document.cookie = `loungeLanguage=${lang}; Path=/gostinaya; Max-Age=31536000; SameSite=Lax`;
+    if (window.updateLoungeDocumentTitle) window.updateLoungeDocumentTitle(lang);
+    document.querySelectorAll('[data-set-language]').forEach(button => {
+        button.setAttribute('aria-pressed', String(button.dataset.setLanguage === lang));
+    });
+    applyLanguageDependentAttributes(lang);
+    document.dispatchEvent(new CustomEvent('lounge-language-change', { detail: { lang } }));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    setLoungeLanguage(document.documentElement.dataset.loungeLang || 'ru');
+
+    document.querySelectorAll('[data-set-language]').forEach(button => {
+        button.addEventListener('click', () => setLoungeLanguage(button.dataset.setLanguage));
+    });
+
+    const sidebar = document.querySelector('.sidebar');
+    const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
     if (!sidebar) return;
 
-    const savedPosition = sessionStorage.getItem('gostinayaSidebarScroll');
+    if (mobileNavToggle) {
+        const closeMobileNav = () => {
+            sidebar.classList.remove('is-open');
+            mobileNavToggle.setAttribute('aria-expanded', 'false');
+        };
 
+        mobileNavToggle.addEventListener('click', () => {
+            const willOpen = !sidebar.classList.contains('is-open');
+            sidebar.classList.toggle('is-open', willOpen);
+            mobileNavToggle.setAttribute('aria-expanded', String(willOpen));
+        });
+
+        sidebar.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', closeMobileNav);
+        });
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape') closeMobileNav();
+        });
+    }
+
+    const savedPosition = sessionStorage.getItem('gostinayaSidebarScroll');
     if (savedPosition !== null) {
         requestAnimationFrame(() => {
             sidebar.scrollTop = Number(savedPosition);
@@ -60,22 +154,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     sidebar.addEventListener('scroll', () => {
-        sessionStorage.setItem(
-            'gostinayaSidebarScroll',
-            String(sidebar.scrollTop)
-        );
+        sessionStorage.setItem('gostinayaSidebarScroll', String(sidebar.scrollTop));
     });
 
     sidebar.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', () => {
-            sessionStorage.setItem(
-                'gostinayaSidebarScroll',
-                String(sidebar.scrollTop)
-            );
+            sessionStorage.setItem('gostinayaSidebarScroll', String(sidebar.scrollTop));
         });
     });
 });
 </script>
+<script src="/gostinaya/public/lounge-message-breaks.js?v=20260925-1"></script>
 
 </body>
 </html>
