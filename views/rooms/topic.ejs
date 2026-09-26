@@ -42,12 +42,12 @@
 
                 <div class="article-discussion-read-actions">
                     <% if (articleDiscussion.url_ru) { %>
-                        <a href="<%= articleDiscussion.url_ru %>" target="_blank" rel="noopener">
+                        <a data-lang="ru" href="<%= articleDiscussion.url_ru %>" target="_blank" rel="noopener">
                             Читать статью <span>RU ↗</span>
                         </a>
                     <% } %>
                     <% if (articleDiscussion.url_en) { %>
-                        <a href="<%= articleDiscussion.url_en %>" target="_blank" rel="noopener">
+                        <a data-lang="en" href="<%= articleDiscussion.url_en %>" target="_blank" rel="noopener">
                             Read article <span>EN ↗</span>
                         </a>
                     <% } %>
