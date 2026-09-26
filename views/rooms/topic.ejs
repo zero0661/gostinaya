@@ -12,46 +12,43 @@
             </h1>
 
             <% if (articleDiscussion) { %>
-                <div class="article-discussion-source-links">
-                    <% if (articleDiscussion.url_ru && articleDiscussion.article_ru?.title) { %>
-                        <a data-lang="ru" href="<%= articleDiscussion.url_ru %>" target="_blank" rel="noopener"><%= articleDiscussion.article_ru.title %></a>
-                    <% } else if (articleDiscussion.url_en && articleDiscussion.article_en?.title) { %>
-                        <a data-lang="ru" href="<%= articleDiscussion.url_en %>" target="_blank" rel="noopener"><%= articleDiscussion.article_en.title %></a>
+                <% const isPair = Boolean(articleDiscussion.url_ru && articleDiscussion.url_en); %>
+                <% const ruImage = articleDiscussion.article_ru?.image || articleDiscussion.article_en?.image; %>
+                <% const enImage = articleDiscussion.article_en?.image || articleDiscussion.article_ru?.image; %>
+
+                <article class="article-discussion-card">
+                    <% if (isPair) { %>
+                        <% if (ruImage) { %><div class="article-shared-image-wrap" data-lang="ru"><img src="<%= ruImage %>" alt="" class="article-shared-image"></div><% } %>
+                        <% if (enImage) { %><div class="article-shared-image-wrap" data-lang="en"><img src="<%= enImage %>" alt="" class="article-shared-image"></div><% } %>
+                    <% } else { %>
+                        <% const singleImage = ruImage || enImage; %>
+                        <% if (singleImage) { %><div class="article-shared-image-wrap"><img src="<%= singleImage %>" alt="" class="article-shared-image"></div><% } %>
                     <% } %>
 
-                    <% if (articleDiscussion.url_en && articleDiscussion.article_en?.title) { %>
-                        <a data-lang="en" href="<%= articleDiscussion.url_en %>" target="_blank" rel="noopener"><%= articleDiscussion.article_en.title %></a>
-                    <% } else if (articleDiscussion.url_ru && articleDiscussion.article_ru?.title) { %>
-                        <a data-lang="en" href="<%= articleDiscussion.url_ru %>" target="_blank" rel="noopener"><%= articleDiscussion.article_ru.title %></a>
-                    <% } %>
-                </div>
+                    <div class="article-language-grid article-language-single">
+                        <% if (articleDiscussion.url_ru) { %>
+                            <a class="article-language-card" <%- isPair ? 'data-lang="ru"' : '' %> href="<%= articleDiscussion.url_ru %>" target="_blank" rel="noopener">
+                                <div class="article-language-body">
+                                    <span class="article-language-label">RU</span>
+                                    <h3><%= articleDiscussion.article_ru?.title || topic.title %></h3>
+                                    <% if (articleDiscussion.article_ru?.excerpt) { %><p><%= articleDiscussion.article_ru.excerpt %></p><% } %>
+                                    <span class="article-read-link">Читать статью →</span>
+                                </div>
+                            </a>
+                        <% } %>
 
-                <% const discussionImageRu = articleDiscussion.article_ru?.image || articleDiscussion.article_en?.image; %>
-                <% const discussionImageEn = articleDiscussion.article_en?.image || articleDiscussion.article_ru?.image; %>
-
-                <% if (discussionImageRu) { %>
-                    <div class="article-discussion-source-image" data-lang="ru">
-                        <img src="<%= discussionImageRu %>" alt="">
+                        <% if (articleDiscussion.url_en) { %>
+                            <a class="article-language-card" <%- isPair ? 'data-lang="en"' : '' %> href="<%= articleDiscussion.url_en %>" target="_blank" rel="noopener">
+                                <div class="article-language-body">
+                                    <span class="article-language-label">EN</span>
+                                    <h3><%= articleDiscussion.article_en?.title || "Read article" %></h3>
+                                    <% if (articleDiscussion.article_en?.excerpt) { %><p><%= articleDiscussion.article_en.excerpt %></p><% } %>
+                                    <span class="article-read-link">Read article →</span>
+                                </div>
+                            </a>
+                        <% } %>
                     </div>
-                <% } %>
-                <% if (discussionImageEn) { %>
-                    <div class="article-discussion-source-image" data-lang="en">
-                        <img src="<%= discussionImageEn %>" alt="">
-                    </div>
-                <% } %>
-
-                <div class="article-discussion-read-actions">
-                    <% if (articleDiscussion.url_ru) { %>
-                        <a data-lang="ru" href="<%= articleDiscussion.url_ru %>" target="_blank" rel="noopener">
-                            Читать статью <span>RU ↗</span>
-                        </a>
-                    <% } %>
-                    <% if (articleDiscussion.url_en) { %>
-                        <a data-lang="en" href="<%= articleDiscussion.url_en %>" target="_blank" rel="noopener">
-                            Read article <span>EN ↗</span>
-                        </a>
-                    <% } %>
-                </div>
+                </article>
             <% } %>
         <% } else { %>
             <p class="profile-eyebrow">
