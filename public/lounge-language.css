@@ -554,3 +554,33 @@ html[data-lounge-lang="en"] .layout .content [data-lang="ru"] {
     min-height: 48px !important;
   }
 }
+
+/* Keep room card metadata below the content instead of a shrinking side column. */
+.room-page .topic-item {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+}
+
+.room-page .topic-main {
+  flex: none;
+  width: 100%;
+}
+
+.room-page .topic-meta {
+  flex: none;
+  width: 100%;
+  min-width: 0;
+  justify-content: flex-start;
+}
+
+.room-page .topic-meta > span {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.room-page .topic-meta a {
+  overflow-wrap: anywhere;
+}
