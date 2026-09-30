@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import GuestRepository from '../repositories/GuestRepository.js';
 import AuthService from '../services/AuthService.js';
 import {
@@ -24,12 +25,6 @@ class GuestController {
 
             const returnTo = normalizeAuthReturnTo(req.body.returnTo);
 
-            if (existing?.email_verified_at) {
-                return res.status(409).json({
-                    error: 'Этот e-mail уже зарегистрирован. / This e-mail is already registered.'
-                });
-            }
-
             if (existing) {
                 await EmailVerificationService.issue(existing, returnTo);
                 return res.json({
@@ -38,7 +33,7 @@ class GuestController {
                 });
             }
 
-            const passwordHash = await AuthService.hashPassword(input.password);
+            const passwordHash = await AuthService.hashPassword(crypto.randomBytes(32).toString('hex'));
 
             const guest = await GuestRepository.create({
                 ...input,
@@ -64,6 +59,17 @@ class GuestController {
         try {
             const email = String(req.body.email || '').trim().toLowerCase();
             const password = String(req.body.password || '');
+
+            if (email && !password) {
+                if (!/^\S+@\S+\.\S+$/.test(email)) {
+                    return res.status(400).json({ message: 'Укажите корректный e-mail. / Enter a valid e-mail address.' });
+                }
+                const guest = await GuestRepository.findByEmail(email);
+                if (guest && Number(guest.is_blocked) !== 1) {
+                    await EmailVerificationService.issue(guest, normalizeAuthReturnTo(req.body.returnTo));
+                }
+                return res.json({ success: true, redirect: `/gostinaya/check-email?email=${encodeURIComponent(email)}` });
+            }
 
             if (!email || !password) {
                 return res.status(400).json({
@@ -135,7 +141,7 @@ class GuestController {
             const email = String(req.body.email || '').trim().toLowerCase();
             const guest = email ? await GuestRepository.findByEmail(email) : null;
 
-            if (guest && !guest.email_verified_at) {
+            if (guest && Number(guest.is_blocked) !== 1) {
                 await EmailVerificationService.issue(guest);
             }
 

@@ -11,12 +11,10 @@ test('registration links to localized Lounge rules and data terms', async () => 
   assert.match(registration, /href="\/gostinaya\/rules\?lang=en" target="_blank" rel="noopener"/);
   assert.match(registration, /href="\/gostinaya\/privacy" target="_blank" rel="noopener"/);
   assert.match(registration, /href="\/gostinaya\/privacy\?lang=en" target="_blank" rel="noopener"/);
-  assert.match(registration, /id="acceptsRulesRu"/);
-  assert.match(registration, /id="acceptsRulesEn"/);
-  assert.match(registration, /id="acceptsPrivacyRu"/);
-  assert.match(registration, /id="acceptsPrivacyEn"/);
-  assert.match(registration, /acceptsRules,/);
-  assert.match(registration, /acceptsPrivacy/);
+  assert.match(registration, /Нажимая «Зарегистрироваться»/);
+  assert.match(registration, /By clicking Register/);
+  assert.doesNotMatch(registration, /<input[^>]+type="checkbox"/);
+
 });
 
 test('legal pages are public routes and keep both localized versions of the actual Lounge terms', async () => {

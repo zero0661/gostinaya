@@ -152,7 +152,7 @@ class GuestRepository {
                      email_verification_expires_at = ?,
                      email_verification_sent_at = ?
                  WHERE id = ?
-                   AND email_verified_at IS NULL
+                   AND COALESCE(is_blocked, 0) = 0
                    AND (
                      email_verification_sent_at IS NULL
                      OR email_verification_sent_at <= ?
@@ -175,7 +175,7 @@ class GuestRepository {
                      email_verification_sent_at = NULL
                  WHERE id = ?
                    AND email_verification_token_hash = ?
-                   AND email_verified_at IS NULL`,
+                   AND COALESCE(is_blocked, 0) = 0`,
                 [id, tokenHash],
                 function (error) {
                     if (error) return reject(error);
@@ -192,7 +192,7 @@ class GuestRepository {
                  FROM guests
                  WHERE email_verification_token_hash = ?
                    AND email_verification_expires_at > ?
-                   AND email_verified_at IS NULL`,
+                   AND COALESCE(is_blocked, 0) = 0`,
                 [tokenHash, now],
                 (findError, row) => {
                     if (findError) return reject(findError);
@@ -201,12 +201,12 @@ class GuestRepository {
                     const repository = this;
                     db.run(
                         `UPDATE guests
-                         SET email_verified_at = CURRENT_TIMESTAMP,
+                         SET email_verified_at = COALESCE(email_verified_at, CURRENT_TIMESTAMP),
                              email_verification_token_hash = NULL,
                              email_verification_expires_at = NULL
                          WHERE id = ?
                            AND email_verification_token_hash = ?
-                           AND email_verified_at IS NULL`,
+                           AND COALESCE(is_blocked, 0) = 0`,
                         [row.id, tokenHash],
                         function (updateError) {
                             if (updateError) return reject(updateError);

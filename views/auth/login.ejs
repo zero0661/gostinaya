@@ -17,16 +17,12 @@
     <h1 data-lang="ru">Вход</h1>
     <h1 data-lang="en">Sign in</h1>
 
-    <p class="auth-intro" data-lang="ru">Войдите, чтобы попасть в закрытое пространство проекта.</p>
-    <p class="auth-intro" data-lang="en">Sign in to enter the private community space.</p>
+    <p class="auth-intro" data-lang="ru">Укажите e-mail — мы пришлём ссылку для входа.</p>
+    <p class="auth-intro" data-lang="en">Enter your e-mail and we will send a sign-in link.</p>
 
     <form id="login-form" class="auth-form">
       <label for="email">E-mail</label>
       <input id="email" name="email" type="email" autocomplete="email" required>
-
-      <label for="password" data-lang="ru">Пароль</label>
-      <label for="password" data-lang="en">Password</label>
-      <input id="password" name="password" type="password" autocomplete="current-password" required>
 
       <button type="submit">
         <span data-lang="ru">Войти</span>
@@ -37,11 +33,6 @@
     </form>
 
     <div class="auth-links">
-      <a href="#" id="forgot-password-link">
-        <span data-lang="ru">Забыли пароль?</span>
-        <span data-lang="en">Forgot password?</span>
-      </a>
-
       <p data-lang="ru">
         Нет аккаунта?
         <a href="/gostinaya/register<%= returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : '' %>">Зарегистрироваться</a>
@@ -85,13 +76,12 @@
         message.textContent = copy[language].checking;
 
         const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value;
 
         try {
             const response = await fetch('/gostinaya/api/guests/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password, returnTo })
+                body: JSON.stringify({ email, returnTo })
             });
 
             const data = await response.json();
@@ -112,30 +102,4 @@
         }
     });
 
-    document.getElementById('forgot-password-link').addEventListener('click', async (e) => {
-        e.preventDefault();
-
-        const language = uiLanguage();
-        const email = document.getElementById('email').value.trim();
-
-        if (!email) {
-            message.textContent = copy[language].emailFirst;
-            return;
-        }
-
-        message.textContent = copy[language].sending;
-
-        try {
-            const response = await fetch('/gostinaya/api/guests/request-password-reset', {
-                method: 'POST',
-                headers: {'Content-Type':'application/json'},
-                body: JSON.stringify({email})
-            });
-
-            const data = await response.json();
-            message.textContent = localizeMessage(data.message);
-        } catch {
-            message.textContent = copy[language].connection;
-        }
-    });
 </script>

@@ -27,21 +27,12 @@ export class EmailVerificationService {
   }
 
   verificationEmail({ guest, url }) {
-    const en = guest.language === 'en';
-    const subject = en
-      ? 'Confirm your e-mail — The Lounge'
-      : 'Подтвердите e-mail — Гостиная';
-    const greeting = en ? `Hello, ${guest.name}.` : `Здравствуйте, ${guest.name}.`;
-    const instruction = en
-      ? 'Confirm your e-mail address to open the door to The Lounge.'
-      : 'Подтвердите адрес электронной почты, чтобы открыть дверь в Гостиную.';
-    const action = en ? 'Confirm e-mail' : 'Подтвердить e-mail';
-    const expiry = en
-      ? 'The link is valid for 24 hours.'
-      : 'Ссылка действует 24 часа.';
-    const ignore = en
-      ? 'If you did not request this registration, simply ignore this message.'
-      : 'Если вы не регистрировались, просто проигнорируйте это письмо.';
+    const subject = 'Вход в Гостиную / Sign in to the Lounge';
+    const greeting = `Здравствуйте / Hello, ${guest.name}.`;
+    const instruction = 'Перейдите по ссылке, чтобы войти в Гостиную и подтвердить e-mail. / Follow the link to sign in to the Lounge and confirm your e-mail.';
+    const action = 'Войти / Sign in';
+    const expiry = 'Ссылка действует 24 часа и используется один раз. / The link is valid for 24 hours and can be used once.';
+    const ignore = 'Если вы не запрашивали вход, проигнорируйте письмо. / If you did not request sign-in, ignore this message.';
 
     return {
       subject,
@@ -56,6 +47,7 @@ export class EmailVerificationService {
   }
 
   async issue(guest, returnTo = '') {
+    if (Number(guest.is_blocked) === 1) return { sent: false, expiresAt: null };
     const issuedAt = this.now();
     const token = crypto.randomBytes(32).toString('hex');
     const tokenHash = hashVerificationToken(token);
