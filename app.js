@@ -238,6 +238,13 @@ app.get('/gostinaya/verify-email', async (req, res, next) => {
             });
         }
 
+        if (Number(guest.is_blocked) === 1) {
+            return res.status(403).render('auth/blocked', { title: 'Доступ приостановлен / Access suspended', layout: 'layouts/public' });
+        }
+        await new Promise((resolve, reject) => {
+            req.session.regenerate((error) => error ? reject(error) : resolve());
+        });
+
         req.session.guest = {
             id: guest.id,
             name: guest.name,
