@@ -14,15 +14,15 @@
     </h1>
 
     <p class="auth-intro">
-      Представьтесь и расскажите немного о себе. После регистрации мы пришлём ссылку для подтверждения e-mail.<br>
-      Introduce yourself and tell us a little about yourself. We will send an e-mail confirmation link after registration.
+      Укажите имя или ник и e-mail. Мы пришлём ссылку для входа. Язык можно выбрать внутри Гостиной.<br>
+      Enter your name or nickname and e-mail. We will send a sign-in link. You can choose your language inside the Lounge.
     </p>
 
     <form id="register-form" class="auth-form">
 
       <label for="name">
-        Имя<br>
-        <span>Name</span>
+        Имя или ник<br>
+        <span>Name or nickname</span>
       </label>
       <input
         id="name"
@@ -41,79 +41,10 @@
         required
       >
 
-      <label for="country">
-        Страна<br>
-        <span>Country</span>
-      </label>
-      <input id="country" name="country" type="text" autocomplete="country-name" maxlength="80" required>
-
-      <label for="city">
-        Город<br>
-        <span>City</span>
-      </label>
-      <input id="city" name="city" type="text" autocomplete="address-level2" maxlength="80" required>
-
-      <label for="language">
-        Язык общения<br>
-        <span>Language</span>
-      </label>
-      <select id="language" name="language" required>
-        <option value="">Выберите / Select</option>
-        <option value="ru">Русский / Russian</option>
-        <option value="en">English / Английский</option>
-      </select>
-
-      <label for="joinReason">
-        Что привело вас на сайт «После логина»?<br>
-        <span>What brought you to After Login?</span>
-      </label>
-      <textarea id="joinReason" name="joinReason" maxlength="1000" rows="4" required></textarea>
-
-      <label for="currentTopic">
-        Какая тема вам сегодня ближе?<br>
-        <span>Which topic feels closest to you today?</span>
-      </label>
-      <textarea id="currentTopic" name="currentTopic" maxlength="1000" rows="4" required></textarea>
-
-      <label for="password">
-        Пароль<br>
-        <span>Password</span>
-      </label>
-      <input
-        id="password"
-        name="password"
-        type="password"
-        autocomplete="new-password"
-        minlength="8"
-        required
-      >
-<label for="confirmPassword">
-  Повторите пароль<br>
-  <span>Confirm password</span>
-</label>
-<input
-  id="confirmPassword"
-  name="confirmPassword"
-  type="password"
-  autocomplete="new-password"
-  minlength="8"
-  required
->
-      <div class="auth-consent">
-        <input id="acceptsRules" name="acceptsRules" type="checkbox" required>
-        <label for="acceptsRules">
-          Я принимаю <a href="/gostinaya/rules" target="_blank" rel="noopener">Правила Гостиной</a>.<br>
-          <em>I accept the <a href="/gostinaya/rules" target="_blank" rel="noopener">Lounge Rules</a>.</em>
-        </label>
-      </div>
-
-      <div class="auth-consent">
-        <input id="acceptsPrivacy" name="acceptsPrivacy" type="checkbox" required>
-        <label for="acceptsPrivacy">
-          Я согласен с <a href="/gostinaya/privacy" target="_blank" rel="noopener">условиями обработки данных</a> для создания и работы аккаунта.<br>
-          <em>I accept the <a href="/gostinaya/privacy" target="_blank" rel="noopener">data processing terms</a> required to create and operate my account.</em>
-        </label>
-      </div>
+      <p class="auth-consent">
+        Нажимая «Зарегистрироваться», вы принимаете <a href="/gostinaya/rules" target="_blank" rel="noopener">Правила Гостиной</a> и <a href="/gostinaya/privacy" target="_blank" rel="noopener">условия обработки данных</a>.<br>
+        By clicking Register, you accept the Lounge Rules and data processing terms linked above.
+      </p>
 
       <button type="submit">
         Зарегистрироваться<br>
@@ -139,33 +70,8 @@
 </section>
 
 <style>
-  /* Registration readability: keep the form geometry, enlarge only its text and consent controls. */
-  #register-form input:not([type="checkbox"]),
-  #register-form select,
-  #register-form textarea {
-    font-size: 18px !important;
-  }
-
-  #register-form .auth-consent {
-    font-size: 16px !important;
-    line-height: 1.5 !important;
-  }
-
-  #register-form .auth-consent input[type="checkbox"] {
-    width: 18px !important;
-    height: 18px !important;
-    margin-top: 3px !important;
-  }
-
-  #register-form .auth-consent label {
-    font-size: 16px !important;
-    line-height: 1.5 !important;
-  }
-
-  #register-form .auth-consent em {
-    font-size: 15px !important;
-    line-height: 1.45 !important;
-  }
+  #register-form input { font-size: 18px !important; }
+  #register-form .auth-consent { font-size: 16px; line-height: 1.5; }
 </style>
 
 <script>
@@ -183,28 +89,10 @@
 
     const formData = new FormData(form);
 
-const password = formData.get('password');
-const confirmPassword = formData.get('confirmPassword');
-
-if (password !== confirmPassword) {
-  message.textContent =
-    'Пароли не совпадают. / Passwords do not match.';
-  submitButton.disabled = false;
-  return;
-}
-
     const payload = {
       name: formData.get('name'),
       email: formData.get('email'),
-      password: formData.get('password'),
-      country: formData.get('country'),
-      city: formData.get('city'),
-      language: formData.get('language'),
-      joinReason: formData.get('joinReason'),
-      currentTopic: formData.get('currentTopic'),
-      returnTo,
-      acceptsRules: formData.get('acceptsRules') === 'on',
-      acceptsPrivacy: formData.get('acceptsPrivacy') === 'on'
+      returnTo
     };
 
     try {

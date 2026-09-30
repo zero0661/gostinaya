@@ -11,8 +11,8 @@
     </h1>
 
     <p class="auth-intro">
-      Войдите, чтобы попасть в закрытое пространство проекта.<br>
-      <span>Sign in to enter the private community space.</span>
+      Укажите e-mail — мы пришлём ссылку для входа.<br>
+      <span>Enter your e-mail and we will send a sign-in link.</span>
     </p>
 
     <form id="login-form" class="auth-form">
@@ -27,18 +27,6 @@
         required
       >
 
-      <label for="password">
-        Пароль<br>
-        <span>Password</span>
-      </label>
-      <input
-        id="password"
-        name="password"
-        type="password"
-        autocomplete="current-password"
-        required
-      >
-
       <button type="submit">
         Войти<br>
         <span>Sign in</span>
@@ -48,10 +36,6 @@
     </form>
 
     <div class="auth-links">
-      <a href="#" id="forgot-password-link">
-        Забыли пароль? / <span>Forgot password?</span>
-      </a>
-
       <p>
         Нет аккаунта? / <span>No account yet?</span>
         <a href="/gostinaya/register<%= returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : '' %>">
@@ -73,7 +57,6 @@
         message.textContent = 'Проверяем данные...';
 
         const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value;
 
         try {
             const response = await fetch('/gostinaya/api/guests/login', {
@@ -83,7 +66,6 @@
                 },
                 body: JSON.stringify({
                     email,
-                    password,
                     returnTo
                 })
             });
@@ -105,30 +87,5 @@
     });
 
 
-document.getElementById('forgot-password-link').addEventListener('click', async (e) => {
-    e.preventDefault();
-
-    const email = document.getElementById('email').value.trim();
-
-    if (!email) {
-        message.textContent = 'Сначала укажите e-mail.';
-        return;
-    }
-
-    message.textContent = 'Отправляем письмо...';
-
-    try {
-        const response = await fetch('/gostinaya/api/guests/request-password-reset', {
-            method: 'POST',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({email})
-        });
-
-        const data = await response.json();
-        message.textContent = data.message;
-    } catch {
-        message.textContent = 'Ошибка соединения.';
-    }
-});
 
 </script>

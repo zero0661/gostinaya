@@ -9,8 +9,8 @@ test('registration links to the Lounge rules and data terms without losing form 
 
   assert.match(registration, /href="\/gostinaya\/rules" target="_blank" rel="noopener"/);
   assert.match(registration, /href="\/gostinaya\/privacy" target="_blank" rel="noopener"/);
-  assert.match(registration, /id="acceptsRules"[^>]+required/);
-  assert.match(registration, /id="acceptsPrivacy"[^>]+required/);
+  assert.match(registration, /Нажимая «Зарегистрироваться»/);
+  assert.doesNotMatch(registration, /type="checkbox"/);
 });
 
 test('legal pages are public routes and describe actual Lounge data use', async () => {
