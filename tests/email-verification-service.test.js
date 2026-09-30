@@ -51,7 +51,7 @@ test('verification stores only a token hash and sends a 24-hour confirmation lin
   assert.equal(stored[0].resendBefore, 4900);
   assert.equal(emails.length, 1);
   assert.equal(emails[0].to, 'member@example.com');
-  assert.match(emails[0].subject, /Подтвердите e-mail/);
+  assert.match(emails[0].subject, /Sign in to the Lounge/);
   assert.match(emails[0].text, /https:\/\/milenin\.pro\/gostinaya\/verify-email\?token=/);
   assert.doesNotMatch(emails[0].text, new RegExp(stored[0].tokenHash));
   assert.match(emails[0].text, /24 часа/);
@@ -96,4 +96,11 @@ test('a mail failure clears the stored token so registration can be retried', as
     /SMTP unavailable/
   );
   assert.deepEqual(cleared, stored);
+});
+
+test('blocked accounts cannot request a sign-in link', async () => {
+  const { service, stored, emails } = harness();
+  assert.equal((await service.issue({ id: 12, is_blocked: 1 })).sent, false);
+  assert.equal(stored.length, 0);
+  assert.equal(emails.length, 0);
 });
