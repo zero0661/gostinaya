@@ -21,13 +21,14 @@ const newsletterTransporter = nodemailer.createTransport({
   }
 });
 
-export async function sendMail({ to, subject, html, text }) {
+export async function sendMail({ to, subject, html, text, attachments }) {
   return transporter.sendMail({
     from: process.env.MAIL_FROM,
     to,
     subject,
     text,
-    html
+    html,
+    attachments
   });
 }
 
