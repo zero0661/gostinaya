@@ -11,14 +11,25 @@
   </nav>
 
   <div class="auth-card public-welcome registration-welcome">
+    <% if (token) { %>
+    <h1 data-lang="ru">Вход в Гостиную</h1>
+    <h1 data-lang="en">Sign in to the Lounge</h1>
+    <p class="auth-intro" data-lang="ru">Нажмите кнопку, чтобы подтвердить почту и войти.</p>
+    <p class="auth-intro" data-lang="en">Press the button to confirm your email and sign in.</p>
+    <form class="auth-form" method="post" action="/gostinaya/verify-email">
+      <input type="hidden" name="token" value="<%= token %>">
+      <input type="hidden" name="returnTo" value="<%= returnTo || '' %>">
+      <button type="submit"><span data-lang="ru">Войти</span><span data-lang="en">Sign in</span></button>
+    </form>
+    <% } else { %>
     <div data-lang="ru">
       <h1>Ссылка недействительна</h1>
       <p class="auth-intro">
         Ссылка уже использована, повреждена или срок её действия истёк.
       </p>
       <div class="welcome-actions">
-        <a class="welcome-primary" href="/gostinaya/register">
-          Вернуться к регистрации
+        <a class="welcome-primary" href="/gostinaya/login">
+          Получить новую ссылку для входа
         </a>
       </div>
     </div>
@@ -29,10 +40,11 @@
         The link has already been used, is damaged, or has expired.
       </p>
       <div class="welcome-actions">
-        <a class="welcome-primary" href="/gostinaya/register">
-          Return to registration
+        <a class="welcome-primary" href="/gostinaya/login">
+          Get a new sign-in link
         </a>
       </div>
     </div>
+    <% } %>
   </div>
 </section>
