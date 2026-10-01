@@ -20,6 +20,7 @@ function discussionTags(post) {
 export function createGhostApiService({ fetchImpl = fetch, adminBaseUrl = 'https://milenin.pro/ghost/api/admin' } = {}) {
   async function adminFetch(path, options = {}) {
     const response = await fetchImpl(`${adminBaseUrl}${path}`, {
+      signal: AbortSignal.timeout(10000),
       ...options,
       headers: { Authorization: `Ghost ${createAdminToken()}`, 'Accept-Version': 'v6.0', ...(options.headers || {}) }
     });

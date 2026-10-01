@@ -133,3 +133,17 @@ test('article route forwards repository errors to Express', async () => {
 
     assert.equal(forwarded, failure);
 });
+
+test('article route repairs an existing single-language topic and follows the merged topic', async () => {
+    let repaired = false;
+    const handler = createArticleDiscussionRedirectHandler({
+        async getByGhostPostId() {
+            return repaired
+                ? { topic_id: 18, ghost_post_id_ru: 'ru', ghost_post_id_en: 'en', url_ru: '/ru', url_en: '/en' }
+                : { topic_id: 35, ghost_post_id_en: 'en', url_en: '/en' };
+        }
+    }, { async syncPostById() { repaired = true; } });
+    const response = responseRecorder();
+    await handler({ params: { ghostPostId: 'en' }, session: { guest: { id: 7 } } }, response, assert.fail);
+    assert.equal(response.redirectUrl, '/gostinaya/topic/18');
+});

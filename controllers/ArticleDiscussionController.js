@@ -29,9 +29,16 @@ export function createArticleDiscussionRedirectHandler(repository, synchronizer 
             );
 
             // A Ghost post.updated webhook can be delayed or missing. Repair the
-            // RU/EN link on demand before returning a dead discussion link.
-            if (!discussion && synchronizer) {
-                await synchronizer.syncPostById(req.params.ghostPostId);
+            // RU/EN link even when an existing single-language topic was found.
+            if (synchronizer && (!discussion || !discussion.ghost_post_id_ru ||
+                !discussion.ghost_post_id_en || !discussion.url_ru || !discussion.url_en)) {
+                try {
+                    await synchronizer.syncPostById(req.params.ghostPostId);
+                } catch (error) {
+                    // A Ghost outage must not prevent opening an existing topic.
+                    if (!discussion) throw error;
+                    console.error('Could not repair article discussion:', error.message);
+                }
                 discussion = await repository.getByGhostPostId(
                     req.params.ghostPostId
                 );
