@@ -2,6 +2,12 @@
     class="message-item topic-message-card <%= parentAuthor ? 'thread-reply' : 'thread-root' %> <%= message.hidden_at ? 'is-moderated-hidden' : '' %>"
     id="message-<%= message.id %>"
 >
+    <% if (parentAuthor) { %>
+    <div class="topic-message-parent">
+        <span data-lang="ru">Ответ для</span><span data-lang="en">Reply to</span>
+        <%= parentAuthor %>
+    </div>
+    <% } %>
     <header class="topic-message-header">
         <strong class="topic-message-author">
             <a href="/gostinaya/member/<%= message.author_id %>"><%= message.author %></a>
