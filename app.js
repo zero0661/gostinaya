@@ -323,15 +323,32 @@ app.get('/gostinaya/check-email', (req, res) => {
     });
 });
 
-app.get('/gostinaya/verify-email', async (req, res, next) => {
+// GET (including Express' implicit HEAD) must never consume a sign-in token.
+app.get('/gostinaya/verify-email', (req, res) => {
+    res.set('Cache-Control', 'no-store');
+    res.set('Referrer-Policy', 'no-referrer');
+    const token = typeof req.query.token === 'string' && /^[a-f0-9]{64}$/i.test(req.query.token)
+        ? req.query.token : '';
+    return res.status(token ? 200 : 400).render('auth/verify-email', {
+        title: token ? 'Вход в Гостиную / Sign in to the Lounge' : 'Ссылка недействительна / Invalid link',
+        layout: 'layouts/public',
+        token,
+        returnTo: normalizeAuthReturnTo(req.query.returnTo)
+    });
+});
+
+app.post('/gostinaya/verify-email', async (req, res, next) => {
+    res.set('Cache-Control', 'no-store');
+    res.set('Referrer-Policy', 'no-referrer');
     try {
-        const guest = await EmailVerificationService.verify(req.query.token);
+        const guest = await EmailVerificationService.verify(req.body.token);
 
         if (!guest) {
             return res.status(400).render('auth/verify-email', {
                 title: 'Ссылка недействительна / Invalid link',
                 layout: 'layouts/public',
-                verified: false
+                token: '',
+                returnTo: normalizeAuthReturnTo(req.body.returnTo)
             });
         }
 
@@ -354,7 +371,7 @@ app.get('/gostinaya/verify-email', async (req, res, next) => {
             req.session.save((error) => error ? reject(error) : resolve());
         });
 
-        const returnTo = normalizeAuthReturnTo(req.query.returnTo);
+        const returnTo = normalizeAuthReturnTo(req.body.returnTo);
         return res.redirect(addReturnTo('/gostinaya/welcome', returnTo));
     } catch (error) {
         next(error);
