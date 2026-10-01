@@ -13,6 +13,8 @@ import EmailVerificationService from './services/EmailVerificationService.js';
 import PasswordResetService from './services/PasswordResetService.js';
 import NewsletterSignupService from './services/NewsletterSignupService.js';
 import NewsletterDeliveryService from './services/NewsletterDeliveryService.js';
+import GhostApiService from './services/GhostApiService.js';
+import { newsletterPublication } from './services/NewsletterPublication.js';
 import { createArticleDiscussionRedirectHandler } from './controllers/ArticleDiscussionController.js';
 import requireGuest from './middleware/requireGuest.js';
 import moderationRouter from './routes/moderation.js';
@@ -178,6 +180,20 @@ async function handleGhostPostWebhook(req, res) {
   }
 
   try {
+    // A missing/unmatched discussion tag must not suppress a published article email.
+    // Never run this on post-updated: editing old articles must not email new readers.
+    let newsletterDelivery;
+    if (req.path.endsWith('/post-published')) {
+      const eventPost = req.body?.post?.current || req.body?.post;
+      if (!eventPost?.id) throw new Error('Invalid Ghost publication event');
+      const post = await GhostApiService.getPostById(eventPost.id);
+      const publication = newsletterPublication(post, process.env.APP_URL);
+      if (publication) {
+        newsletterDelivery = await NewsletterDeliveryService.deliverPublication(publication);
+        console.info('Newsletter publication result:', post.id, JSON.stringify(newsletterDelivery));
+        if (!newsletterDelivery.ok) throw new Error('Newsletter delivery incomplete');
+      }
+    }
     const result = await GhostWebhookService.handlePost(req.body);
 
     if (result.created && result.publication) {
@@ -192,15 +208,7 @@ async function handleGhostPostWebhook(req, res) {
       }
     }
 
-    const isPublishedEvent = req.path.endsWith('/post-published');
-    if (isPublishedEvent && result.publicationReady && result.publication) {
-      try {
-        result.newsletterDelivery = await NewsletterDeliveryService.deliverPublication(result.publication);
-      } catch (newsletterError) {
-        console.error('Newsletter delivery error:', newsletterError);
-        result.newsletterDelivery = { ok: false, error: 'delivery-failed' };
-      }
-    }
+    if (newsletterDelivery) result.newsletterDelivery = newsletterDelivery;
 
     return res.status(200).json({
       ok: true,

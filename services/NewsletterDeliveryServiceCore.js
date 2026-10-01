@@ -49,6 +49,7 @@ export class NewsletterDeliveryService {
       if (!member?.id || !member?.email) continue;
       const delivery = {
         deliveryKey: publication.deliveryKey,
+        legacyDeliveryKeys: publication.legacyDeliveryKeys || [],
         newsletterSlug: channel.key,
         memberId: member.id
       };

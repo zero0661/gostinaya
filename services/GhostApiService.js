@@ -36,6 +36,19 @@ export function createGhostApiService({ fetchImpl = fetch, adminBaseUrl = 'https
       const data = await adminFetch('/newsletters/?limit=all');
       return data.newsletters || [];
     },
+    async listMembers() {
+      const data = await adminFetch('/members/?limit=all&include=newsletters,labels');
+      return data.members || [];
+    },
+    async archiveNewsletter(id) {
+      const data = await adminFetch(`/newsletters/${encodeURIComponent(id)}/`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newsletters: [{ id, status: 'archived', subscribe_on_signup: false }] })
+      });
+      const newsletter = data.newsletters?.[0];
+      if (newsletter?.status !== 'archived') throw new Error('Ghost did not confirm newsletter archival');
+      return newsletter;
+    },
     async findMemberByEmail(email) {
       const normalized = String(email || '').trim().toLowerCase();
       const filter = `email:'${escapeNql(normalized)}'`;

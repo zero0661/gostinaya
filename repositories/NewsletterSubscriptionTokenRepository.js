@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
-const db = new sqlite3.Database(path.join(dirname, '..', 'database', 'gostinaya.db'));
+const db = new sqlite3.Database(process.env.GOSTINAYA_DB_PATH || path.join(dirname, '..', 'database', 'gostinaya.db'));
 
 function run(sql, params = []) {
   return new Promise((resolve, reject) => db.run(sql, params, error => error ? reject(error) : resolve()));
@@ -27,6 +27,14 @@ export default {
         if (error) reject(error);
         else resolve(row ? JSON.parse(row.payload) : null);
       }
+    ));
+  },
+  consume(tokenHash, action, now) {
+    return new Promise((resolve, reject) => db.get(
+      `DELETE FROM newsletter_subscription_tokens
+       WHERE token_hash = ? AND action = ? AND expires_at > ? RETURNING payload`,
+      [tokenHash, action, now],
+      (error, row) => error ? reject(error) : resolve(row ? JSON.parse(row.payload) : null)
     ));
   },
   remove(tokenHash) {
