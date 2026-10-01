@@ -226,6 +226,8 @@
   .topic-replies-panel .thread-replies .topic-message-card {
     margin: 0 !important;
     padding: 14px 0 0 !important;
+    width: 100% !important;
+    box-sizing: border-box;
     border-left: 0 !important;
     border-top: 1px solid rgba(148, 163, 184, 0.16) !important;
     min-width: 0;
