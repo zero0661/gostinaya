@@ -4,6 +4,7 @@ import GuestRepository from './repositories/GuestRepository.js';
 import DiscussionRepository from './repositories/DiscussionRepository.js';
 import ArticleDiscussionRepository from './repositories/ArticleDiscussionRepository.js';
 import ArticleMetadataService from './services/ArticleMetadataService.js';
+import ArticleDiscussionListService from './services/ArticleDiscussionListService.js';
 import GhostWebhookService from './services/GhostWebhookService.js';
 import NotificationRepository from './repositories/NotificationRepository.js';
 import NotificationService from './services/NotificationService.js';
@@ -405,7 +406,7 @@ app.get('/gostinaya/hall', requireGuest, async (req, res, next) => {
     const [recentActivity, roomStats, articleDiscussions] = await Promise.all([
         DiscussionRepository.getRecentActivity(15),
         DiscussionRepository.getRoomStats(),
-        ArticleDiscussionRepository.list()
+        ArticleDiscussionListService.list()
     ]);
 
     let latestArticle = null;
@@ -1059,7 +1060,7 @@ app.get('/gostinaya/:room', requireGuest, async (req, res, next) => {
                     req.session.guest?.id || 0
                 ),
             roomKey === 'articles'
-                ? ArticleDiscussionRepository.list()
+                ? ArticleDiscussionListService.list()
                 : Promise.resolve([]),
             DiscussionRepository.getRecentActivity(10)
         ]);
