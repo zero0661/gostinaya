@@ -213,3 +213,30 @@
     width: 100% !important;
   }
 }
+/* Deep threads keep their reading width on phones. */
+.topic-message-parent { display: none; }
+@media (max-width: 700px) {
+  .topic-replies-panel .thread-replies,
+  .topic-replies-panel .thread-replies .thread-replies {
+    margin: 12px 0 0 !important;
+    padding: 0 !important;
+    border-left: 0 !important;
+    min-width: 0;
+  }
+  .topic-replies-panel .thread-replies .topic-message-card {
+    margin: 0 !important;
+    padding: 14px 0 0 !important;
+    width: 100% !important;
+    box-sizing: border-box;
+    border-left: 0 !important;
+    border-top: 1px solid rgba(148, 163, 184, 0.16) !important;
+    min-width: 0;
+  }
+  .topic-message-parent {
+    display: block;
+    margin: 0 0 8px;
+    font-size: 13px;
+    color: #94a3b8;
+    overflow-wrap: anywhere;
+  }
+}
