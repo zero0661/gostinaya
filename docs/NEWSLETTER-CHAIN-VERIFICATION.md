@@ -27,6 +27,8 @@ Node 22.16.0: `npm test` — 123 passed, 0 failed. RU/EN lifecycle tests cover c
 
 ## Production evidence — 2026-10-02
 
+Historical checkpoint before the later verification below; its pending statuses are superseded by subsequent entries.
+
 Lifecycle repair PR #19 was merged and installed; 123 tests passed on the server. After restart, the repeated health check succeeded and diagnostics ran. The owner confirmed receiving the RU confirmation email, successful confirmation on the site and the welcome email. Recovery delivery for RU post `6abe5c772b46fe0001bb2eac` to `milen.petr@gmail.com` reported one sent, zero failures; the inbox screenshot confirms arrival. Automatic publication triggering, duplicate suppression in production, opt-out/receipt, resubscription and the EN cycle still require live verification. Legacy migration has not been applied.
 
 The article card change is locally validated by 125 passing tests; installation and inspection of the revised email remain pending.
@@ -45,8 +47,14 @@ The Lounge publication email's “Read and discuss” / “Прочитать и
 
 The owner installed the discussion-link change (126 tests passed, PM2 online) and confirmed that the new sample reaches the correct topic. An English email opened the RU view because browser language was stored as RU. Publication email links now include `lang=en` or `lang=ru`, which the existing layout prioritizes over browser/account language. Topic login redirects preserve the full internal return path including language. Live verification of this language fix remains pending.
 
+The subsequent owner check still showed the RU view after opening the English email. The mismatch cause has not been established; automatic EN selection is not verified. The owner asked to stop further language changes.
+
 ## Project news and new topic email content
 
 Topic creation now passes the full opening message to notifications. Project news additionally passes prepared RU/EN titles and bodies, selected by recipient language. Community topic text remains in the author's original language. Emails explain the event, include the full escaped text with paragraphs, project logo, a “View on the website and discuss” button to the topic and profile notification settings. Existing new-topic and email preferences and author exclusion remain in effect. Topic links use the current Lounge language; no additional language behavior is changed here.
 
 `node scripts/preview-topic-notifications.js ACCOUNT_EMAIL [ru|en]` previews the latest visible news and community topic emails. `--send` sends these two samples only to that existing account without creating topics, internal notifications or changing preferences. Live automatic delivery for both categories remains to be verified after deployment.
+
+## Latest owner checkpoint — 2026-10-02, 09:44 Moscow
+
+PR #26 was installed: 128 tests passed on the server and PM2 was online. PR #27 corrected the sample script room key from `community` to the configured `discussions`; the owner then received both RU sample emails and confirmed layout and links for each. These were samples of existing topics, not automatic creation events. The owner explicitly declined a separate automatic-delivery test and plans a normal project news post inviting bug reports. Therefore automatic delivery of news/new-topic events remains unverified in production. The EN newsletter lifecycle, approved welcome text installation and removal of test article/discussion also remain pending. The technical passport 1.7.0 records the same distinction.
