@@ -8,6 +8,7 @@ import ArticleDiscussionListService from './services/ArticleDiscussionListServic
 import GhostWebhookService from './services/GhostWebhookService.js';
 import NotificationRepository from './repositories/NotificationRepository.js';
 import NotificationService from './services/NotificationService.js';
+import NewsPublicationService from './services/NewsPublicationService.js';
 import ModerationRepository from './repositories/ModerationRepository.js';
 import EmailVerificationService from './services/EmailVerificationService.js';
 import PasswordResetService from './services/PasswordResetService.js';
@@ -984,24 +985,36 @@ app.post('/gostinaya/:room/new', topicPublicationRateLimit, async (req, res, nex
         return res.status(403).send('Новости проекта публикуют администратор и модераторы');
     }
 
-    const titleRu = String(req.body.title_ru || '').trim().slice(0, 160);
-    const titleEn = String(req.body.title_en || '').trim().slice(0, 160);
-    const bodyRu = String(req.body.body_ru || '').trim().slice(0, 5000);
-    const bodyEn = String(req.body.body_en || '').trim().slice(0, 5000);
+    let titleRu = String(req.body.title_ru || '').trim().slice(0, 160);
+    let titleEn = String(req.body.title_en || '').trim().slice(0, 160);
+    let bodyRu = String(req.body.body_ru || '').trim().slice(0, 5000);
+    let bodyEn = String(req.body.body_en || '').trim().slice(0, 5000);
 
     const title = isNews
-        ? (titleRu || titleEn)
+        ? String(req.body.title || titleRu || titleEn).trim().slice(0, 160)
         : String(req.body.title || '').trim().slice(0, 160);
 
     const body = isNews
-        ? (bodyRu || bodyEn)
+        ? String(req.body.body || bodyRu || bodyEn).trim().slice(0, 5000)
         : String(req.body.body || '').trim().slice(0, 5000);
 
     if (isNews) {
-        if (!titleRu || !titleEn || !bodyRu || !bodyEn) {
-            return res.status(400).send(
-                'Для новости нужны русская и английская версии заголовка и текста / Both Russian and English versions are required'
-            );
+        try {
+            ({ titleRu, titleEn, bodyRu, bodyEn } = await NewsPublicationService.prepare({
+                title: req.body.title, body: req.body.body,
+                titleRu, titleEn, bodyRu, bodyEn,
+                language: req.session.guest.language
+            }));
+        } catch (error) {
+            console.error('News preparation failed:', error.message);
+            const invalidInput = error.message === 'INVALID_NEWS_INPUT';
+            return res.status(invalidInput ? 400 : 502).render('rooms/new-topic', {
+                title: 'Новая новость / New Project News', roomKey, room,
+                form: { title, body },
+                error: invalidInput
+                    ? 'Заполните заголовок и текст новости. / Please enter a title and news text.'
+                    : 'Не удалось подготовить вторую языковую версию. Новость не опубликована. Текст сохранён в форме — попробуйте ещё раз. / Could not prepare the second language version. Nothing was published. Your text is still in the form — please try again.'
+            });
         }
     } else {
         if (!title) {
