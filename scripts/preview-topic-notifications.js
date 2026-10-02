@@ -18,7 +18,7 @@ try {
   const recipient = { ...account, language: language || account.language };
   const service = new NotificationService({});
   const previews = [];
-  for (const room of ['news', 'community']) {
+  for (const room of ['news', 'discussions']) {
     const topics = await Discussions.listTopics(room, account.id);
     const topic = topics.sort((a, b) => Number(b.id) - Number(a.id))[0];
     if (!topic) throw new Error(`No visible topic in ${room}`);
