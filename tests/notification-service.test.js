@@ -192,7 +192,8 @@ test('publication category controls the internal notification and master prefere
   assert.deepEqual(harness.created.map(item => item.recipientId), [1, 3]);
   assert.deepEqual(harness.emails.map(item => item.to), ['guest3@example.com']);
   assert.ok(harness.emails[0].subject.includes('English title'));
-  assert.ok(harness.emails[0].text.includes('/en/english/'));
+  assert.ok(harness.emails[0].text.includes('/gostinaya/topic/50'));
+  assert.ok(!harness.emails[0].text.includes('/en/english/'));
 });
 
 test('new-topic category controls the internal notification and master preference controls e-mail', async () => {
@@ -273,6 +274,11 @@ test('Lounge article cards use localized previews, branding and profile settings
     imageRu: 'https://milenin.pro/ru.png', imageEn: 'https://milenin.pro/en.png'
   });
   const [ru, en] = harness.emails;
+  for (const mail of [ru, en]) {
+    assert.match(mail.html, /href="[^"]*\/gostinaya\/topic\/70"/);
+    assert.match(mail.text, /\/gostinaya\/topic\/70/);
+    assert.doesNotMatch(mail.html, /href="https:\/\/milenin\.pro\/(en\/)?article\/"/);
+  }
   assert.match(ru.html, /Русский анонс &lt;script&gt;/);
   assert.match(ru.html, /ru\.png/);
   assert.doesNotMatch(ru.html, /en\.png/);

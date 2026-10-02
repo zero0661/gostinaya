@@ -147,7 +147,6 @@ export class NotificationService {
     for (const recipient of recipients) {
       if (Number(recipient.id) === Number(actorId)) continue;
       if (Number(recipient.notify_publications) !== 1) continue;
-      const articleUrl = recipient.language === 'en' ? (urlEn || urlRu) : (urlRu || urlEn);
       const useEnglish = recipient.language === 'en' && Boolean(urlEn);
       const articleExcerpt = useEnglish ? excerptEn : (urlRu ? excerptRu : excerptEn);
       const articleImage = useEnglish ? imageEn : (urlRu ? imageRu : imageEn);
@@ -163,7 +162,7 @@ export class NotificationService {
         void this.deliverEmail(recipient, this.publicationEmail({
           recipient,
           title: localizedTitle,
-          url: articleUrl || this.topicUrl(topicId),
+          url: this.topicUrl(topicId),
           excerpt: articleExcerpt,
           image: articleImage
         }));
