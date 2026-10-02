@@ -227,8 +227,8 @@ export class NewsletterSignupService {
     const en = language === 'en';
     const subject = en ? 'Unsubscription confirmed — After Login' : 'Отписка подтверждена — После логина';
     const message = en
-      ? 'You have unsubscribed from new English articles from After Login. Your subscriptions in other languages and your Lounge account are unchanged.'
-      : 'Вы отписались от новых статей «После логина» на русском языке. Подписки на других языках и ваш аккаунт в Гостиной сохранены.';
+      ? 'You have unsubscribed from new articles from the “After Login” project.'
+      : 'Вы отписались от новых статей проекта «После логина».';
     const thanks = en ? 'Thank you for reading.' : 'Спасибо, что читали.';
     return {
       to: email, subject,
