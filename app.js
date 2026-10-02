@@ -1039,6 +1039,8 @@ app.post('/gostinaya/:room/new', topicPublicationRateLimit, async (req, res, nex
                 topicId: result.lastID,
                 actor: req.session.guest,
                 title,
+                body,
+                ...(isNews ? { titleRu, titleEn, bodyRu, bodyEn } : {}),
                 room: roomKey
             });
         } catch (notificationError) {
