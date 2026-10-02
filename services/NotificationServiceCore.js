@@ -128,8 +128,10 @@ export class NotificationService {
 
   publicationEmail({ recipient, title, url, excerpt, image }) {
     const en = recipient.language === 'en';
+    const destination = new URL(url);
+    destination.searchParams.set('lang', en ? 'en' : 'ru');
     const mail = articlePublicationEmail({
-      language: en ? 'en' : 'ru', title, url, excerpt, image,
+      language: en ? 'en' : 'ru', title, url: destination.href, excerpt, image,
       actionLabel: en ? 'Read and discuss' : 'Прочитать и обсудить',
       reason: en
         ? 'You are receiving this email because you enabled new article notifications in the Lounge of the “After Login” project.'
