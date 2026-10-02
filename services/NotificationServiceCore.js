@@ -1,4 +1,5 @@
 import { articlePublicationEmail } from '../utils/articlePublicationEmail.js';
+import { newsletterLogoAttachment, newsletterLogoHeader } from '../utils/newsletterBrand.js';
 
 const APP_URL = String(process.env.APP_URL || 'https://milenin.pro').replace(/\/$/, '');
 
@@ -172,7 +173,7 @@ export class NotificationService {
     }
   }
 
-  newTopicEmail({ recipient, actorName, title, url, room = 'discussions' }) {
+  newTopicEmail({ recipient, actorName, title, body, url, room = 'discussions' }) {
     const en = recipient.language === 'en';
     const isProjectNews = room === 'news';
     const subject = isProjectNews
@@ -185,17 +186,24 @@ export class NotificationService {
       : (en
           ? `${actorName} started a new Lounge topic: “${title}”.`
           : `${actorName} открыл новую тему в Гостиной: «${title}».`);
-    const linkText = isProjectNews
-      ? (en ? 'Read and discuss' : 'Прочитать и обсудить')
-      : (en ? 'Open the topic' : 'Открыть тему');
+    const linkText = en ? 'View on the website and discuss' : 'Посмотреть на сайте и обсудить';
+    const content = String(body || '').trim();
+    const contentHtml = content.split(/\r?\n\s*\r?\n/)
+      .map(paragraph => `<p style="font-size:18px;line-height:1.6;overflow-wrap:break-word;">${escapeHtml(paragraph).replace(/\r?\n/g, '<br>')}</p>`).join('');
+    const reason = en
+      ? 'You are receiving this email because you enabled notifications about new topics and project news in the Lounge of the “After Login” project.'
+      : 'Вы получаете это письмо, потому что включили уведомления о новых темах и новостях проекта в Гостиной проекта «После логина».';
+    const settingsUrl = `${APP_URL}/gostinaya/profile`;
+    const settingsLabel = en ? 'Notification settings' : 'Настройки уведомлений';
     return {
       subject,
-      text: `${opening}\n\n${linkText}: ${url}`,
-      html: `<p>${escapeHtml(opening)}</p><p><a href="${escapeHtml(url)}">${linkText}</a></p>`
+      text: `${opening}\n\n${content}\n\n${linkText}: ${url}\n\n${reason}\n\n${settingsLabel}: ${settingsUrl}`,
+      html: `<div style="max-width:640px;margin:0 auto;padding:24px 16px;font-family:Arial,sans-serif;color:#202124;">${newsletterLogoHeader(en ? 'en' : 'ru')}<p style="font-size:14px;color:#666;">${escapeHtml(opening)}</p><h1 style="font-size:28px;line-height:1.3;">${escapeHtml(title)}</h1>${contentHtml}<p><a href="${escapeHtml(url)}" style="display:inline-block;background:#513496;color:#fff;padding:14px 22px;border-radius:8px;text-decoration:none;font-weight:bold;">${escapeHtml(linkText)}</a></p><p style="margin-top:32px;font-size:13px;line-height:1.5;color:#666;">${escapeHtml(reason)}</p><p><small><a href="${escapeHtml(settingsUrl)}" style="color:#666;">${escapeHtml(settingsLabel)}</a></small></p></div>`,
+      attachments: [newsletterLogoAttachment()]
     };
   }
 
-  async notifyNewTopic({ topicId, actor, title, room = 'discussions' }) {
+  async notifyNewTopic({ topicId, actor, title, body, titleRu, titleEn, bodyRu, bodyEn, room = 'discussions' }) {
     const recipients = await this.guests.listNotificationRecipients();
     const url = this.topicUrl(topicId);
     for (const recipient of recipients) {
@@ -214,7 +222,8 @@ export class NotificationService {
         void this.deliverEmail(recipient, this.newTopicEmail({
           recipient,
           actorName: actor.name,
-          title,
+          title: recipient.language === 'en' ? (titleEn || title) : (titleRu || title),
+          body: recipient.language === 'en' ? (bodyEn || body) : (bodyRu || body),
           url,
           room
         }));

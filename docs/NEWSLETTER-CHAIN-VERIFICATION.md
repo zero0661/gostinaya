@@ -44,3 +44,9 @@ The article card change is locally validated by 125 passing tests; installation 
 The Lounge publication email's “Read and discuss” / “Прочитать и обсудить” button now links to `/gostinaya/topic/:topicId`, matching the internal publication notification. The footer still opens profile notification settings. RU/EN preview and cover selection remains unchanged. All 126 tests pass locally; production installation and clicking the revised button remain pending.
 
 The owner installed the discussion-link change (126 tests passed, PM2 online) and confirmed that the new sample reaches the correct topic. An English email opened the RU view because browser language was stored as RU. Publication email links now include `lang=en` or `lang=ru`, which the existing layout prioritizes over browser/account language. Topic login redirects preserve the full internal return path including language. Live verification of this language fix remains pending.
+
+## Project news and new topic email content
+
+Topic creation now passes the full opening message to notifications. Project news additionally passes prepared RU/EN titles and bodies, selected by recipient language. Community topic text remains in the author's original language. Emails explain the event, include the full escaped text with paragraphs, project logo, a “View on the website and discuss” button to the topic and profile notification settings. Existing new-topic and email preferences and author exclusion remain in effect. Topic links use the current Lounge language; no additional language behavior is changed here.
+
+`node scripts/preview-topic-notifications.js ACCOUNT_EMAIL [ru|en]` previews the latest visible news and community topic emails. `--send` sends these two samples only to that existing account without creating topics, internal notifications or changing preferences. Live automatic delivery for both categories remains to be verified after deployment.

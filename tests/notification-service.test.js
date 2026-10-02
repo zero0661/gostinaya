@@ -237,7 +237,51 @@ test('project news uses the topic preference but has its own notification identi
   assert.match(harness.created[0].text, /новость проекта/);
   assert.deepEqual(harness.emails.map(item => item.to), ['guest1@example.com']);
   assert.match(harness.emails[0].subject, /Новость проекта/);
-  assert.match(harness.emails[0].text, /Прочитать и обсудить/);
+  assert.match(harness.emails[0].text, /Посмотреть на сайте и обсудить/);
+});
+
+test('news emails contain full matching RU/EN text, safe paragraphs and the discussion link', async () => {
+  const harness = createHarness({ recipients: [
+    guest(5, { language: 'ru', notify_new_topics: 1, notify_email: 1 }),
+    guest(6, { language: 'en', notify_new_topics: 1, notify_email: 1 })
+  ] });
+  const bodyRu = `Первая строка\nВторая строка\n\n${'Полный текст '.repeat(300)}Конец RU <script>alert(1)</script>`;
+  const bodyEn = 'First paragraph\n\nFinal EN paragraph & details';
+  await harness.service.notifyNewTopic({
+    topicId: 61, actor: guest(2), room: 'news', title: 'Новость', body: bodyRu,
+    titleRu: 'Новость RU', titleEn: 'News EN', bodyRu, bodyEn
+  });
+  const [ru, en] = harness.emails;
+  assert.match(ru.subject, /Новость RU/);
+  assert.match(en.subject, /News EN/);
+  assert.ok(ru.text.includes(bodyRu));
+  assert.ok(en.text.includes(bodyEn));
+  assert.ok(!en.text.includes('Конец RU'));
+  assert.match(ru.html, /Первая строка<br>Вторая строка/);
+  assert.match(ru.html, /Конец RU &lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+  assert.doesNotMatch(ru.html, /<script>/);
+  assert.match(en.html, /Final EN paragraph &amp; details/);
+  for (const mail of [ru, en]) {
+    assert.match(mail.html, /href="[^"]*\/gostinaya\/topic\/61"/);
+    assert.match(mail.text, /\/gostinaya\/topic\/61/);
+    assert.match(mail.html, /gostinaya\/profile/);
+    assert.equal(mail.attachments.length, 1);
+    assert.equal(mail.headers, undefined);
+  }
+});
+
+test('community topic emails include the entire opening message in its original language', async () => {
+  const harness = createHarness({ recipients: [
+    guest(5, { language: 'en', notify_new_topics: 1, notify_email: 1 })
+  ] });
+  const body = `${'Текст автора '.repeat(350)}Последняя строка`;
+  await harness.service.notifyNewTopic({
+    topicId: 62, actor: guest(2), room: 'community', title: 'Тема автора', body
+  });
+  assert.ok(harness.emails[0].text.includes(body));
+  assert.match(harness.emails[0].html, /Последняя строка/);
+  assert.match(harness.emails[0].text, /View on the website and discuss/);
+  assert.match(harness.emails[0].text, /\/gostinaya\/topic\/62/);
 });
 
 test('SMTP failure is logged and does not reject internal notification delivery', async () => {
