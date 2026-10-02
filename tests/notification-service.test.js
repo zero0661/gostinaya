@@ -275,10 +275,14 @@ test('Lounge article cards use localized previews, branding and profile settings
   });
   const [ru, en] = harness.emails;
   for (const mail of [ru, en]) {
-    assert.match(mail.html, /href="[^"]*\/gostinaya\/topic\/70"/);
+    assert.match(mail.html, /href="[^"]*\/gostinaya\/topic\/70\?lang=(ru|en)"/);
     assert.match(mail.text, /\/gostinaya\/topic\/70/);
     assert.doesNotMatch(mail.html, /href="https:\/\/milenin\.pro\/(en\/)?article\/"/);
   }
+  assert.match(ru.html, /\/gostinaya\/topic\/70\?lang=ru/);
+  assert.match(en.html, /\/gostinaya\/topic\/70\?lang=en/);
+  assert.match(ru.text, /\/gostinaya\/topic\/70\?lang=ru/);
+  assert.match(en.text, /\/gostinaya\/topic\/70\?lang=en/);
   assert.match(ru.html, /Русский анонс &lt;script&gt;/);
   assert.match(ru.html, /ru\.png/);
   assert.doesNotMatch(ru.html, /en\.png/);

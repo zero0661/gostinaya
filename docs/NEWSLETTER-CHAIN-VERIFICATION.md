@@ -42,3 +42,5 @@ The article card change is locally validated by 125 passing tests; installation 
 ## Lounge discussion button
 
 The Lounge publication email's “Read and discuss” / “Прочитать и обсудить” button now links to `/gostinaya/topic/:topicId`, matching the internal publication notification. The footer still opens profile notification settings. RU/EN preview and cover selection remains unchanged. All 126 tests pass locally; production installation and clicking the revised button remain pending.
+
+The owner installed the discussion-link change (126 tests passed, PM2 online) and confirmed that the new sample reaches the correct topic. An English email opened the RU view because browser language was stored as RU. Publication email links now include `lang=en` or `lang=ru`, which the existing layout prioritizes over browser/account language. Topic login redirects preserve the full internal return path including language. Live verification of this language fix remains pending.

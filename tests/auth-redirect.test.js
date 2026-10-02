@@ -18,6 +18,10 @@ test('accepts only internal article and topic return paths', () => {
 
 test('adds a safely encoded return path to an auth URL', () => {
     assert.equal(
+        addReturnTo('/gostinaya/login', '/gostinaya/topic/70?lang=en'),
+        '/gostinaya/login?returnTo=%2Fgostinaya%2Ftopic%2F70%3Flang%3Den'
+    );
+    assert.equal(
         addReturnTo('/gostinaya/login', '/gostinaya/article/post-id'),
         '/gostinaya/login?returnTo=%2Fgostinaya%2Farticle%2Fpost-id'
     );

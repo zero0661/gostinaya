@@ -757,7 +757,7 @@ app.post('/gostinaya/topic/:id/messages', messagePublicationRateLimit, async (re
 
 app.get('/gostinaya/topic/:id', async (req, res, next) => {
     if (!req.session.guest?.id) {
-        return res.redirect('/gostinaya/login');
+        return res.redirect(addReturnTo('/gostinaya/login', req.originalUrl));
     }
 
     try {
