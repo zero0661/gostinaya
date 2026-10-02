@@ -38,3 +38,7 @@ The article card change is locally validated by 125 passing tests; installation 
 - `post.published` is registered in Gostinaya 2. Publishing a new test post automatically delivered the article card to both RU member addresses; the user reported no new emails after editing the published post.
 - A separate Lounge publication notification was received by the author account. Lounge article emails now use the shared article-card template, localized preview and cover, and profile notification settings.
 - English signup/publication/opt-out production verification and removal of test content remain pending. The approved new welcome text is not yet installed.
+
+## Lounge discussion button
+
+The Lounge publication email's “Read and discuss” / “Прочитать и обсудить” button now links to `/gostinaya/topic/:topicId`, matching the internal publication notification. The footer still opens profile notification settings. RU/EN preview and cover selection remains unchanged. All 126 tests pass locally; production installation and clicking the revised button remain pending.
