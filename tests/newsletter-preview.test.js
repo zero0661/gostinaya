@@ -37,6 +37,10 @@ test('delivered RU and EN cards contain their own teaser and safely escaped cove
   assert.match(sent[0].html, /&lt;RU&gt;/);
   assert.match(sent[0].html, /src="https:\/\/milenin.pro\/cover.jpg"/);
   assert.match(sent[0].html, /Отписаться/);
+  assert.match(sent[0].text, /Вы получаете это письмо, потому что подписаны/);
+  assert.match(sent[0].html, /Вы получаете это письмо, потому что подписаны/);
+  assert.match(sent[1].text, /You are receiving this email because you subscribed/);
+  assert.match(sent[1].html, /You are receiving this email because you subscribed/);
   assert.match(sent[1].text, /English teaser/);
   assert.doesNotMatch(sent[1].html, /RU|data:text/);
   const empty = service.publicationEmail({ language: 'ru', title: 'No image', url: post.url });
