@@ -128,7 +128,7 @@ export function createGhostApiService({ fetchImpl = fetch, adminBaseUrl = 'https
       );
     },
   async getPostById(postId) {
-    const data = await adminFetch(`/posts/${encodeURIComponent(postId)}/?include=tags`);
+    const data = await adminFetch(`/posts/${encodeURIComponent(postId)}/?include=tags&formats=html`);
     return data.posts?.[0] || null;
   },
   async getPostByUrl(url) {
