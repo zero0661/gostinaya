@@ -30,3 +30,11 @@ Node 22.16.0: `npm test` — 123 passed, 0 failed. RU/EN lifecycle tests cover c
 Lifecycle repair PR #19 was merged and installed; 123 tests passed on the server. After restart, the repeated health check succeeded and diagnostics ran. The owner confirmed receiving the RU confirmation email, successful confirmation on the site and the welcome email. Recovery delivery for RU post `6abe5c772b46fe0001bb2eac` to `milen.petr@gmail.com` reported one sent, zero failures; the inbox screenshot confirms arrival. Automatic publication triggering, duplicate suppression in production, opt-out/receipt, resubscription and the EN cycle still require live verification. Legacy migration has not been applied.
 
 The article card change is locally validated by 125 passing tests; installation and inspection of the revised email remain pending.
+
+## Production verification on 2026-10-02
+
+- RU confirmation and welcome were received; unsubscribe page and receipt succeeded. Ghost reported RU membership inactive after opt-out. Resubscription confirmation and welcome were then received.
+- Legacy migration dry-run found no members to migrate or review. Apply saved a member backup and archived the obsolete newsletter.
+- `post.published` is registered in Gostinaya 2. Publishing a new test post automatically delivered the article card to both RU member addresses; the user reported no new emails after editing the published post.
+- A separate Lounge publication notification was received by the author account. Lounge article emails now use the shared article-card template, localized preview and cover, and profile notification settings.
+- English signup/publication/opt-out production verification and removal of test content remain pending. The approved new welcome text is not yet installed.

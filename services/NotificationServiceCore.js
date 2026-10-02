@@ -1,3 +1,5 @@
+import { articlePublicationEmail } from '../utils/articlePublicationEmail.js';
+
 const APP_URL = String(process.env.APP_URL || 'https://milenin.pro').replace(/\/$/, '');
 
 function escapeHtml(value) {
@@ -124,28 +126,31 @@ export class NotificationService {
     }
   }
 
-  publicationEmail({ recipient, title, url }) {
+  publicationEmail({ recipient, title, url, excerpt, image }) {
     const en = recipient.language === 'en';
-    const subject = en
-      ? `New publication: ${title} — After Login`
-      : `Новая публикация: ${title} — После логина`;
-    const opening = en
-      ? `A new article has been published: “${title}”.`
-      : `Опубликована новая статья: «${title}».`;
-    const linkText = en ? 'Read and discuss' : 'Прочитать и обсудить';
-    return {
-      subject,
-      text: `${opening}\n\n${linkText}: ${url}`,
-      html: `<p>${escapeHtml(opening)}</p><p><a href="${escapeHtml(url)}">${linkText}</a></p>`
-    };
+    const mail = articlePublicationEmail({
+      language: en ? 'en' : 'ru', title, url, excerpt, image,
+      actionLabel: en ? 'Read and discuss' : 'Прочитать и обсудить',
+      reason: en
+        ? 'You are receiving this email because you enabled new article notifications in the Lounge of the “After Login” project.'
+        : 'Вы получаете это письмо, потому что включили уведомления о новых статьях в Гостиной проекта «После логина».',
+      unsubscribeUrl: `${APP_URL}/gostinaya/profile`,
+      footerLabel: en ? 'Notification settings' : 'Настройки уведомлений'
+    });
+    // The profile requires sign-in and is a settings page, not an unsubscribe endpoint.
+    delete mail.headers;
+    return mail;
   }
 
-  async notifyPublication({ topicId, actorId, title, titleRu, titleEn, urlRu, urlEn }) {
+  async notifyPublication({ topicId, actorId, title, titleRu, titleEn, urlRu, urlEn, excerptRu, excerptEn, imageRu, imageEn }) {
     const recipients = await this.guests.listNotificationRecipients();
     for (const recipient of recipients) {
       if (Number(recipient.id) === Number(actorId)) continue;
       if (Number(recipient.notify_publications) !== 1) continue;
       const articleUrl = recipient.language === 'en' ? (urlEn || urlRu) : (urlRu || urlEn);
+      const useEnglish = recipient.language === 'en' && Boolean(urlEn);
+      const articleExcerpt = useEnglish ? excerptEn : (urlRu ? excerptRu : excerptEn);
+      const articleImage = useEnglish ? imageEn : (urlRu ? imageRu : imageEn);
       const localizedTitle = recipient.language === 'en' ? (titleEn || title) : (titleRu || title);
       await this.notifications.create({
         recipientId: recipient.id,
@@ -158,7 +163,9 @@ export class NotificationService {
         void this.deliverEmail(recipient, this.publicationEmail({
           recipient,
           title: localizedTitle,
-          url: articleUrl || this.topicUrl(topicId)
+          url: articleUrl || this.topicUrl(topicId),
+          excerpt: articleExcerpt,
+          image: articleImage
         }));
       }
     }

@@ -259,3 +259,30 @@ test('SMTP failure is logged and does not reject internal notification delivery'
   assert.equal(harness.created.length, 1);
   assert.equal(harness.errors.length, 1);
 });
+
+
+test('Lounge article cards use localized previews, branding and profile settings', async () => {
+  const harness = createHarness({ recipients: [
+    guest(5, { language: 'ru', notify_publications: 1, notify_email: 1 }),
+    guest(6, { language: 'en', notify_publications: 1, notify_email: 1 })
+  ] });
+  await harness.service.notifyPublication({
+    topicId: 70, actorId: 2, title: 'Статья', titleRu: 'Статья', titleEn: 'Article',
+    urlRu: 'https://milenin.pro/article/', urlEn: 'https://milenin.pro/en/article/',
+    excerptRu: 'Русский анонс <script>', excerptEn: 'English preview',
+    imageRu: 'https://milenin.pro/ru.png', imageEn: 'https://milenin.pro/en.png'
+  });
+  const [ru, en] = harness.emails;
+  assert.match(ru.html, /Русский анонс &lt;script&gt;/);
+  assert.match(ru.html, /ru\.png/);
+  assert.doesNotMatch(ru.html, /en\.png/);
+  assert.match(en.html, /English preview/);
+  assert.match(en.html, /en\.png/);
+  assert.match(ru.text, /включили уведомления/);
+  assert.match(en.text, /enabled new article notifications/);
+  assert.match(ru.html, /Настройки уведомлений/);
+  assert.match(en.html, /Notification settings/);
+  assert.match(en.html, /gostinaya\/profile/);
+  assert.equal(en.attachments.length, 1);
+  assert.equal(en.headers, undefined);
+});
