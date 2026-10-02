@@ -7,7 +7,7 @@
 - Failed delivery previously returned HTTP 200. Incomplete publication delivery now fails the webhook with HTTP 500 and logs the result; already sent recipients remain deduplicated on retry. This allows the caller to detect failure; it does not establish that Ghost will automatically retry every failure.
 - Unsubscribe now verifies the Ghost result and sends a localized confirmation email. SMTP receipt failure cannot undo opt-out; it is logged and exposed as `receiptSent: false`. There is no durable automatic retry queue for welcome/receipt email yet.
 - Confirmation and unsubscribe tokens are atomically consumed in SQLite. Concurrent use cannot send duplicate welcome/receipt messages. Ghost API failure restores the token for retry. Welcome delivery failure does not invalidate an already confirmed subscription and is logged as `welcomeSent: false`.
-- Existing confirmation and welcome wording is preserved for separate editorial review. Article emails still contain logo, title, article link and unsubscribe link, without full article text.
+- Existing confirmation and welcome wording is preserved for separate editorial review. Article emails contain the logo, cover when present, title, a short teaser, article button and unsubscribe link. Teasers prefer the author’s custom excerpt, then metadata/excerpt, then the beginning of the article (up to 500 characters), separately for RU and EN. The full article remains on the site.
 
 ## Local validation
 
@@ -25,4 +25,8 @@ Node 22.16.0: `npm test` — 123 passed, 0 failed. RU/EN lifecycle tests cover c
 8. Optional recovery of one missed article: `node scripts/deliver-newsletter-post.js POST_ID milen.petr@gmail.com` is dry-run; `--apply` sends only to that actively subscribed address, with normal duplicate protection. Obtain the exact POST_ID from Ghost; do not infer it from a slug.
 9. Inspect SMTP provider delivery/bounce status separately: `sent` means SMTP handoff, not guaranteed inbox delivery. Never reset `pending` delivery rows blindly; inspect SMTP history first to avoid duplicates.
 
-Status: code prepared and locally tested; production deployment, member migration and live email cycle have not been performed by this change.
+## Production evidence — 2026-10-02
+
+Lifecycle repair PR #19 was merged and installed; 123 tests passed on the server. After restart, the repeated health check succeeded and diagnostics ran. The owner confirmed receiving the RU confirmation email, successful confirmation on the site and the welcome email. Recovery delivery for RU post `6abe5c772b46fe0001bb2eac` to `milen.petr@gmail.com` reported one sent, zero failures; the inbox screenshot confirms arrival. Automatic publication triggering, duplicate suppression in production, opt-out/receipt, resubscription and the EN cycle still require live verification. Legacy migration has not been applied.
+
+The article card change is locally validated by 125 passing tests; installation and inspection of the revised email remain pending.
