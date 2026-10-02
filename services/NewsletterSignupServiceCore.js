@@ -23,13 +23,14 @@ function normalizeReturnTo(value, language) {
 }
 
 export class NewsletterSignupService {
-  constructor({ ghost, mailer, tokens, appUrl = 'https://milenin.pro', ttlMs = 24 * 60 * 60 * 1000, now = Date.now }) {
+  constructor({ ghost, mailer, tokens, appUrl = 'https://milenin.pro', ttlMs = 24 * 60 * 60 * 1000, now = Date.now, logger = console }) {
     this.ghost = ghost;
     this.mailer = mailer;
     this.tokens = tokens;
     this.appUrl = String(appUrl).replace(/\/$/, '');
     this.ttlMs = ttlMs;
     this.now = now;
+    this.logger = logger;
   }
 
   tokenHash(token) {
@@ -144,21 +145,34 @@ export class NewsletterSignupService {
   async confirm(token) {
     const payload = await this.lookup(token, 'confirm');
     if (!payload) return null;
+    if (!await this.tokens.consume(this.tokenHash(token), 'confirm', this.now())) return null;
     const target = NEWSLETTERS[payload.language];
-    const member = await this.ghost.subscribeMember({ email: payload.email, newsletterName: target.name, labelName: target.label });
-    if (!member?.id) throw new Error('Ghost member ID missing after subscription');
+    let member;
+    try {
+      member = await this.ghost.subscribeMember({ email: payload.email, newsletterName: target.name, labelName: target.label });
+      if (!member?.id) throw new Error('Ghost member ID missing after subscription');
+    } catch (error) {
+      await this.tokens.create({ tokenHash: this.tokenHash(token), action: 'confirm', payload, expiresAt: payload.expiresAt });
+      throw error;
+    }
     const unsubscribeUrl = await this.createUnsubscribeUrl({
       memberId: member.id,
       email: payload.email,
       language: payload.language
     });
-    await this.mailer(this.welcomeEmail({
-      email: payload.email,
-      language: payload.language,
-      unsubscribeUrl
-    }));
     await this.tokens.remove(this.tokenHash(token));
-    return { ...payload, member };
+    let welcomeSent = false;
+    try {
+      await this.mailer(this.welcomeEmail({
+        email: payload.email,
+        language: payload.language,
+        unsubscribeUrl
+      }));
+      welcomeSent = true;
+    } catch (error) {
+      this.logger.error('Newsletter welcome delivery failed:', error);
+    }
+    return { ...payload, member, welcomeSent };
   }
 
   async createUnsubscribeUrl({ memberId, email, language }) {
@@ -184,14 +198,44 @@ export class NewsletterSignupService {
   async unsubscribe(token) {
     const payload = await this.previewUnsubscribe(token);
     if (!payload) return null;
+    if (!await this.tokens.consume(this.tokenHash(token), 'unsubscribe', this.now())) return null;
     const target = NEWSLETTERS[payload.language];
-    await this.ghost.unsubscribeMember({
-      memberId: payload.memberId,
-      email: payload.email,
-      newsletterName: target.name
-    });
+    try {
+      const member = await this.ghost.unsubscribeMember({
+        memberId: payload.memberId,
+        email: payload.email,
+        newsletterName: target.name
+      });
+      if (!member?.id) throw new Error('Ghost did not confirm unsubscribe');
+    } catch (error) {
+      await this.tokens.create({ tokenHash: this.tokenHash(token), action: 'unsubscribe', payload, expiresAt: payload.expiresAt });
+      throw error;
+    }
     await this.tokens.remove(this.tokenHash(token));
-    return payload;
+    // SMTP failure must never restore a subscription or report a failed opt-out.
+    let receiptSent = false;
+    try {
+      await this.mailer(this.unsubscribeEmail(payload));
+      receiptSent = true;
+    } catch (error) {
+      this.logger.error('Newsletter unsubscribe receipt failed:', error);
+    }
+    return { ...payload, receiptSent };
+  }
+
+  unsubscribeEmail({ email, language }) {
+    const en = language === 'en';
+    const subject = en ? 'Unsubscription confirmed — After Login' : 'Отписка подтверждена — После логина';
+    const message = en
+      ? 'You have unsubscribed from new English articles from After Login. Your subscriptions in other languages and your Lounge account are unchanged.'
+      : 'Вы отписались от новых статей «После логина» на русском языке. Подписки на других языках и ваш аккаунт в Гостиной сохранены.';
+    const thanks = en ? 'Thank you for reading.' : 'Спасибо, что читали.';
+    return {
+      to: email, subject,
+      text: `${message}\n\n${thanks}`,
+      html: `${newsletterLogoHeader(language)}<p>${escapeHtml(message)}</p><p>${escapeHtml(thanks)}</p>`,
+      attachments: [newsletterLogoAttachment()]
+    };
   }
 }
 

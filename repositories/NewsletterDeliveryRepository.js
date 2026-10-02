@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
-const db = new sqlite3.Database(path.join(dirname, '..', 'database', 'gostinaya.db'));
+const db = new sqlite3.Database(process.env.GOSTINAYA_DB_PATH || path.join(dirname, '..', 'database', 'gostinaya.db'));
 
 function run(sql, params = []) {
   return new Promise((resolve, reject) => {
@@ -21,20 +21,27 @@ function get(sql, params = []) {
 }
 
 export default {
-  async claim({ deliveryKey, newsletterSlug, memberId, email }) {
+  async claim({ deliveryKey, legacyDeliveryKeys = [], newsletterSlug, memberId, email }) {
+    for (const key of legacyDeliveryKeys) {
+      const previous = await get(
+        'SELECT status FROM newsletter_deliveries WHERE delivery_key = ? AND newsletter_slug = ? AND member_id = ?',
+        [key, newsletterSlug, memberId]
+      );
+      if (previous?.status === 'sent' || previous?.status === 'pending') return false;
+    }
     const existing = await get(
       'SELECT status FROM newsletter_deliveries WHERE delivery_key = ? AND newsletter_slug = ? AND member_id = ?',
       [deliveryKey, newsletterSlug, memberId]
     );
     if (existing?.status === 'sent' || existing?.status === 'pending') return false;
     if (existing) {
-      await run(
+      const retried = await run(
         `UPDATE newsletter_deliveries
          SET status = 'pending', attempts = attempts + 1, error = NULL, updated_at = CURRENT_TIMESTAMP
-         WHERE delivery_key = ? AND newsletter_slug = ? AND member_id = ?`,
+         WHERE delivery_key = ? AND newsletter_slug = ? AND member_id = ? AND status = 'failed'`,
         [deliveryKey, newsletterSlug, memberId]
       );
-      return true;
+      return retried.changes === 1;
     }
     const result = await run(
       `INSERT OR IGNORE INTO newsletter_deliveries
