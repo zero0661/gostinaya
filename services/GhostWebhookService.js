@@ -1,3 +1,4 @@
+import { newsletterPublication } from './NewsletterPublication.js';
 import DiscussionRepository from '../repositories/DiscussionRepository.js';
 import ArticleDiscussionRepository from '../repositories/ArticleDiscussionRepository.js';
 import GhostApiService from './GhostApiService.js';
@@ -19,20 +20,16 @@ function languageVersion(posts) {
     title: ru.title || en.title,
     titleRu: ru.title,
     titleEn: en.title,
+    excerptRu: newsletterPublication(ru)?.excerptRu,
+    excerptEn: newsletterPublication(en)?.excerptEn,
+    imageRu: newsletterPublication(ru)?.imageRu,
+    imageEn: newsletterPublication(en)?.imageEn,
     publicationReady: [ru, en].every(post => post.status === 'published')
   };
 }
 
 function singlePublication(post) {
-  const english = isEnglish(post);
-  return {
-    deliveryKey: `post:${post.id}`,
-    title: post.title,
-    titleRu: english ? null : post.title,
-    titleEn: english ? post.title : null,
-    urlRu: english ? null : post.url,
-    urlEn: english ? post.url : null
-  };
+  return newsletterPublication(post);
 }
 
 function pairedPublication(tag, version) {
@@ -41,6 +38,8 @@ function pairedPublication(tag, version) {
     title: version.title,
     titleRu: version.titleRu,
     titleEn: version.titleEn,
+    excerptRu: version.excerptRu, excerptEn: version.excerptEn,
+    imageRu: version.imageRu, imageEn: version.imageEn,
     urlRu: version.urlRu,
     urlEn: version.urlEn
   };

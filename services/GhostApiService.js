@@ -146,7 +146,7 @@ export function createGhostApiService({ fetchImpl = fetch, adminBaseUrl = 'https
   },
   async findPostsByDiscussionTag(tagName) {
     const tagSlug = tagName.startsWith('#') ? `hash-${tagName.slice(1)}` : tagName;
-    const data = await adminFetch(`/posts/?limit=all&include=tags&filter=${encodeURIComponent(`tag:${tagSlug}`)}`);
+    const data = await adminFetch(`/posts/?limit=all&include=tags&formats=html&filter=${encodeURIComponent(`tag:${tagSlug}`)}`);
     return data.posts || [];
   },
   async addDiscussionTag(post, tagName) {
