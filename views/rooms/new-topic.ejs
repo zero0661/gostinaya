@@ -26,56 +26,30 @@
         <% } %>
       </h2>
 
-      <% if (roomKey === 'news') { %>
-        <div class="room-intro">
-          <p data-lang="ru">Заполните обе версии. В ленте и внутри новости участник увидит только выбранный язык.</p>
-          <p data-lang="en">Fill in both versions. Members will see only the language they have selected.</p>
-        </div>
-
-        <div class="news-language-groups">
-          <fieldset class="news-language-section">
-            <legend>
-              <span data-lang="ru">Русская версия</span><span data-lang="en">Russian version</span>
-            </legend>
-
-            <label>
-              <span>Заголовок</span>
-              <input type="text" name="title_ru" maxlength="160" required autofocus>
-            </label>
-
-            <label>
-              <span>Текст</span>
-              <textarea name="body_ru" rows="8" maxlength="5000" required></textarea>
-            </label>
-          </fieldset>
-
-          <fieldset class="news-language-section">
-            <legend>
-              <span data-lang="ru">Английская версия</span><span data-lang="en">English version</span>
-            </legend>
-
-            <label>
-              <span>Title</span>
-              <input type="text" name="title_en" maxlength="160" required>
-            </label>
-
-            <label>
-              <span>Text</span>
-              <textarea name="body_en" rows="8" maxlength="5000" required></textarea>
-            </label>
-          </fieldset>
-        </div>
-      <% } else { %>
-        <label>
-          <span data-lang="ru">Заголовок темы</span><span data-lang="en">Topic Title</span>
-          <input type="text" name="title" maxlength="160" required autofocus>
-        </label>
-
-        <label>
-          <span data-lang="ru">Первое сообщение</span><span data-lang="en">First Message</span>
-          <textarea name="body" rows="10" maxlength="5000" required></textarea>
-        </label>
+      <% const draft = typeof form !== 'undefined' ? form : {}; %>
+      <% if (typeof error !== 'undefined' && error) { %>
+        <p role="alert"><%= error %></p>
       <% } %>
+      <% if (roomKey === 'news') { %>
+        <p data-lang="ru">Напишите новость на русском или английском. Вторая языковая версия появится автоматически.</p>
+        <p data-lang="en">Write your news in Russian or English. The other language version will be created automatically.</p>
+      <% } %>
+      <label>
+        <% if (roomKey === 'news') { %>
+          <span data-lang="ru">Заголовок новости</span><span data-lang="en">News Title</span>
+        <% } else { %>
+          <span data-lang="ru">Заголовок темы</span><span data-lang="en">Topic Title</span>
+        <% } %>
+        <input type="text" name="title" maxlength="160" required autofocus value="<%= draft.title || '' %>">
+      </label>
+      <label>
+        <% if (roomKey === 'news') { %>
+          <span data-lang="ru">Текст новости</span><span data-lang="en">News Text</span>
+        <% } else { %>
+          <span data-lang="ru">Первое сообщение</span><span data-lang="en">First Message</span>
+        <% } %>
+        <textarea name="body" rows="10" maxlength="5000" required><%= draft.body || '' %></textarea>
+      </label>
 
       <div class="room-intro">
         <p><span data-lang="ru">После публикации тема становится частью общего обсуждения.</span><span data-lang="en">Once published, the topic becomes part of the community discussion.</span></p>
@@ -97,3 +71,15 @@
     <a href="/gostinaya/<%= roomKey %>"><span data-lang="ru">← Вернуться к темам</span><span data-lang="en">← Back to Topics</span></a>
   </nav>
 </section>
+
+<script>
+(() => {
+  const form = document.querySelector('form[action="/gostinaya/news/new"]');
+  if (!form) return;
+  form.addEventListener('submit', () => {
+    const button = form.querySelector('button[type="submit"]');
+    button.disabled = true;
+    button.textContent = document.documentElement.lang === 'en' ? 'Publishing…' : 'Публикуем…';
+  });
+})();
+</script>

@@ -52,6 +52,7 @@ async function requestTranslation(text, targetLang) {
 
   const response = await fetch('https://api.openai.com/v1/responses', {
     method: 'POST',
+    signal: AbortSignal.timeout(30000),
     headers: {
       Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       'Content-Type': 'application/json'
@@ -139,6 +140,11 @@ async function mapWithConcurrency(items, limit, worker) {
 
 export default {
   detectLanguage,
+
+  async translateText(text, targetLang) {
+    if (!['ru', 'en'].includes(targetLang)) throw new Error('Unsupported target language');
+    return requestTranslation(String(text || ''), targetLang);
+  },
 
   async translateTopic({ topic, messages, targetLang }) {
     if (!['ru', 'en'].includes(targetLang)) {
