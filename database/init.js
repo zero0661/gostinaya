@@ -24,6 +24,7 @@ db.serialize(() => {
             notify_followed_discussions INTEGER NOT NULL DEFAULT 1,
             notify_publications INTEGER NOT NULL DEFAULT 1,
             notify_new_topics INTEGER NOT NULL DEFAULT 0,
+            notify_project_news INTEGER NOT NULL DEFAULT 0,
             notify_all_article_discussions INTEGER NOT NULL DEFAULT 0,
             notify_email INTEGER NOT NULL DEFAULT 0,
             is_blocked INTEGER NOT NULL DEFAULT 0,

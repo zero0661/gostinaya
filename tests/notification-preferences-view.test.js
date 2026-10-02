@@ -16,6 +16,8 @@ test('profile separates internal event categories from the master e-mail channel
   assert.match(source, /Все новые сообщения во всех обсуждениях статей/);
   assert.match(source, /name="notify_publications"/);
   assert.match(source, /name="notify_new_topics"/);
+  assert.match(source, /name="notify_project_news"/);
+  assert.match(source, /Новости проекта/);
   assert.match(source, /name="notify_email"/);
   assert.match(source, /Дополнительно дублировать выбранные уведомления на e-mail/);
 });
