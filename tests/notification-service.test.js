@@ -42,6 +42,7 @@ const guest = (id, overrides = {}) => ({
   notify_followed_discussions: 0,
   notify_publications: 0,
   notify_new_topics: 0,
+  notify_project_news: 0,
   notify_all_article_discussions: 0,
   notify_email: 0,
   ...overrides
@@ -216,11 +217,11 @@ test('new-topic category controls the internal notification and master preferenc
   assert.deepEqual(harness.emails.map(item => item.to), ['guest1@example.com']);
 });
 
-test('project news uses the topic preference but has its own notification identity and wording', async () => {
+test('project news uses its independent preference and includes the subscribed author', async () => {
   const harness = createHarness({
     recipients: [
-      guest(1, { notify_new_topics: 1, notify_email: 1 }),
-      guest(2, { notify_new_topics: 1, notify_email: 1 })
+      guest(1, { notify_project_news: 1, notify_email: 1 }),
+      guest(2, { notify_project_news: 1, notify_email: 1 })
     ]
   });
 
@@ -232,18 +233,18 @@ test('project news uses the topic preference but has its own notification identi
   });
 
   assert.deepEqual(harness.created.map(item => [item.recipientId, item.type]), [
-    [1, 'project_news']
+    [1, 'project_news'], [2, 'project_news']
   ]);
   assert.match(harness.created[0].text, /новость проекта/);
-  assert.deepEqual(harness.emails.map(item => item.to), ['guest1@example.com']);
+  assert.deepEqual(harness.emails.map(item => item.to), ['guest1@example.com', 'guest2@example.com']);
   assert.match(harness.emails[0].subject, /Новость проекта/);
   assert.match(harness.emails[0].text, /Посмотреть на сайте и обсудить/);
 });
 
 test('news emails contain full matching RU/EN text, safe paragraphs and the discussion link', async () => {
   const harness = createHarness({ recipients: [
-    guest(5, { language: 'ru', notify_new_topics: 1, notify_email: 1 }),
-    guest(6, { language: 'en', notify_new_topics: 1, notify_email: 1 })
+    guest(5, { language: 'ru', notify_project_news: 1, notify_email: 1 }),
+    guest(6, { language: 'en', notify_project_news: 1, notify_email: 1 })
   ] });
   const bodyRu = `Первая строка\nВторая строка\n\n${'Полный текст '.repeat(300)}Конец RU <script>alert(1)</script>`;
   const bodyEn = 'First paragraph\n\nFinal EN paragraph & details';
@@ -339,4 +340,23 @@ test('Lounge article cards use localized previews, branding and profile settings
   assert.match(en.html, /gostinaya\/profile/);
   assert.equal(en.attachments.length, 1);
   assert.equal(en.headers, undefined);
+});
+
+
+
+test('news and topics are independent and e-mail remains optional', async () => {
+  const harness = createHarness({ recipients: [
+    guest(1, { notify_project_news: 1, notify_new_topics: 0, notify_email: 1 }),
+    guest(2, { notify_project_news: 0, notify_new_topics: 1, notify_email: 1 }),
+    guest(3, { notify_project_news: 1, notify_new_topics: 1, notify_email: 0 }),
+    guest(4, { notify_project_news: 0, notify_new_topics: 0, notify_email: 1 })
+  ] });
+  await harness.service.notifyNewTopic({ topicId: 81, actor: guest(4), room: 'news', title: 'News', body: 'News body' });
+  await harness.service.notifyNewTopic({ topicId: 82, actor: guest(4), room: 'discussions', title: 'Topic', body: 'Topic body' });
+  assert.deepEqual(harness.created.map(item => [item.recipientId, item.type]), [
+    [1, 'project_news'], [3, 'project_news'], [2, 'new_topic'], [3, 'new_topic']
+  ]);
+  assert.deepEqual(harness.emails.map(item => item.to), ['guest1@example.com', 'guest2@example.com']);
+  assert.match(harness.emails[0].text, /уведомления о новостях проекта/);
+  assert.match(harness.emails[1].text, /уведомления о новых темах/);
 });

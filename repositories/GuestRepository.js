@@ -17,6 +17,7 @@ class GuestRepository {
                     notify_followed_discussions,
                     notify_publications,
                     notify_new_topics,
+                    notify_project_news,
                     notify_all_article_discussions,
                     notify_email,
                     is_blocked,
@@ -118,6 +119,7 @@ class GuestRepository {
                     notify_followed_discussions = ?,
                     notify_publications = ?,
                     notify_new_topics = ?,
+           notify_project_news = ?,
                     notify_all_article_discussions = ?,
                     notify_email = ?,
                     profile_completed = ?
@@ -128,6 +130,7 @@ class GuestRepository {
                     settings.notifyFollowedDiscussions,
                     settings.notifyPublications,
                     settings.notifyNewTopics,
+                    settings.notifyProjectNews,
                     settings.notifyAllArticleDiscussions,
                     settings.notifyEmail,
                     settings.profileCompleted,
@@ -232,6 +235,7 @@ class GuestRepository {
            notify_followed_discussions = ?,
            notify_publications = ?,
            notify_new_topics = ?,
+           notify_project_news = ?,
            notify_all_article_discussions = ?,
            notify_email = ?,
            profile_completed = ?
@@ -245,6 +249,7 @@ class GuestRepository {
           profile.notifyFollowedDiscussions,
           profile.notifyPublications,
           profile.notifyNewTopics,
+          profile.notifyProjectNews,
           profile.notifyAllArticleDiscussions,
           profile.notifyEmail,
           profile.profileCompleted,
@@ -404,6 +409,7 @@ class GuestRepository {
                     g.notify_followed_discussions,
                     g.notify_publications,
                     g.notify_new_topics,
+                    g.notify_project_news,
                     g.notify_all_article_discussions,
                     g.notify_email
                  FROM guests g
@@ -439,6 +445,7 @@ class GuestRepository {
                     notify_followed_discussions,
                     notify_publications,
                     notify_new_topics,
+                    notify_project_news,
                     notify_all_article_discussions,
                     notify_email
                  FROM guests

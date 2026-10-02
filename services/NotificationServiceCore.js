@@ -190,9 +190,13 @@ export class NotificationService {
     const content = String(body || '').trim();
     const contentHtml = content.split(/\r?\n\s*\r?\n/)
       .map(paragraph => `<p style="font-size:18px;line-height:1.6;overflow-wrap:break-word;">${escapeHtml(paragraph).replace(/\r?\n/g, '<br>')}</p>`).join('');
-    const reason = en
-      ? 'You are receiving this email because you enabled notifications about new topics and project news in the Lounge of the “After Login” project.'
-      : 'Вы получаете это письмо, потому что включили уведомления о новых темах и новостях проекта в Гостиной проекта «После логина».';
+    const reason = isProjectNews
+      ? (en
+          ? 'You are receiving this email because you enabled project news notifications in the Lounge of the “After Login” project.'
+          : 'Вы получаете это письмо, потому что включили уведомления о новостях проекта в Гостиной проекта «После логина».')
+      : (en
+          ? 'You are receiving this email because you enabled new topic notifications in the Lounge of the “After Login” project.'
+          : 'Вы получаете это письмо, потому что включили уведомления о новых темах в Гостиной проекта «После логина».');
     const settingsUrl = `${APP_URL}/gostinaya/profile`;
     const settingsLabel = en ? 'Notification settings' : 'Настройки уведомлений';
     return {
@@ -207,8 +211,10 @@ export class NotificationService {
     const recipients = await this.guests.listNotificationRecipients();
     const url = this.topicUrl(topicId);
     for (const recipient of recipients) {
-      if (Number(recipient.id) === Number(actor.id)) continue;
-      if (Number(recipient.notify_new_topics) !== 1) continue;
+      const isProjectNews = room === 'news';
+      if (!isProjectNews && Number(recipient.id) === Number(actor.id)) continue;
+      const preference = isProjectNews ? recipient.notify_project_news : recipient.notify_new_topics;
+      if (Number(preference) !== 1) continue;
       await this.notifications.create({
         recipientId: recipient.id,
         actorId: actor.id,
