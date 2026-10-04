@@ -31,14 +31,33 @@ export function createGhostApiService({ fetchImpl = fetch, adminBaseUrl = 'https
     return response.json();
   }
 
+  async function adminList(path, key) {
+    const url = new URL(path, 'https://ghost.invalid');
+    url.searchParams.set('limit', '100');
+    const items = [];
+    let page = 1;
+    while (true) {
+      url.searchParams.set('page', String(page));
+      const data = await adminFetch(`${url.pathname}?${url.searchParams}`);
+      const batch = data[key] || [];
+      if (!Array.isArray(batch)) throw new Error(`Ghost returned invalid ${key} data`);
+      items.push(...batch);
+      const next = data.meta?.pagination?.next;
+      if (next === null || next === undefined) return items;
+      if (!Number.isInteger(next) || next <= page) {
+        throw new Error('Ghost returned invalid pagination');
+      }
+      page = next;
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
+  }
+
   return {
     async listNewsletters() {
-      const data = await adminFetch('/newsletters/?limit=all');
-      return data.newsletters || [];
+      return adminList('/newsletters/', 'newsletters');
     },
     async listMembers() {
-      const data = await adminFetch('/members/?limit=all&include=newsletters,labels');
-      return data.members || [];
+      return adminList('/members/?include=newsletters,labels', 'members');
     },
     async archiveNewsletter(id) {
       const data = await adminFetch(`/newsletters/${encodeURIComponent(id)}/`, {
@@ -120,8 +139,8 @@ export function createGhostApiService({ fetchImpl = fetch, adminBaseUrl = 'https
       const newsletters = await this.listNewsletters();
       const newsletter = newsletters.find(item => item.name === newsletterName);
       if (!newsletter) throw new Error(`Ghost newsletter not found: ${newsletterName}`);
-      const data = await adminFetch('/members/?limit=all&include=newsletters,labels');
-      return (data.members || []).filter(member =>
+      const members = await this.listMembers();
+      return members.filter(member =>
         member.subscribed !== false &&
         member.email_suppression?.suppressed !== true &&
         (member.newsletters || []).some(item => item.id === newsletter.id)
@@ -146,8 +165,7 @@ export function createGhostApiService({ fetchImpl = fetch, adminBaseUrl = 'https
   },
   async findPostsByDiscussionTag(tagName) {
     const tagSlug = tagName.startsWith('#') ? `hash-${tagName.slice(1)}` : tagName;
-    const data = await adminFetch(`/posts/?limit=all&include=tags&formats=html&filter=${encodeURIComponent(`tag:${tagSlug}`)}`);
-    return data.posts || [];
+    return adminList(`/posts/?include=tags&formats=html&filter=${encodeURIComponent(`tag:${tagSlug}`)}`, 'posts');
   },
   async addDiscussionTag(post, tagName) {
     // Ghost uses updated_at for collision detection and replaces all tag relations.
