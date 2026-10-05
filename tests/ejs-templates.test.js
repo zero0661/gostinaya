@@ -36,3 +36,16 @@ test('all EJS templates compile after the locale split', async () => {
     );
   }
 });
+
+
+test('public Lounge entry honors the language of the referring site page', async () => {
+  const layout = await fs.readFile(path.join(viewsDir, 'layouts', 'public.ejs'), 'utf8');
+
+  assert.match(layout, /document\.referrer/);
+  assert.match(layout, /\/\^\\\/en\(\?:\\\/\|\$\)\/i/);
+  assert.match(layout, /referrerLanguage \|\|/);
+  assert.ok(
+    layout.indexOf('referrerLanguage ||') < layout.indexOf("stored === 'en' || stored === 'ru'"),
+    'referrer language should win over a previously stored Lounge language'
+  );
+});
