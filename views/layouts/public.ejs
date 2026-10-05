@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="<%= typeof lang !== 'undefined' && lang === 'en' ? 'en' : 'ru' %>">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -24,13 +24,23 @@
       src="/gostinaya/public/after-login-logo-transparent.png"
       alt="После логина / After Login"
     >
-    <span class="lounge-banner-name">Гостиная</span>
-    <small>The Lounge</small>
+    <% if (typeof lang !== 'undefined' && lang === 'en') { %>
+      <span class="lounge-banner-name">The Lounge</span>
+      <small>After Login</small>
+    <% } else { %>
+      <span class="lounge-banner-name">Гостиная</span>
+      <small>The Lounge</small>
+    <% } %>
   </div>
 
   <blockquote class="lounge-banner-quote">
-    <p>«Любая достаточно развитая технология неотличима от магии»</p>
-    <cite>Артур Кларк</cite>
+    <% if (typeof lang !== 'undefined' && lang === 'en') { %>
+      <p>“Any sufficiently advanced technology is indistinguishable from magic.”</p>
+      <cite>Arthur C. Clarke</cite>
+    <% } else { %>
+      <p>«Любая достаточно развитая технология неотличима от магии»</p>
+      <cite>Артур Кларк</cite>
+    <% } %>
   </blockquote>
 </header>
 
