@@ -1,34 +1,40 @@
 <section class="auth-page">
-  <nav class="public-nav" aria-label="Навигация / Navigation">
-    <a href="https://milenin.pro/">← На сайт проекта / <span>Main website</span></a>
+  <nav class="public-nav" aria-label="<%= lang === 'en' ? 'Navigation' : 'Навигация' %>">
+    <a href="<%= lang === 'en' ? 'https://milenin.pro/en-project-map/' : 'https://milenin.pro/' %>">← <%= lang === 'en' ? 'Main website' : 'На сайт проекта' %></a>
   </nav>
 
   <div class="auth-card public-welcome registration-welcome">
-    <p class="auth-kicker">Гостиная / The Lounge</p>
+    <p class="auth-kicker"><%= lang === 'en' ? 'The Lounge' : 'Гостиная' %></p>
 
-    <h1>
-      Дверь открыта, <%= guest.name %><br>
-      <span>The door is open</span>
-    </h1>
+    <% if (lang === 'en') { %>
+      <h1>The door is open, <%= guest.name %></h1>
 
-    <p class="auth-intro">
-      Вы стали участником сообщества проекта «После логина».<br>
-      <span>You are now a member of the After Login community.</span>
-    </p>
+      <p class="auth-intro">
+        You are now a member of the After Login community.
+      </p>
 
-    <p>
-      Здесь не нужно спешить, собирать реакции или доказывать свою полезность.
-      Читайте, отвечайте, спорьте и начинайте разговор, когда появится собственная мысль.<br>
-      <span>
+      <p>
         There is no need to rush, collect reactions, or prove your usefulness here.
         Read, reply, disagree, and start a conversation when you have a thought of your own.
-      </span>
-    </p>
+      </p>
+    <% } else { %>
+      <h1>Дверь открыта, <%= guest.name %></h1>
+
+      <p class="auth-intro">
+        Вы стали участником сообщества проекта «После логина».
+      </p>
+
+      <p>
+        Здесь не нужно спешить, собирать реакции или доказывать свою полезность.
+        Читайте, отвечайте, спорьте и начинайте разговор, когда появится собственная мысль.
+      </p>
+    <% } %>
 
     <div class="welcome-actions">
       <a class="welcome-primary" href="<%= returnTo || '/gostinaya/hall' %>">
-        <%= returnTo ? 'Перейти к обсуждению' : 'Войти в Холл' %><br>
-        <span><%= returnTo ? 'Go to the Discussion' : 'Enter the Hall' %></span>
+        <%= returnTo
+          ? (lang === 'en' ? 'Go to the Discussion' : 'Перейти к обсуждению')
+          : (lang === 'en' ? 'Enter the Hall' : 'Войти в Холл') %>
       </a>
     </div>
   </div>
