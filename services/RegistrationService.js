@@ -2,12 +2,17 @@ function clean(value, maxLength) {
     return String(value || '').trim().slice(0, maxLength);
 }
 
+export function normalizePublicLanguage(value) {
+    return value === 'en' ? 'en' : 'ru';
+}
+
 export function normalizeRegistrationInput(body = {}) {
     return {
         name: clean(body.name, 80),
         email: clean(body.email, 254).toLowerCase(),
         country: '', city: '', location: '',
-        language: body.language === 'en' ? 'en' : 'ru', joinReason: '', currentTopic: ''
+        language: normalizePublicLanguage(body.language),
+        joinReason: '', currentTopic: ''
     };
 }
 
