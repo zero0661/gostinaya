@@ -1,29 +1,24 @@
 <section class="auth-page">
-  <nav class="public-nav" aria-label="Навигация / Navigation">
-    <a href="/gostinaya">← Добро пожаловать / <span>Welcome</span></a>
-    <a href="https://milenin.pro/">⌂ На сайт проекта / <span>Main website</span></a>
+  <nav class="public-nav" aria-label="<%= lang === 'en' ? 'Navigation' : 'Навигация' %>">
+    <a href="/gostinaya?lang=<%= lang %>">← <%= lang === 'en' ? 'Welcome' : 'Добро пожаловать' %></a>
+    <a href="<%= lang === 'en' ? 'https://milenin.pro/en-project-map/' : 'https://milenin.pro/' %>">⌂ <%= lang === 'en' ? 'Main website' : 'На сайт проекта' %></a>
   </nav>
 
   <div class="auth-card">
 
-    <p class="auth-kicker">Гостиная / The Lounge</p>
+    <p class="auth-kicker"><%= lang === 'en' ? 'The Lounge' : 'Гостиная' %></p>
 
-    <h1>
-      Постучать в дверь<br>
-      <span>Knock on the Door</span>
-    </h1>
+    <h1><%= lang === 'en' ? 'Knock on the Door' : 'Постучать в дверь' %></h1>
 
     <p class="auth-intro">
-      Укажите имя или ник и e-mail. Мы пришлём ссылку для входа. Язык можно выбрать внутри Гостиной.<br>
-      Enter your name or nickname and e-mail. We will send a sign-in link. You can choose your language inside the Lounge.
+      <%= lang === 'en'
+        ? 'Enter your name or nickname and e-mail. We will send a sign-in link. You can change your language later inside the Lounge.'
+        : 'Укажите имя или ник и e-mail. Мы пришлём ссылку для входа. Язык можно изменить позже внутри Гостиной.' %>
     </p>
 
     <form id="register-form" class="auth-form">
 
-      <label for="name">
-        Имя или ник<br>
-        <span>Name or nickname</span>
-      </label>
+      <label for="name"><%= lang === 'en' ? 'Name or nickname' : 'Имя или ник' %></label>
       <input
         id="name"
         name="name"
@@ -42,27 +37,23 @@
       >
 
       <p class="auth-consent">
-        Нажимая «Зарегистрироваться», вы принимаете <a href="/gostinaya/rules" target="_blank" rel="noopener">Правила Гостиной</a> и <a href="/gostinaya/privacy" target="_blank" rel="noopener">условия обработки данных</a>.<br>
-        By clicking Register, you accept the Lounge Rules and data processing terms linked above.
+        <% if (lang === 'en') { %>
+          By clicking Register, you accept the <a href="/gostinaya/rules" target="_blank" rel="noopener">Lounge Rules</a> and <a href="/gostinaya/privacy" target="_blank" rel="noopener">data processing terms</a>.
+        <% } else { %>
+          Нажимая «Зарегистрироваться», вы принимаете <a href="/gostinaya/rules" target="_blank" rel="noopener">Правила Гостиной</a> и <a href="/gostinaya/privacy" target="_blank" rel="noopener">условия обработки данных</a>.
+        <% } %>
       </p>
 
-      <button type="submit">
-        Зарегистрироваться<br>
-        <span>Register</span>
-      </button>
+      <button type="submit"><%= lang === 'en' ? 'Register' : 'Зарегистрироваться' %></button>
 
       <p id="register-message" class="auth-message" aria-live="polite"></p>
     </form>
 
     <div class="auth-links">
-      <span>
-        Уже зарегистрированы?<br>
-        Already have an account?
-      </span>
+      <span><%= lang === 'en' ? 'Already have an account?' : 'Уже зарегистрированы?' %></span>
 
-      <a href="/gostinaya/login<%= returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : '' %>">
-        Войти<br>
-        Sign in
+      <a href="/gostinaya/login?lang=<%= lang %><%= returnTo ? `&returnTo=${encodeURIComponent(returnTo)}` : '' %>">
+        <%= lang === 'en' ? 'Sign in' : 'Войти' %>
       </a>
     </div>
 
@@ -78,6 +69,7 @@
   const form = document.getElementById('register-form');
   const message = document.getElementById('register-message');
   const returnTo = <%- JSON.stringify(returnTo || '') %>;
+  const language = <%- JSON.stringify(lang) %>;
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -85,13 +77,16 @@
     const submitButton = form.querySelector('button[type="submit"]');
     submitButton.disabled = true;
 
-    message.textContent = 'Создаём учётную запись... / Creating your account...';
+    message.textContent = language === 'en'
+      ? 'Creating your account...'
+      : 'Создаём учётную запись...';
 
     const formData = new FormData(form);
 
     const payload = {
       name: formData.get('name'),
       email: formData.get('email'),
+      language,
       returnTo
     };
 
@@ -109,13 +104,14 @@
       if (!response.ok) {
         message.textContent =
           data.error ||
-          'Не удалось зарегистрироваться. / Registration failed.';
+          (language === 'en' ? 'Registration failed.' : 'Не удалось зарегистрироваться.');
         submitButton.disabled = false;
         return;
       }
 
-      message.textContent =
-        'Отправляем письмо для подтверждения… / Sending the confirmation e-mail…';
+      message.textContent = language === 'en'
+        ? 'Sending the sign-in e-mail...'
+        : 'Отправляем письмо для входа…';
 
       if (data.redirect) {
         window.location.href = data.redirect;
@@ -125,8 +121,9 @@
       window.location.href = '/gostinaya/welcome';
 
     } catch (error) {
-      message.textContent =
-        'Не удалось связаться с сервером. / Could not connect to the server.';
+      message.textContent = language === 'en'
+        ? 'Could not connect to the server.'
+        : 'Не удалось связаться с сервером.';
       submitButton.disabled = false;
     }
   });
