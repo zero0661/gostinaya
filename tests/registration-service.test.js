@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
+    normalizePublicLanguage,
     normalizeRegistrationInput,
     validateRegistrationInput
 } from '../services/RegistrationService.js';
@@ -14,6 +15,19 @@ test('registration accepts only name and email and normalizes them', () => {
     assert.equal(validateRegistrationInput(input), null);
     assert.equal(input.language, 'ru');
     assert.equal(input.location, '');
+});
+
+test('registration preserves an explicit English entry language', () => {
+    const input = normalizeRegistrationInput({
+        name: 'Nick',
+        email: 'member@example.com',
+        language: 'en'
+    });
+
+    assert.equal(input.language, 'en');
+    assert.equal(normalizePublicLanguage('en'), 'en');
+    assert.equal(normalizePublicLanguage('ru'), 'ru');
+    assert.equal(normalizePublicLanguage('anything-else'), 'ru');
 });
 
 test('registration rejects missing names and malformed email addresses', () => {
