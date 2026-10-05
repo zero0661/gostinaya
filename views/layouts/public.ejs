@@ -12,11 +12,31 @@
       const stored = localStorage.getItem('loungeLanguage');
       const legacyStored = localStorage.getItem('gostinayaLanguage');
       const browserLanguage = (navigator.language || '').toLowerCase().startsWith('en') ? 'en' : 'ru';
+
+      let referrerLanguage = null;
+      if (document.referrer) {
+        try {
+          const referrer = new URL(document.referrer);
+          const sameProjectHost =
+            referrer.hostname === 'milenin.pro' ||
+            referrer.hostname.endsWith('.milenin.pro');
+
+          if (sameProjectHost) {
+            referrerLanguage = /^\/en(?:\/|$)/i.test(referrer.pathname)
+              ? 'en'
+              : 'ru';
+          }
+        } catch {
+          // Ignore malformed referrers and continue with saved/browser language.
+        }
+      }
+
       const language = requested === 'en' || requested === 'ru'
         ? requested
-        : (stored === 'en' || stored === 'ru'
-            ? stored
-            : (legacyStored === 'en' || legacyStored === 'ru' ? legacyStored : browserLanguage));
+        : (referrerLanguage ||
+            (stored === 'en' || stored === 'ru'
+              ? stored
+              : (legacyStored === 'en' || legacyStored === 'ru' ? legacyStored : browserLanguage)));
       const rawTitle = <%- JSON.stringify(title || '') %>;
 
       function localizedTitle(value, lang) {
