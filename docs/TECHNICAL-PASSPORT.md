@@ -6,7 +6,7 @@
 **Дата фиксации:** 5 октября 2026 года, 17:33 МСК (исправлен и вручную подтверждён EN-вход в Гостиную; прежние проверки датированы отдельно)
 **Репозиторий Гостиной:** `zero0661/gostinaya`
 **Production-ветка:** `feature/article-subscriptions`
-**Последний runtime-код в Git:** `c4744e5a972dc9b812b93b85f5495be415f72f49` (PR #30; установка ещё не подтверждена)
+**Последний runtime-код в Git:** `8f6a3e1a30cd4af4d6fd3c82c255ed2fae2f67bb` (PR #33; EN-вход в The Lounge, merge 5 октября 2026)
 **Последний подтверждённый установленный runtime:** `832b4d84c36fdf38ae34d95ed09efc2ecb0cdcb4` (PR #29; создание новости и перевод проверены владельцем)
 **Дополнительная установленная правка:** GhostApiService.js из `2892985683ac6aae052e7f1f5780447c78562740` (пагинация для Ghost 6, проверены SHA256 и перезапуск PM2); полный checkout этого коммита не подтверждён.
 **Основной адрес:** `https://milenin.pro`
@@ -1523,4 +1523,4 @@ systemctl start ghost-release-watch.service
 - passwordless login и redirect на `/gostinaya/check-email` сохраняют `lang`;
 - при отсутствии параметра и подходящего referrer остаются прежние fallback: сохранённая локаль, затем язык браузера.
 
-Изменены `app.js`, `controllers/GuestController.js`, `services/RegistrationService.js`, `views/layouts/public.ejs`, `views/auth/login.ejs` и регрессионные тесты. Production-прогон после установки: **137 tests, 137 pass, 0 fail**. PM2 перезапущен. Владелец проверил результат в приватном Safari: переход с английской версии сайта по **The Lounge** открыл английский баннер и английскую welcome-card, активным был переключатель **EN**. Исправление считается подтверждённым в production.
+Изменены `app.js`, `controllers/GuestController.js`, `services/RegistrationService.js`, `views/layouts/public.ejs`, `views/auth/login.ejs` и регрессионные тесты. Production-прогон после установки: **137 tests, 137 pass, 0 fail**. PM2 перезапущен. Владелец проверил результат в приватном Safari: переход с английской версии сайта по **The Lounge** открыл английский баннер и английскую welcome-card, активным был переключатель **EN**. Исправление считается подтверждённым в production. Git: PR #33, merge `8f6a3e1a30cd4af4d6fd3c82c255ed2fae2f67bb` в `feature/article-subscriptions`.
