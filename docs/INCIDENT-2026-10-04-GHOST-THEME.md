@@ -105,3 +105,8 @@ CONTENT_SCAN_OK, CONTENT_DETAILS_OK, EXTERNAL_RESOURCES_OK, SPACER_CHECK_OK. Э�
 ## Статус
 
 Уязвимая версия заменена, восемь обнаруженных Admin keys ротированы, прямой порт ограничен localhost, временная блокировка Content API снята после проверки. Основные HTTP-маршруты работают. Владелец сменил пароли обоих staff аккаунтов; штатный обработчик Ghost отзывает их прежние сеансы. Глобальные и отдельные поля code injection и текущий список webhooks проверены. Восстановление доступности и основные меры сдерживания выполнены. Владелец подтвердил поиск, RU/EN в статье и вход в Гостиную. Расследование последствий и остальные функциональные проверки остаются открытыми; инцидент полностью закрытым не объявляется.
+
+
+### Установка контроля изменений — 5 октября, 07:47 МСК
+
+Владелец выполнил установщик scripts/ghost-security-watch.py из d8a04122296c0d1ff65b43c10c7b56aa6e759f01 с проверкой SHA256. Вывод: BASELINE_SAVED, TEST_MAIL_ACCEPTED_BY_SMTP, SECURITY_WATCH_OK, SECURITY_WATCH_INSTALLED_OK; ghost-security-watch.timer active/enabled. Получение тестового письма подтверждено владельцем и скриншотом. Код /usr/local/lib/ghost-security-watch.py, закрытые снимок/config/state в /var/lib/ghost-security-watch; service/timer в /etc/systemd/system. Период настроен пять минут. В немедленном list-timers NEXT ещё был «-»; завершение запуска под systemd и следующий плановый запуск требуют дополнительной проверки. Это локальный контроль/уведомления, не автоматическая блокировка, внешний монитор, security updates или external backup. Инструкция: docs/GHOST-SECURITY-WATCH.md.
