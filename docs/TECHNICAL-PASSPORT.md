@@ -1269,3 +1269,8 @@ CONTENT_SCAN_OK, CONTENT_DETAILS_OK, EXTERNAL_RESOURCES_OK, SPACER_CHECK_OK. Э�
 ### Установка контроля изменений — 5 октября, 07:47 МСК
 
 Владелец выполнил установщик scripts/ghost-security-watch.py из d8a04122296c0d1ff65b43c10c7b56aa6e759f01 с проверкой SHA256. Вывод: BASELINE_SAVED, TEST_MAIL_ACCEPTED_BY_SMTP, SECURITY_WATCH_OK, SECURITY_WATCH_INSTALLED_OK; ghost-security-watch.timer active/enabled. Получение тестового письма подтверждено владельцем и скриншотом. Код /usr/local/lib/ghost-security-watch.py, закрытые снимок/config/state в /var/lib/ghost-security-watch; service/timer в /etc/systemd/system. Период настроен пять минут. В немедленном list-timers NEXT ещё был «-»; завершение запуска под systemd и следующий плановый запуск требуют дополнительной проверки. Это локальный контроль/уведомления, не автоматическая блокировка, внешний монитор, security updates или external backup. Инструкция: docs/GHOST-SECURITY-WATCH.md.
+
+
+### Подтверждение systemd — 5 октября, 07:50 МСК
+
+Скриншот journalctl показывает два успешных завершения сервиса в 04:47:02 и 04:47:04 UTC с SECURITY_WATCH_OK (первое ручное, второе после включения timer). list-timers показывает следующий запуск 04:52:03 UTC / 07:52:03 МСК, интервал пять минут. Первое выполнение под systemd и наличие следующего запуска подтверждены; следующий отдельный пятиминутный цикл в этом скриншоте ещё не наступил. Прежний NEXT «-» был временным состоянием сразу после включения, исправление timer не потребовалось.
