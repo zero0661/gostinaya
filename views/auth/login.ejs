@@ -81,7 +81,7 @@
             const response = await fetch('/gostinaya/api/guests/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, returnTo })
+                body: JSON.stringify({ email, language, returnTo })
             });
 
             const data = await response.json();
