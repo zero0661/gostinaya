@@ -25,6 +25,7 @@ import db from './database/db.js';
 import session from 'express-session';
 import sessionFileStore from 'session-file-store';
 import { addReturnTo, normalizeAuthReturnTo } from './utils/authRedirect.js';
+import { normalizePublicLanguage } from './services/RegistrationService.js';
 import { formatMoscowDateTime } from './utils/dateTime.js';
 import { linkifyText } from './utils/linkifyText.js';
 import { isModerator } from './services/ModerationPolicy.js';
@@ -54,6 +55,30 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const FileStore = sessionFileStore(session);
+
+function publicLanguageFromRequest(req) {
+    if (req.query?.lang === 'en' || req.query?.lang === 'ru') {
+        return normalizePublicLanguage(req.query.lang);
+    }
+
+    const referer = req.get('referer');
+
+    if (referer) {
+        try {
+            const url = new URL(referer);
+
+            if (url.hostname === 'milenin.pro' || url.hostname.endsWith('.milenin.pro')) {
+                if (/^\/en(?:[-/]|$)/i.test(url.pathname)) {
+                    return 'en';
+                }
+            }
+        } catch {
+            // Ignore malformed Referer and fall back to Russian.
+        }
+    }
+
+    return 'ru';
+}
 
 app.set('view engine', 'ejs');
 app.use(expressLayouts);
@@ -210,19 +235,24 @@ app.get('/health', (req, res) => {
 
 app.get('/gostinaya/register', (req, res) => {
     const returnTo = normalizeAuthReturnTo(req.query.returnTo);
+    const lang = publicLanguageFromRequest(req);
 
     res.render('auth/register', {
-        title: 'Регистрация / Registration',
+        title: lang === 'en' ? 'Registration' : 'Регистрация',
         layout: 'layouts/public',
-        returnTo
+        returnTo,
+        lang
     });
 });
 
 app.get('/gostinaya/check-email', (req, res) => {
+    const lang = publicLanguageFromRequest(req);
+
     res.render('auth/check-email', {
-        title: 'Проверьте почту / Check your inbox',
+        title: lang === 'en' ? 'Check your inbox' : 'Проверьте почту',
         layout: 'layouts/public',
-        email: String(req.query.email || '').trim().slice(0, 254)
+        email: String(req.query.email || '').trim().slice(0, 254),
+        lang
     });
 });
 
@@ -266,10 +296,13 @@ app.get('/gostinaya/verify-email', async (req, res, next) => {
 
 app.get('/gostinaya', (req, res) => {
     if (!req.session.guest?.id) {
+        const lang = publicLanguageFromRequest(req);
+
         return res.render('public-lounge', {
-        title: 'Гостиная / The Lounge',
-        layout: 'layouts/public'
-    });
+            title: lang === 'en' ? 'The Lounge' : 'Гостиная',
+            layout: 'layouts/public',
+            lang
+        });
     }
 
     return res.redirect('/gostinaya/hall');
@@ -523,11 +556,13 @@ app.get('/gostinaya/privacy', (req, res) => {
 
 app.get('/gostinaya/login', (req, res) => {
     const returnTo = normalizeAuthReturnTo(req.query.returnTo);
+    const lang = publicLanguageFromRequest(req);
 
     res.render('auth/login', {
-        title: 'Вход / Login',
+        title: lang === 'en' ? 'Sign in' : 'Вход',
         layout: 'layouts/public',
-        returnTo
+        returnTo,
+        lang
     });
 });
 
