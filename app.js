@@ -435,11 +435,14 @@ app.get('/gostinaya', (req, res) => {
 app.get('/gostinaya/welcome', requireGuest, (req, res) => {
     const returnTo = normalizeAuthReturnTo(req.query.returnTo);
 
+    const lang = normalizePublicLanguage(req.session.guest.language);
+
     res.render('auth/welcome', {
-        title: 'Дверь открыта / The Door Is Open',
+        title: lang === 'en' ? 'The Door Is Open' : 'Дверь открыта',
         layout: 'layouts/public',
         guest: req.session.guest,
-        returnTo
+        returnTo,
+        lang
     });
 });
 
