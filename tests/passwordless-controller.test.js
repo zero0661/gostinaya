@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import vm from 'node:vm';
 import crypto from 'node:crypto';
-import { normalizeRegistrationInput, validateRegistrationInput } from '../services/RegistrationService.js';
+import { normalizePublicLanguage, normalizeRegistrationInput, validateRegistrationInput } from '../services/RegistrationService.js';
 import { normalizeAuthReturnTo } from '../utils/authRedirect.js';
 
 async function harness(existing = null) {
@@ -13,7 +13,7 @@ async function harness(existing = null) {
     .replace(/^import[\s\S]*?;\n/gm, '')
     .replace('export default new GuestController();', 'globalThis.controller = new GuestController();');
   const context = vm.createContext({
-    crypto, console, normalizeRegistrationInput, validateRegistrationInput, normalizeAuthReturnTo,
+    crypto, console, normalizePublicLanguage, normalizeRegistrationInput, validateRegistrationInput, normalizeAuthReturnTo,
     GuestRepository: { findByEmail: async () => existing, create: async input => { created.push(input); return guest; } },
     AuthService: { hashPassword: async value => { passwords.push(value); return 'hashed-random-secret'; } },
     EmailVerificationService: { issue: async (value, returnTo) => { issued.push({ guest: value, returnTo }); } },
