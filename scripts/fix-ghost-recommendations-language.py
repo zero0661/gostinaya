@@ -9,7 +9,7 @@ import subprocess
 
 ROOT = Path('/var/lib/docker/volumes/ghost_ghost_content/_data/themes/liebling')
 OLD_FILTER = 'tags:[{{post.tags}}]+id:-{{post.id}}'
-MARKER = '{{!-- after-login-recommendations-language-v1 --}}'
+MARKER = '{{!-- after-login-recommendations-language-v2 --}}'
 
 def transform(source):
     if MARKER in source:
@@ -28,7 +28,7 @@ def transform(source):
         raise ValueError('Unexpected heading or cards; no changes made')
     def version(language):
         tag = 'tag:english' if language == 'en' else 'tag:-english'
-        result = query.replace(OLD_FILTER, 'tags:[{{tags}}]+id:-{{id}}+' + tag)
+        result = query.replace(OLD_FILTER, 'tags:[{{tags[*].slug}}]+id:-{{id}}+' + tag)
         return result.replace(heading, 'Recommended' if language == 'en' else '{{t "Recommended for you"}}')
     replacement = '\n'.join([MARKER, '{{#post}}', '{{#if tags.length}}', '{{#has tag="English"}}', version('en'), '{{else}}', version('ru'), '{{/has}}', '{{/if}}', '{{/post}}'])
     return source[:match.start()] + replacement + source[match.end():]
@@ -51,9 +51,9 @@ def main():
     backup = Path('/root/ghost-theme-backups') / ('recommendations-language-' + stamp)
     backup.mkdir(parents=True, exist_ok=False)
     (backup / 'post.hbs').write_text(source)
+    if target.read_text() != source:
+        raise RuntimeError('Theme changed during preparation; rerun')
     try:
-        if target.read_text() != source:
-            raise RuntimeError('Theme changed during preparation; rerun')
         target.write_text(updated)
         if hashlib.sha256(target.read_bytes()).digest() != hashlib.sha256(updated.encode()).digest():
             raise RuntimeError('Written theme checksum mismatch')
