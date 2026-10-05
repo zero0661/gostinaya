@@ -44,7 +44,7 @@ def collect(watcher, config):
             identity = item['ghsa_id']
             assert re.fullmatch(r'GHSA-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}', identity)
             assert item['html_url'].startswith('https://github.com/TryGhost/Ghost/security/advisories/')
-            selected = {k: item.get(k) for k in ('ghsa_id', 'cve_id', 'summary', 'severity', 'html_url',
+            selected = {k: item.get(k) for k in ('ghsa_id', 'cve_id', 'summary', 'description', 'severity', 'html_url',
                                                 'published_at', 'withdrawn_at', 'vulnerabilities')}
             selected['signature'] = hashlib.sha256(json.dumps(selected, sort_keys=True).encode()).hexdigest()
             advisories[identity] = selected
