@@ -6,6 +6,7 @@ import {
     validateRegistrationInput
 } from '../services/RegistrationService.js';
 import { normalizeAuthReturnTo } from '../utils/authRedirect.js';
+import { normalizePublicLanguage } from '../services/RegistrationService.js';
 import EmailVerificationService from '../services/EmailVerificationService.js';
 import PasswordResetService from '../services/PasswordResetService.js';
 
@@ -29,7 +30,7 @@ class GuestController {
                 await EmailVerificationService.issue(existing, returnTo);
                 return res.json({
                     success: true,
-                    redirect: `/gostinaya/check-email?email=${encodeURIComponent(existing.email)}`
+                    redirect: `/gostinaya/check-email?email=${encodeURIComponent(existing.email)}&lang=${normalizePublicLanguage(req.body.language)}`
                 });
             }
 
@@ -44,7 +45,7 @@ class GuestController {
 
             return res.json({
                 success: true,
-                redirect: `/gostinaya/check-email?email=${encodeURIComponent(guest.email)}`
+                redirect: `/gostinaya/check-email?email=${encodeURIComponent(guest.email)}&lang=${input.language}`
             });
         } catch (err) {
             console.error(err);
@@ -68,7 +69,7 @@ class GuestController {
                 if (guest && Number(guest.is_blocked) !== 1) {
                     await EmailVerificationService.issue(guest, normalizeAuthReturnTo(req.body.returnTo));
                 }
-                return res.json({ success: true, redirect: `/gostinaya/check-email?email=${encodeURIComponent(email)}` });
+                return res.json({ success: true, redirect: `/gostinaya/check-email?email=${encodeURIComponent(email)}&lang=${normalizePublicLanguage(req.body.language)}` });
             }
 
             if (!email || !password) {
