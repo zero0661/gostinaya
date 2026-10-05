@@ -1264,3 +1264,8 @@ SQL-инвентаризация posts обнаружила ровно две з
 Внешние домены в первом проходе: www.youtube.com, t.me, img.spacergif.org, davidsenra.podhood.com. Последний URL проверен: расшифровка интервью Сэма Альтмана Дэвиду Сенре, соответствующая теме двух статей (https://davidsenra.podhood.com/bb572af5-447a-4d35-bb95-e18dc89e28bd). spacer.png используется как poster в карточках локального видео двух прологов «Тени цифрового согласия»; created_at 16.07.2026, updated_at 12.08.2026. Сам удалённый PNG не удалось получить; контекст указывает на картинку-заглушку, даты предшествуют инциденту.
 
 CONTENT_SCAN_OK, CONTENT_DETAILS_OK, EXTERNAL_RESOURCES_OK, SPACER_CHECK_OK. Это поиск выбранных HTML-признаков и ручной анализ найденных фрагментов; не полный аудит файлов сервера, сравнение всего текста с доверенной копией или доказательство отсутствия утечки. Автоматический контроль изменений пока не установлен.
+
+
+### Установка контроля изменений — 5 октября, 07:47 МСК
+
+Владелец выполнил установщик scripts/ghost-security-watch.py из d8a04122296c0d1ff65b43c10c7b56aa6e759f01 с проверкой SHA256. Вывод: BASELINE_SAVED, TEST_MAIL_ACCEPTED_BY_SMTP, SECURITY_WATCH_OK, SECURITY_WATCH_INSTALLED_OK; ghost-security-watch.timer active/enabled. Получение тестового письма подтверждено владельцем и скриншотом. Код /usr/local/lib/ghost-security-watch.py, закрытые снимок/config/state в /var/lib/ghost-security-watch; service/timer в /etc/systemd/system. Период настроен пять минут. В немедленном list-timers NEXT ещё был «-»; завершение запуска под systemd и следующий плановый запуск требуют дополнительной проверки. Это локальный контроль/уведомления, не автоматическая блокировка, внешний монитор, security updates или external backup. Инструкция: docs/GHOST-SECURITY-WATCH.md.
