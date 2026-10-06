@@ -1,0 +1,334 @@
+{{!--
+This header template is shared across all the pages.
+--}}
+
+<style>
+@media (min-width: 992px){
+  .m-nav__left > ul{gap:14px;}
+  .m-nav__left > ul > li{margin-right:0!important;}
+
+  /* AFTER LOGIN — compact language switch */
+  .m-nav__left > ul > li.language-switch > a{
+    min-width:34px;
+    height:34px;
+    padding:0 8px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:999px;
+    line-height:1;
+    font-size:16px;
+    transition:background-color .18s ease, box-shadow .18s ease, transform .18s ease;
+  }
+
+  .m-nav__left > ul > li.language-switch > a:hover,
+  .m-nav__left > ul > li.language-switch > a:focus-visible{
+    background:rgba(255,255,255,.10);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.10);
+    transform:translateY(-1px);
+  }
+
+  html[data-theme="light"] .m-nav__left > ul > li.language-switch > a:hover,
+  html[data-theme="light"] .m-nav__left > ul > li.language-switch > a:focus-visible{
+    background:rgba(0,0,0,.06);
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.06);
+  }
+
+  /* AFTER LOGIN — visible active menu item */
+  .m-nav__left > ul > li.nav-current > a{
+    position:relative;
+    color:#fff !important;
+  }
+
+  .m-nav__left > ul > li.nav-current > a::after{
+    content:"";
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:-8px;
+    height:2px;
+    border-radius:999px;
+    background:#c9894a;
+    box-shadow:0 0 10px rgba(201,137,74,.35);
+  }
+
+  html[data-theme="light"] .m-nav__left > ul > li.nav-current > a{
+    color:#222 !important;
+  }
+
+  html[data-theme="light"] .m-nav__left > ul > li.nav-current > a::after{
+    background:#b8753b;
+    box-shadow:0 0 8px rgba(184,117,59,.22);
+  }
+
+  .m-nav__left > ul > li.language-switch.nav-current > a::after{
+    display:none;
+  }
+}
+</style>
+
+<header class="m-header {{#if background}}with-picture{{/if}} js-header"  data-animate="fade-down">
+  <div class="m-mobile-topbar">
+    <button class="m-icon-button in-mobile-topbar js-open-menu" aria-label="{{t "Open menu"}}">
+      <span class="icon-menu" aria-hidden="true"></span>
+    </button>
+    {{#if @site.logo}}
+      <a href="{{@site.url}}" class="m-logo in-mobile-topbar">
+        <img src="{{@site.logo}}" alt="{{@site.title}}" class="{{#if @custom.dark_mode_logo}}m-logo__image-light{{/if}}">
+        {{#if @custom.dark_mode_logo}}
+          <img src="{{@custom.dark_mode_logo}}" alt="{{@site.title}}" class="m-logo__image-dark">
+        {{/if}}
+      </a>
+    {{else}}
+      <a href="{{@site.url}}" class="m-site-name in-mobile-topbar">
+        {{@site.title}}
+      </a>
+    {{/if}}
+    <button class="m-icon-button in-mobile-topbar {{^if @custom.enable_native_search}}js-open-search{{/if}}" {{#if @custom.enable_native_search}}data-ghost-search{{/if}} aria-label="{{t "Open search"}}">
+      <span class="icon-search" aria-hidden="true"></span>
+    </button>
+  </div>
+
+  <div class="m-menu js-menu">
+    <button class="m-icon-button outlined as-close-menu js-close-menu" aria-label="{{t "Close menu"}}">
+      <span class="icon-close"></span>
+    </button>
+    <div class="m-menu__main">
+      <div class="l-wrapper">
+        <div class="m-nav js-main-nav">
+          <nav class="m-nav__left js-main-nav-left" role="navigation" aria-label="{{t "Main menu"}}">
+            <ul>
+              {{#if @site.logo}}
+                <li class="only-desktop">
+                  <a href="{{@site.url}}" class="m-logo">
+                    <img src="{{@site.logo}}" alt="{{@site.title}}" class="{{#if @custom.dark_mode_logo}}m-logo__image-light{{/if}}">
+                    {{#if @custom.dark_mode_logo}}
+                      <img src="{{@custom.dark_mode_logo}}" alt="{{@site.title}}" class="m-logo__image-dark">
+                    {{/if}}
+                  </a>
+                </li>
+                {{else}}
+                <li class="only-desktop">
+                  <a href="{{@site.url}}" class="m-site-name in-desktop-menu">
+                    {{@site.title}}
+                  </a>
+                </li>
+              {{/if}}
+              {{#if @site.navigation}}
+                                <li class="ru-menu-item"><a href="/">Главная</a></li>
+                                <li class="ru-menu-item"><a href="/karta-proekta/">Карта проекта</a></li>
+                                <li class="ru-menu-item"><a href="/o-proekte/">О проекте</a></li>
+                                <li class="ru-menu-item"><a href="/ob-avtorie/">Об авторе</a></li>
+                                <li class="ru-menu-item"><a href="/audiotieka/">Аудиотека</a></li>
+                        <li class="ru-menu-item"><a href="/kontakty/">Контакты</a></li>
+                    <li class="ru-menu-item"><a href="/gostinaya">Гостиная</a></li>
+                                <li class="ru-menu-item language-switch"><a href="/en/" aria-label="English version" title="English version">🇬🇧</a></li>
+
+                                <li class="en-menu-item" style="display:none;"><a href="/en/">Home</a></li>
+                                <li class="en-menu-item" style="display:none;"><a href="/en-project-map/">Project Map</a></li>
+                                <li class="en-menu-item" style="display:none;"><a href="/en-about-the-project/">About the Project</a></li>
+                                <li class="en-menu-item" style="display:none;"><a href="/en-about-the-author/">About the Author</a></li>
+                                <li class="en-menu-item" style="display:none;"><a href="/en-contact/">Contact</a></li>
+                    <li class="en-menu-item" style="display:none;"><a href="/gostinaya">The Lounge</a></li>
+                                <li class="en-menu-item language-switch" style="display:none;"><a href="/" aria-label="Русская версия" title="Русская версия">🇷🇺</a></li>
+                                {{/if}}
+              {{#if @site.secondary_navigation}}
+                <li class="more">
+                  <span>
+                    <a href="javascript:void(0);" class="js-open-secondary-menu">
+                      {{t "More"}}
+                      <span class="icon-chevron-down" aria-hidden="true"></span>
+                    </a>
+                  </span>
+                </li>
+              {{/if}}
+              <li class="submenu-option js-submenu-option">
+                <button class="m-icon-button in-menu-main more js-toggle-submenu" aria-label="{{t "Open submenu"}}">
+                  <span class="icon-more" aria-hidden="true"></span>
+                </button>
+                <div class="m-submenu js-submenu">
+                  <div class="l-wrapper in-submenu">
+                    <section class="m-recent-articles ru-submenu-content">
+                      <h3 class="m-submenu-title in-recent-articles">Последние статьи</h3>
+                      {{#get "posts" limit="4" filter="tag:-english" order="published_at desc" as |recent|}}
+                        {{#if recent}}
+                          <div class="swiper js-recent-slider">
+                            <div class="swiper-wrapper">
+                              {{#foreach recent}}
+                                <div class="swiper-slide">
+                                  <a href="{{url}}" class="m-recent-article">
+                                    <div class="m-recent-article__picture {{#unless feature_image}}no-picture{{/unless}}">
+                                      {{#if feature_image}}
+                                        <img src="{{img_url feature_image size="s"}}" loading="lazy" alt="">
+                                      {{else}}
+                                        <img src="{{asset "images/no-image.png"}}" loading="lazy" alt="">
+                                      {{/if}}
+                                    </div>
+                                    <h3 class="m-recent-article__title js-recent-article-title" title="{{title}}">
+                                      {{title}}
+                                    </h3>
+                                    <span class="m-recent-article__date">{{date published_at timeago="true"}}</span>
+                                  </a>
+                                </div>
+                              {{/foreach}}
+                            </div>
+                          </div>
+                        {{else}}
+                          <div class="m-not-found in-recent-articles">Свежие статьи не найдены.</div>
+                        {{/if}}
+                      {{/get}}
+                    </section>
+
+                    <section class="m-recent-articles en-submenu-content" style="display:none;">
+                      <h3 class="m-submenu-title in-recent-articles">Latest articles</h3>
+                      {{#get "posts" limit="4" filter="tag:english" order="published_at desc" as |recent_en|}}
+                        {{#if recent_en}}
+                          <div class="swiper js-recent-slider">
+                            <div class="swiper-wrapper">
+                              {{#foreach recent_en}}
+                                <div class="swiper-slide">
+                                  <a href="{{url}}" class="m-recent-article">
+                                    <div class="m-recent-article__picture {{#unless feature_image}}no-picture{{/unless}}">
+                                      {{#if feature_image}}
+                                        <img src="{{img_url feature_image size="s"}}" loading="lazy" alt="">
+                                      {{else}}
+                                        <img src="{{asset "images/no-image.png"}}" loading="lazy" alt="">
+                                      {{/if}}
+                                    </div>
+                                    <h3 class="m-recent-article__title js-recent-article-title" title="{{title}}">
+                                      {{title}}
+                                    </h3>
+                                    <span class="m-recent-article__date">{{date published_at timeago="true"}}</span>
+                                  </a>
+                                </div>
+                              {{/foreach}}
+                            </div>
+                          </div>
+                        {{else}}
+                          <div class="m-not-found in-recent-articles">No recent articles found.</div>
+                        {{/if}}
+                      {{/get}}
+                    </section>
+
+                    {{#get "tags" limit="10" filter="slug:-english"}}
+                      {{#foreach tags}}
+                        {{#if @first}}<section class="m-tags ru-submenu-content"><h3 class="m-submenu-title">Теги</h3><ul>{{/if}}
+                        <li><a href="{{url}}">{{name}}</a></li>
+                        {{#if @last}}</ul></section>{{/if}}
+                      {{/foreach}}
+                    {{/get}}
+
+                    {{#get "tags" limit="10" filter="slug:english"}}
+                      {{#foreach tags}}
+                        {{#if @first}}<section class="m-tags en-submenu-content" style="display:none;"><h3 class="m-submenu-title">Tags</h3><ul>{{/if}}
+                        <li><a href="{{url}}">{{name}}</a></li>
+                        {{#if @last}}</ul></section>{{/if}}
+                      {{/foreach}}
+                    {{/get}}                  </div>
+                </div>
+              </li>
+            </ul>
+          </nav>
+          <div class="m-nav__right">
+            <button class="m-icon-button in-menu-main {{^if @custom.enable_native_search}}js-open-search{{/if}}" {{#if @custom.enable_native_search}}data-ghost-search{{/if}} aria-label="{{t "Open search"}}">
+              <span class="icon-search" aria-hidden="true"></span>
+            </button>
+            <div class="m-toggle-darkmode after-login-theme-ui js-tooltip" data-tippy-content="{{t "Toggle dark mode"}}" tabindex="0">
+              <label for="toggle-darkmode" class="sr-only">
+                {{t "Toggle dark mode"}}
+              </label>
+              <input id="toggle-darkmode" type="checkbox" class="js-toggle-darkmode">
+              <div>
+                <span class="icon-moon moon" aria-hidden="true"></span>
+                <span class="icon-sunny sun" aria-hidden="true"></span>
+              </div>
+              <span class="after-login-theme-label" aria-hidden="true">Светлая тема</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{#if @site.secondary_navigation}}
+    <div id="secondary-navigation-template" style="display: none;">
+      {{navigation type="secondary"}}
+    </div>
+  {{/if}}
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const englishPaths = [
+    '/en/',
+    '/en-project-map/',
+    '/en-about-the-project/',
+    '/en-about-the-author/',
+    '/en-contact/',
+    '/en/we-are-the-generation-of-two-worlds/',
+    '/en/the-internet-is-no-longer-a-quiet-place/',
+    '/en/when-buying-no-longer-means-owning/',
+    '/en/loneliness-in-the-digital-age/',
+    '/en/the-music-we-once-had-to-search-for/',
+    '/en/why-science-fiction-prepared-us-for-the-age-of-ai/',
+    '/en/when-closed-doors-become-unexpected-teachers/'
+  ];
+
+  const path = window.location.pathname;
+  const isEnglish = englishPaths.includes(path) || path.startsWith('/en/');
+
+  document.querySelectorAll('.ru-menu-item').forEach(item => {
+    item.style.display = isEnglish ? 'none' : '';
+  });
+
+  document.querySelectorAll('.en-menu-item').forEach(item => {
+    item.style.display = isEnglish ? '' : 'none';
+  });
+
+  document.querySelectorAll('.ru-submenu-content').forEach(item => {
+    item.style.display = isEnglish ? 'none' : '';
+  });
+
+  document.querySelectorAll('.en-submenu-content').forEach(item => {
+    item.style.display = isEnglish ? '' : 'none';
+  });
+
+  document.querySelectorAll('.m-site-name').forEach(item => {
+    item.textContent = isEnglish ? '>_ AFTER LOGIN' : '>_ ПОСЛЕ ЛОГИНА';
+    item.setAttribute('href', isEnglish ? '/en/' : '/');
+  });
+
+  const normalizePath = (url) => {
+    const parsed = new URL(url, window.location.origin);
+    let pathname = parsed.pathname;
+    if (!pathname.endsWith('/')) pathname += '/';
+    return pathname;
+  };
+
+  const currentPath = normalizePath(window.location.href);
+  document.querySelectorAll('.ru-menu-item, .en-menu-item').forEach(item => {
+    item.classList.remove('nav-current');
+  });
+
+  const menuSelector = isEnglish ? '.en-menu-item:not(.language-switch)' : '.ru-menu-item:not(.language-switch)';
+  let bestItem = null;
+  let bestLength = -1;
+
+  document.querySelectorAll(menuSelector).forEach(item => {
+    const link = item.querySelector('a[href]');
+    if (!link) return;
+
+    const hrefPath = normalizePath(link.getAttribute('href'));
+    const isRoot = hrefPath === '/';
+    const isMatch = isRoot ? currentPath === '/' : currentPath === hrefPath || currentPath.startsWith(hrefPath);
+
+    if (isMatch && hrefPath.length > bestLength) {
+      bestItem = item;
+      bestLength = hrefPath.length;
+    }
+  });
+
+  if (bestItem) bestItem.classList.add('nav-current');
+});
+</script>
+
+</header>

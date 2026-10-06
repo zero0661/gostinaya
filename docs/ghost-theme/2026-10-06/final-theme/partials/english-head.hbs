@@ -1,0 +1,25 @@
+{{!-- Generate one English social metadata set in the server response. --}}
+{{ghost_head exclude="social_data"}}
+<meta property="og:site_name" content="After Login" />
+<meta property="og:type" content="{{#is "post"}}article{{else}}website{{/is}}" />
+<meta property="og:title" content="{{#if og_title}}{{og_title}}{{else}}{{meta_title}}{{/if}}" />
+<meta property="og:description" content="{{#if og_description}}{{og_description}}{{else}}{{#if meta_description}}{{meta_description}}{{else}}{{excerpt words="45"}}{{/if}}{{/if}}" />
+<meta property="og:url" content="{{#if canonical_url}}{{canonical_url}}{{else}}{{url absolute="true"}}{{/if}}" />
+{{#if og_image}}
+<meta property="og:image" content="{{img_url og_image absolute="true"}}" />
+{{else}}{{#if feature_image}}
+<meta property="og:image" content="{{img_url feature_image absolute="true"}}" />
+{{/if}}{{/if}}
+<meta name="twitter:card" content="{{#if feature_image}}summary_large_image{{else}}summary{{/if}}" />
+<meta name="twitter:title" content="{{#if twitter_title}}{{twitter_title}}{{else}}{{meta_title}}{{/if}}" />
+<meta name="twitter:description" content="{{#if twitter_description}}{{twitter_description}}{{else}}{{#if meta_description}}{{meta_description}}{{else}}{{excerpt words="45"}}{{/if}}{{/if}}" />
+<meta name="twitter:url" content="{{#if canonical_url}}{{canonical_url}}{{else}}{{url absolute="true"}}{{/if}}" />
+{{#if twitter_image}}
+<meta name="twitter:image" content="{{img_url twitter_image absolute="true"}}" />
+{{else}}{{#if feature_image}}
+<meta name="twitter:image" content="{{img_url feature_image absolute="true"}}" />
+{{/if}}{{/if}}
+{{#is "post"}}
+<meta property="article:published_time" content="{{date published_at format="YYYY-MM-DDTHH:mm:ss.SSSZ"}}" />
+<meta property="article:modified_time" content="{{date updated_at format="YYYY-MM-DDTHH:mm:ss.SSSZ"}}" />
+{{/is}}

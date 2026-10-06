@@ -1,0 +1,72 @@
+{{!--
+This template is used for the posts that are marked as pages.
+--}}
+
+{{!-- This block preloads specific assets for the post page --}}
+{{#contentFor "preload"}}
+  <link rel="preload" href="{{asset "css/post.css"}}" as="style" />
+  <link rel="preload" href="{{asset "js/page.js"}}" as="script" />
+{{/contentFor}}
+
+{{!-- This block loads specific styles for the post page --}}
+{{#contentFor "styles"}}
+  <link rel="stylesheet" href="{{asset "css/home-identity.css"}}" />
+  {{#post}}{{#has slug="en"}}<link rel="stylesheet" href="{{asset "css/listing.css"}}" />{{/has}}{{/post}}
+  <link rel="stylesheet" type="text/css" href="{{asset "css/post.css"}}" media="screen" />
+{{/contentFor}}
+
+{{!-- The tag below means: insert everything in this file
+into the {body} of the default.hbs template --}}
+{{!< default}}
+
+{{#contentFor "ghosthead"}}
+{{#post}}{{#has tag="English"}}{{> english-head}}{{else}}{{#has slug="en"}}{{> english-head}}{{else}}{{#has slug="en-project-map"}}{{> english-head}}{{else}}{{#has slug="en-about-the-project"}}{{> english-head}}{{else}}{{#has slug="en-about-the-author"}}{{> english-head}}{{else}}{{#has slug="en-contact"}}{{> english-head}}{{else}}{{#has slug="en-audio-essays"}}{{> english-head}}{{else}}{{ghost_head}}{{/has}}{{/has}}{{/has}}{{/has}}{{/has}}{{/has}}{{/has}}{{/post}}
+{{/contentFor}}
+
+
+{{!-- Special header.hbs partial to generate the <header> tag --}}
+{{#post}}
+  {{> header background=feature_image}}
+{{/post}}
+
+<main class="main-wrap">
+  {{!-- Everything inside the #post tags pulls data from the post --}}
+  {{#post}}
+    {{#has slug="en"}}
+    <div class="pl-home-en">
+      {{> home-identity english=true}}
+      {{> home-content english=true flagIntro="We have lived in two worlds: the analogue one we remember and the digital one we are learning to navigate. What does that experience help us see?" flagLink="Read the essay →" flagship="we-are-the-generation-of-two-worlds" latest="tag:english" picks="slug:[after-the-credits,why-science-fiction-prepared-us-for-the-age-of-ai,when-work-becomes-optional-what-musk-left-unsaid]"}}
+    </div>
+    {{else}}
+    {{!-- Inject styles of the hero image to make it responsive --}}
+    {{> hero background=feature_image}}
+    <div class="m-hero__content" data-animate="fade-down">
+      <h1 class="m-hero-title bigger">{{title}}</h1>
+      {{#if custom_excerpt}}
+        <p class="m-hero-description">{{custom_excerpt}}</p>
+      {{/if}}
+    </div>
+    </section>
+    <article>
+      <div class="l-content">
+        <div class="l-wrapper in-post" data-animate="fade-up">
+          <div class="l-post-content">
+            <div class="pos-relative js-post-content">
+              <h1 class="m-hero-title">{{title}}</h1>
+              {{content}}
+              {{#has slug="en"}}
+                {{> "after-login-page-cta" english=true}}
+              {{/has}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+    {{/has}}
+  {{/post}}
+</main>
+
+{{!-- The #contentFor helper here will send everything inside it up to the matching #block helper found in default.hbs --}}
+{{#contentFor "scripts"}}
+  <script defer src="{{asset "js/page.js"}}"></script>
+{{/contentFor}}

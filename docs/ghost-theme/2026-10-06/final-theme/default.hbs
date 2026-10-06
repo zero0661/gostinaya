@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="{{@site.locale}}">
+  <head>
+    {{!-- Document Settings --}}
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    {{!-- Base Meta --}}
+    <title>{{meta_title}}</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    {{!-- after-login-theme-init: dark by default, saved light preference respected --}}
+    <script>
+      (function () {
+        var theme = 'dark'
+        try {
+          if (localStorage.getItem('theme') === 'light') theme = 'light'
+        } catch (error) {}
+        document.documentElement.setAttribute('data-theme', theme)
+        document.documentElement.style.colorScheme = theme
+      }())
+    </script>
+
+    {{!-- Preload assets --}}
+    <link rel="preload" href="{{asset "css/app.css"}}" as="style" />
+    <link rel="preload" href="{{asset "js/manifest.js"}}" as="script" />
+    <link rel="preload" href="{{asset "js/vendor.js"}}" as="script" />
+    <link rel="preload" href="{{asset "js/app.js"}}" as="script" />
+
+    {{!-- This #block helper will try to preload page-specific assets --}}
+    {{{block "preload"}}}
+
+    {{!-- Styles & Scripts --}}
+    <style>
+      /* These font-faces are here to make fonts work if the Ghost instance is installed in a subdirectory */
+
+      /* source-sans-pro-regular */
+      @font-face {
+        font-family: 'Source Sans Pro';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: local('SourceSansPro-Regular'),
+            url("{{asset 'fonts/source-sans-pro/latin/source-sans-pro-regular.woff2'}}") format('woff2'),
+            url("{{asset 'fonts/source-sans-pro/latin/source-sans-pro-regular.woff'}}") format('woff');
+      }
+
+      /* source-sans-pro-600 */
+      @font-face {
+        font-family: 'Source Sans Pro';
+        font-style: normal;
+        font-weight: 600;
+        font-display: swap;
+        src: local('SourceSansPro-SemiBold'),
+            url("{{asset 'fonts/source-sans-pro/latin/source-sans-pro-600.woff2'}}") format('woff2'),
+            url("{{asset 'fonts/source-sans-pro/latin/source-sans-pro-600.woff'}}") format('woff');
+      }
+
+      /* source-sans-pro-700 */
+      @font-face {
+        font-family: 'Source Sans Pro';
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: local('SourceSansPro-Bold'),
+            url("{{asset 'fonts/source-sans-pro/latin/source-sans-pro-700.woff2'}}") format('woff2'),
+            url("{{asset 'fonts/source-sans-pro/latin/source-sans-pro-700.woff'}}") format('woff');
+      }
+
+      /* iconmoon */
+      @font-face {
+        font-family: 'icomoon';
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+        src: url("{{asset 'fonts/icomoon/icomoon.eot?101fc3'}}");
+        src: url("{{asset 'fonts/icomoon/icomoon.eot?101fc3#iefix'}}") format('embedded-opentype'),
+        url("{{asset 'fonts/icomoon/icomoon.ttf?101fc3'}}") format('truetype'),
+        url("{{asset 'fonts/icomoon/icomoon.woff?101fc3'}}") format('woff'),
+        url("{{asset 'fonts/icomoon/icomoon.svg?101fc3#icomoon'}}") format('svg');
+      }
+    </style>
+
+    <link rel="stylesheet" type="text/css" href="{{asset "css/app.css"}}" media="screen" />
+
+    {{!-- This #block helper will inject a stylesheet for a specific page --}}
+    {{{block "styles"}}}
+
+    {{!-- This #block helper will pull data from the hero partial
+    to inject styles of the hero image to make it responsive --}}
+    {{{block "herobackground"}}}
+
+    {{!-- This tag outputs SEO meta+structured data and other important settings --}}
+    {{{block "ghosthead"}}}
+
+    {{!-- This style overrides the accent color to match the one from the Admin --}}
+    <style>
+      :root {
+        --primary-subtle-color: var(--ghost-accent-color) !important;
+      }
+    </style>
+
+    {{!-- These variables are used to make the search form work --}}
+    <script>
+      // @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&dn=expat.txt Expat
+      const ghostHost = "{{@site.url}}"
+      // @license-end
+    </script>
+
+    {{#if @custom.enable_native_search}}
+      <script>
+        const nativeSearchEnabled = true
+      </script>
+    {{/if}}
+
+    {{#if @custom.search_api_key}}
+      <script>
+        const ghostSearchApiKey = "{{@custom.search_api_key}}"
+      </script>
+    {{/if}}
+
+    {{!-- This variable disbale the fade animation when it's enabled --}}
+    {{#if @custom.disable_fade_animation}}
+      <style>
+        :root {
+          --show-fade-animation: 0;
+        }
+      </style>
+    {{/if}}
+
+<link rel="stylesheet" type="text/css" href="{{asset "css/custom.css"}}" />
+
+  </head>
+  <body class="{{body_class}}">
+    {{!-- All the main content gets inserted here, index.hbs, post.hbs, etc --}}
+    {{{body}}}
+
+    {{!-- Search form --}}
+    {{^if @custom.enable_native_search}}
+      {{> search}}
+    {{/if}}
+
+    {{!-- The footer --}}
+    {{> footer}}
+
+    {{!-- Common scripts shared between pages --}}
+    <script defer src="{{asset "js/manifest.js"}}"></script>
+    <script defer src="{{asset "js/vendor.js"}}"></script>
+    <script defer src="{{asset "js/app.js"}}"></script>
+
+    {{!-- The #block helper will pull in data from the #contentFor other template files --}}
+    {{{block "scripts"}}}
+
+    {{!-- Ghost outputs important scripts and data with this tag --}}
+
+    {{!-- after-login-theme-ui: accessible mobile control and synchronized label --}}
+    <style>
+      .after-login-theme-label { display: none; }
+
+      @media (max-width: 47.99rem) {
+        .m-nav__right {
+          flex-wrap: wrap;
+          justify-content: flex-start;
+          gap: .75rem;
+        }
+
+        .m-toggle-darkmode.after-login-theme-ui {
+          position: relative;
+          right: auto;
+          bottom: auto;
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+          gap: .75rem;
+          width: 100%;
+          height: 48px;
+          padding: 0 1rem;
+          overflow: hidden;
+          border: 1px solid var(--border-color, rgba(255,255,255,.14));
+          border-radius: 12px;
+          background: var(--secondary-subtle-color, rgba(255,255,255,.06));
+          cursor: pointer;
+        }
+
+        .m-toggle-darkmode.after-login-theme-ui input {
+          inset: 0;
+          width: 100%;
+          height: 100%;
+        }
+
+        .m-toggle-darkmode.after-login-theme-ui > div {
+          position: relative;
+          top: auto;
+          left: auto;
+          flex: 0 0 28px;
+          width: 28px;
+          height: 28px;
+        }
+
+        .after-login-theme-label {
+          display: inline;
+          color: var(--primary-foreground-color, inherit);
+          font-size: 1rem;
+          font-weight: 600;
+          line-height: 1.2;
+          pointer-events: none;
+        }
+      }
+    </style>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        var toggle = document.querySelector('.js-toggle-darkmode')
+        var control = document.querySelector('.after-login-theme-ui')
+        var label = document.querySelector('.after-login-theme-label')
+        if (!toggle || !control || !label) return
+
+        function updateThemeControl() {
+          var isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+          var english = window.location.pathname.indexOf('/en') === 0 || /\btag-english\b/.test(document.body.className)
+          var text = english
+            ? (isDark ? 'Light theme' : 'Dark theme')
+            : (isDark ? 'Светлая тема' : 'Тёмная тема')
+          label.textContent = text
+          toggle.checked = isDark
+          control.setAttribute('aria-label', text)
+          control.setAttribute('data-tippy-content', text)
+          toggle.setAttribute('aria-label', text)
+          if (control._tippy) control._tippy.setContent(text)
+          document.documentElement.style.colorScheme = isDark ? 'dark' : 'light'
+        }
+
+        updateThemeControl()
+        toggle.addEventListener('change', function () {
+          window.setTimeout(updateThemeControl, 0)
+        })
+      })
+    </script>
+
+    {{ghost_foot}}
+
+    <script>
+      // After Login bilingual UI polish: English pages should not inherit Russian UI strings from the global Ghost locale.
+      (function () {
+        function isEnglishPage() {
+          var path = window.location.pathname || '';
+          var bodyClass = document.body ? document.body.className : '';
+          return path.indexOf('/en') === 0 || /\btag-english\b/.test(bodyClass);
+        }
+
+        function englishTimeAgoFromRussian(text) {
+          if (!text) return text;
+          var t = text.trim();
+
+          t = t.replace(/(\d+)\s+мин\.?\s+на\s+чтение/gi, '$1 min read');
+          t = t.replace(/1\s+минута\s+на\s+чтение/gi, '1 min read');
+
+          t = t.replace(/только что/gi, 'just now');
+          t = t.replace(/сегодня/gi, 'today');
+          t = t.replace(/вчера/gi, 'yesterday');
+
+          t = t.replace(/(\d+)\s+минут[уы]?\s+назад/gi, function (_, n) { return n + ' min ago'; });
+          t = t.replace(/(\d+)\s+час(?:а|ов)?\s+назад/gi, function (_, n) { return n + ' hour' + (String(n) === '1' ? '' : 's') + ' ago'; });
+          t = t.replace(/(\d+)\s+д(?:ень|ня|ней)\s+назад/gi, function (_, n) { return n + ' day' + (String(n) === '1' ? '' : 's') + ' ago'; });
+          t = t.replace(/(\d+)\s+недел(?:ю|и|ь)\s+назад/gi, function (_, n) { return n + ' week' + (String(n) === '1' ? '' : 's') + ' ago'; });
+          t = t.replace(/(\d+)\s+месяц(?:а|ев)?\s+назад/gi, function (_, n) { return n + ' month' + (String(n) === '1' ? '' : 's') + ' ago'; });
+          t = t.replace(/(\d+)\s+год(?:а|ов)?\s+назад/gi, function (_, n) { return n + ' year' + (String(n) === '1' ? '' : 's') + ' ago'; });
+
+          return t;
+        }
+
+        function polishEnglishUi() {
+          if (!isEnglishPage()) return;
+
+          document.documentElement.setAttribute('lang', 'en');
+
+          document.querySelectorAll('.m-section-title.in-recommended').forEach(function (el) {
+            if (el.textContent.trim() === 'Рекомендуем') el.textContent = 'Recommended';
+          });
+
+          document.querySelectorAll('.m-article-card__timestamp span, .m-heading__meta__time').forEach(function (el) {
+            el.textContent = englishTimeAgoFromRussian(el.textContent);
+          });
+
+          document.querySelectorAll('.m-footer-copyright span').forEach(function (el) {
+            var yearMatch = (el.textContent || '').match(/(20\d{2})/);
+            var year = yearMatch ? yearMatch[1] : new Date().getFullYear();
+            el.textContent = '>_ AFTER LOGIN © ' + year;
+          });
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', polishEnglishUi);
+        } else {
+          polishEnglishUi();
+        }
+        window.addEventListener('load', polishEnglishUi);
+        setTimeout(polishEnglishUi, 700);
+        setTimeout(polishEnglishUi, 1800);
+      })();
+    </script>
+
+  </body>
+</html>

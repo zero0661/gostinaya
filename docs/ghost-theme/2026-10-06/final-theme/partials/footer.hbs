@@ -1,0 +1,26 @@
+{{!--
+This footer template is shared across all the pages.
+--}}
+
+{{!--
+This footer template is shared across all the pages.
+--}}
+
+<footer class="m-footer">
+    <div class="m-footer__content">
+        {{#if @site.secondary_navigation}}
+            <nav class="m-footer__nav-secondary" role="navigation" aria-label="{{t "Secondary menu in footer"}}">
+                {{navigation type="secondary"}}
+            </nav>
+        {{/if}}
+
+        <nav class="m-footer-social">
+            <a href="https://t.me/posle_logina" target="_blank" rel="noopener" aria-label="Telegram">Telegram</a>
+        </nav>
+
+        <p class="m-footer-copyright">
+            <span>{{@site.title}} &copy; {{date format="YYYY"}}</span>
+        </p>
+
+    </div>
+</footer>
