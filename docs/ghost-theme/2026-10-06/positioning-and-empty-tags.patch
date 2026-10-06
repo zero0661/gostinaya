@@ -1,6 +1,6 @@
 --- a/partials/header.hbs
 +++ b/partials/header.hbs
-@@ -210,35 +210,23 @@
+@@ -210,35 +210,21 @@
                        {{/get}}
                      </section>
  
@@ -34,21 +34,19 @@
 -                      {{/get}}
 -                    </section>                  </div>
 +                    {{#get "tags" limit="10" filter="slug:-english"}}
-+                      {{#if tags}}
-+                        <section class="m-tags ru-submenu-content">
-+                          <h3 class="m-submenu-title">Теги</h3>
-+                          <ul>{{#foreach tags}}<li><a href="{{url}}">{{name}}</a></li>{{/foreach}}</ul>
-+                        </section>
-+                      {{/if}}
++                      {{#foreach tags}}
++                        {{#if @first}}<section class="m-tags ru-submenu-content"><h3 class="m-submenu-title">Теги</h3><ul>{{/if}}
++                        <li><a href="{{url}}">{{name}}</a></li>
++                        {{#if @last}}</ul></section>{{/if}}
++                      {{/foreach}}
 +                    {{/get}}
 +
 +                    {{#get "tags" limit="10" filter="slug:english"}}
-+                      {{#if tags}}
-+                        <section class="m-tags en-submenu-content" style="display:none;">
-+                          <h3 class="m-submenu-title">Tags</h3>
-+                          <ul>{{#foreach tags}}<li><a href="{{url}}">{{name}}</a></li>{{/foreach}}</ul>
-+                        </section>
-+                      {{/if}}
++                      {{#foreach tags}}
++                        {{#if @first}}<section class="m-tags en-submenu-content" style="display:none;"><h3 class="m-submenu-title">Tags</h3><ul>{{/if}}
++                        <li><a href="{{url}}">{{name}}</a></li>
++                        {{#if @last}}</ul></section>{{/if}}
++                      {{/foreach}}
 +                    {{/get}}                  </div>
                  </div>
                </li>
