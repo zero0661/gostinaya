@@ -1,0 +1,226 @@
+--- a/package.json
++++ b/package.json
+@@ -90,5 +90,5 @@
+     "desktop": "assets/screenshot-desktop.jpg",
+     "mobile": "assets/screenshot-mobile.jpg"
+   },
+-  "version": "2.1.8-afterlogin-v1.2.2"
++  "version": "2.1.8-afterlogin-v1.2.3"
+ }
+--- a/tag.hbs
++++ b/tag.hbs
+@@ -15,6 +15,8 @@
+ {{!-- The tag below means: insert everything in this file
+ into the {body} of the default.hbs template --}}
+ {{!< default}}
++
++{{#contentFor "ghosthead"}}{{ghost_head}}{{/contentFor}}
+ 
+ {{!-- Special header.hbs partial to generate the <header> tag --}}
+ {{#tag}}
+--- a/page-authors.hbs
++++ b/page-authors.hbs
+@@ -16,6 +16,8 @@
+ {{!-- The tag below means: insert everything in this file
+ into the {body} of the default.hbs template --}}
+ {{!< default}}
++
++{{#contentFor "ghosthead"}}{{ghost_head}}{{/contentFor}}
+ 
+ {{!-- Special header.hbs partial to generate the <header> tag --}}
+ {{#post}}
+--- a/index.hbs
++++ b/index.hbs
+@@ -20,6 +20,8 @@
+ into the {body} of the default.hbs template --}}
+ {{!< default}}
+ 
++{{#contentFor "ghosthead"}}{{ghost_head}}{{/contentFor}}
++
+ {{!-- Special header.hbs partial to generate the <header> tag --}}
+ {{> header background=@site.cover_image}}
+ 
+@@ -35,13 +37,14 @@
+       <a href="{{@custom.custom_cta_url}}" class="m-button filled">{{@custom.custom_cta_text}}</a>
+     {{else}}
+       {{#if @site.members_enabled}}
+-        <a href="{{@site.url}}/newsletter" class="m-button filled js-newsletter">{{t "Subscribe"}}</a>
++        <a href="#after-login-signup" class="m-button filled">{{t "Subscribe"}}</a>
+       {{/if}}
+     {{/if}}
+   </div>
+   </section>
+   <div class="l-content">
+     <div class="l-wrapper" data-animate="fade-up">
++      {{#is "home"}}{{> home-start-ru}}{{/is}}
+       <div class="l-grid centered">
+         {{#get "posts" filter="featured:true" include="authors,tags" limit="5" as |featured|}}
+           {{#if featured}}
+--- a/page.hbs
++++ b/page.hbs
+@@ -16,6 +16,11 @@
+ {{!-- The tag below means: insert everything in this file
+ into the {body} of the default.hbs template --}}
+ {{!< default}}
++
++{{#contentFor "ghosthead"}}
++{{#post}}{{#has tag="English"}}{{> english-head}}{{else}}{{#has slug="en"}}{{> english-head}}{{else}}{{#has slug="en-project-map"}}{{> english-head}}{{else}}{{#has slug="en-about-the-project"}}{{> english-head}}{{else}}{{#has slug="en-about-the-author"}}{{> english-head}}{{else}}{{#has slug="en-contact"}}{{> english-head}}{{else}}{{#has slug="en-audio-essays"}}{{> english-head}}{{else}}{{ghost_head}}{{/has}}{{/has}}{{/has}}{{/has}}{{/has}}{{/has}}{{/has}}{{/post}}
++{{/contentFor}}
++
+ 
+ {{!-- Special header.hbs partial to generate the <header> tag --}}
+ {{#post}}
+--- a/page-newsletter.hbs
++++ b/page-newsletter.hbs
+@@ -15,6 +15,8 @@
+ {{!-- The tag below means: insert everything in this file
+ into the {body} of the default.hbs template --}}
+ {{!< default}}
++
++{{#contentFor "ghosthead"}}{{ghost_head}}{{/contentFor}}
+ 
+ <main>
+   <div class="l-wrapper" data-animate="fade-down">
+--- a/error-404.hbs
++++ b/error-404.hbs
+@@ -16,6 +16,8 @@
+ into the {body} of the default.hbs template --}}
+ {{!< default}}
+ 
++{{#contentFor "ghosthead"}}{{ghost_head}}{{/contentFor}}
++
+ {{!-- Special header.hbs partial to generate the <header> tag --}}
+ {{> header}}
+ 
+--- a/author.hbs
++++ b/author.hbs
+@@ -15,6 +15,8 @@
+ {{!-- The tag below means: insert everything in this file
+ into the {body} of the default.hbs template --}}
+ {{!< default}}
++
++{{#contentFor "ghosthead"}}{{ghost_head}}{{/contentFor}}
+ 
+ {{!-- Special header.hbs partial to generate the <header> tag --}}
+ {{#author}}
+--- a/post.hbs
++++ b/post.hbs
+@@ -16,6 +16,11 @@
+ {{!-- The tag below means: insert everything in this file
+ into the {body} of the default.hbs template --}}
+ {{!< default}}
++
++{{#contentFor "ghosthead"}}
++{{#post}}{{#has tag="English"}}{{> english-head}}{{else}}{{#has slug="en"}}{{> english-head}}{{else}}{{#has slug="en-project-map"}}{{> english-head}}{{else}}{{#has slug="en-about-the-project"}}{{> english-head}}{{else}}{{#has slug="en-about-the-author"}}{{> english-head}}{{else}}{{#has slug="en-contact"}}{{> english-head}}{{else}}{{#has slug="en-audio-essays"}}{{> english-head}}{{else}}{{ghost_head}}{{/has}}{{/has}}{{/has}}{{/has}}{{/has}}{{/has}}{{/has}}{{/post}}
++{{/contentFor}}
++
+ 
+ {{!-- Special header.hbs partial to generate the <header> tag --}}
+ {{#post}}
+--- a/subscribe.hbs
++++ b/subscribe.hbs
+@@ -15,6 +15,8 @@
+ {{!-- The tag below means: insert everything in this file
+ into the {body} of the default.hbs template --}}
+ {{!< default}}
++
++{{#contentFor "ghosthead"}}{{ghost_head}}{{/contentFor}}
+ 
+ <main>
+   <div class="l-wrapper" data-animate="fade-down">
+--- a/page-tags.hbs
++++ b/page-tags.hbs
+@@ -16,6 +16,8 @@
+ {{!-- The tag below means: insert everything in this file
+ into the {body} of the default.hbs template --}}
+ {{!< default}}
++
++{{#contentFor "ghosthead"}}{{ghost_head}}{{/contentFor}}
+ 
+ {{!-- Special header.hbs partial to generate the <header> tag --}}
+ {{#post}}
+--- a/default.hbs
++++ b/default.hbs
+@@ -92,18 +92,7 @@
+     {{{block "herobackground"}}}
+ 
+     {{!-- This tag outputs SEO meta+structured data and other important settings --}}
+-    {{ghost_head}}
+-
+-    {{!-- After Login bilingual SEO override for English posts --}}
+-    {{#is "post"}}
+-      {{#post}}
+-        {{#has tag="English"}}
+-          <meta property="og:site_name" content="After Login" />
+-          <meta name="twitter:site" content="After Login" />
+-        {{/has}}
+-      {{/post}}
+-    {{/is}}
+-
++    {{{block "ghosthead"}}}
+ 
+     {{!-- This style overrides the accent color to match the one from the Admin --}}
+     <style>
+--- a/partials/english-head.hbs
++++ b/partials/english-head.hbs
+@@ -0,0 +1,25 @@
++{{!-- Generate one English social metadata set in the server response. --}}
++{{ghost_head exclude="social_data"}}
++<meta property="og:site_name" content="After Login" />
++<meta property="og:type" content="{{#is "post"}}article{{else}}website{{/is}}" />
++<meta property="og:title" content="{{#if og_title}}{{og_title}}{{else}}{{meta_title}}{{/if}}" />
++<meta property="og:description" content="{{#if og_description}}{{og_description}}{{else}}{{#if meta_description}}{{meta_description}}{{else}}{{excerpt words="45"}}{{/if}}{{/if}}" />
++<meta property="og:url" content="{{#if canonical_url}}{{canonical_url}}{{else}}{{url absolute="true"}}{{/if}}" />
++{{#if og_image}}
++<meta property="og:image" content="{{img_url og_image absolute="true"}}" />
++{{else}}{{#if feature_image}}
++<meta property="og:image" content="{{img_url feature_image absolute="true"}}" />
++{{/if}}{{/if}}
++<meta name="twitter:card" content="{{#if feature_image}}summary_large_image{{else}}summary{{/if}}" />
++<meta name="twitter:title" content="{{#if twitter_title}}{{twitter_title}}{{else}}{{meta_title}}{{/if}}" />
++<meta name="twitter:description" content="{{#if twitter_description}}{{twitter_description}}{{else}}{{#if meta_description}}{{meta_description}}{{else}}{{excerpt words="45"}}{{/if}}{{/if}}" />
++<meta name="twitter:url" content="{{#if canonical_url}}{{canonical_url}}{{else}}{{url absolute="true"}}{{/if}}" />
++{{#if twitter_image}}
++<meta name="twitter:image" content="{{img_url twitter_image absolute="true"}}" />
++{{else}}{{#if feature_image}}
++<meta name="twitter:image" content="{{img_url feature_image absolute="true"}}" />
++{{/if}}{{/if}}
++{{#is "post"}}
++<meta property="article:published_time" content="{{date published_at format="YYYY-MM-DDTHH:mm:ss.SSSZ"}}" />
++<meta property="article:modified_time" content="{{date updated_at format="YYYY-MM-DDTHH:mm:ss.SSSZ"}}" />
++{{/is}}
+--- a/partials/home-start-ru.hbs
++++ b/partials/home-start-ru.hbs
+@@ -0,0 +1,12 @@
++<section class="after-login-start" aria-labelledby="after-login-start-title">
++  <h2 id="after-login-start-title">Впервые здесь?</h2>
++  <p>Начните с <a href="/manifiest/">Манифеста</a> — о жизни между прошлым и будущим и о том, почему появился «После логина».</p>
++  <p>Затем откройте <a href="/karta-proekta/">Карту проекта</a>: она поможет выбрать тему и найти свой маршрут по статьям.</p>
++</section>
++<style>
++.after-login-start{max-width:960px;margin:0 auto 40px;padding:24px 28px;border:1px solid var(--primary-subtle-color);border-radius:12px;color:var(--primary-foreground-color);background:var(--background-color)}
++.after-login-start h2{margin:0 0 14px;font-size:26px;line-height:1.3}
++.after-login-start p{margin:10px 0;font-size:18px;line-height:1.65}
++.after-login-start a{text-decoration:underline;text-underline-offset:3px;color:inherit;font-weight:600}
++@media(max-width:600px){.after-login-start{padding:20px;margin-bottom:28px}.after-login-start h2{font-size:23px}.after-login-start p{font-size:16px}}
++</style>
+--- a/partials/after-login-page-cta.hbs
++++ b/partials/after-login-page-cta.hbs
+@@ -3,7 +3,7 @@
+                     <div class="after-login-invitation__part after-login-invitation__part--subscribe">
+                         <h2>Stay Updated</h2>
+                         <p>New essays from <em>After Login</em>, about once every two weeks. New publications only. No promotional mail.</p>
+-                        <form class="after-login-subscribe" action="/gostinaya/api/newsletter/subscribe" method="post" data-language="en">
++                        <form id="after-login-signup" class="after-login-subscribe" action="/gostinaya/api/newsletter/subscribe" method="post" data-language="en">
+                             <input name="language" type="hidden" value="en">
+                             <input name="returnTo" type="hidden" value="">
+                             <div class="after-login-subscribe__row">
+@@ -47,7 +47,7 @@
+                     <div class="after-login-invitation__part after-login-invitation__part--subscribe">
+                         <h2>Не пропустить новые публикации</h2>
+                         <p>Новые статьи «После логина» — примерно раз в две недели. Только новые материалы, без рекламной рассылки.</p>
+-                        <form class="after-login-subscribe" action="/gostinaya/api/newsletter/subscribe" method="post" data-language="ru">
++                        <form id="after-login-signup" class="after-login-subscribe" action="/gostinaya/api/newsletter/subscribe" method="post" data-language="ru">
+                             <input name="language" type="hidden" value="ru">
+                             <input name="returnTo" type="hidden" value="">
+                             <div class="after-login-subscribe__row">
