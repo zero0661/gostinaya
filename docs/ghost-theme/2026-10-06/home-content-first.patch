@@ -1,0 +1,405 @@
+--- a/index.hbs
++++ b/index.hbs
+@@ -45,9 +45,12 @@
+   </div>
+   </section>
+   {{/is}}
++  {{#is "home"}}
++  {{> home-content english=false flagIntro="Мы прожили жизнь в двух мирах: аналоговом, который помним, и цифровом, который продолжаем осваивать. Что этот опыт помогает нам увидеть?" flagLink="Читать эссе →" flagship="my-pokolieniie-dvukh-mirov" latest="tag:-english" picks="slug:[my-pokolieniie-dvukh-mirov,pochiemu-fantastika-podghotovila-nas-k-epokhie-ai,koghda-rabota-staniet-nieobiazatielnoi-chto-mask-nie-doghovoril]"}}
++  {{else}}
+   <div class="l-content">
+     <div class="l-wrapper" data-animate="fade-up">
+-      {{#is "home"}}{{> home-start-ru english=false}}{{/is}}
++      
+       <div class="l-grid centered">
+         {{#get "posts" filter="featured:true" include="authors,tags" limit="5" as |featured|}}
+           {{#if featured}}
+@@ -120,6 +123,7 @@
+   <div class="l-wrapper" style="max-width: 960px;">
+     {{> "after-login-page-cta" english=false}}
+   </div>
++  {{/is}}
+ </main>
+ 
+ {{!-- The #contentFor helper here will send everything inside it up to the matching #block helper found in default.hbs --}}
+--- a/page.hbs
++++ b/page.hbs
+@@ -35,12 +35,7 @@
+     {{#has slug="en"}}
+     <div class="pl-home-en">
+       {{> home-identity english=true}}
+-      <div class="l-content"><div class="l-wrapper">
+-        {{> home-start-ru english=true}}
+-        <div class="l-grid centered">{{#get "posts" filter="tag:english" include="authors,tags" limit="12"}}{{> loop}}{{/get}}</div>
+-        <p style="text-align:center;margin:24px 0 40px"><a class="pl-home-button primary" href="/en-project-map/">Explore all essays</a></p>
+-        {{> after-login-page-cta english=true}}
+-      </div></div>
++      {{> home-content english=true flagIntro="We have lived in two worlds: the analogue one we remember and the digital one we are learning to navigate. What does that experience help us see?" flagLink="Read the essay →" flagship="we-are-the-generation-of-two-worlds" latest="tag:english" picks="slug:[we-are-the-generation-of-two-worlds,why-science-fiction-prepared-us-for-the-age-of-ai,when-work-becomes-optional-what-musk-left-unsaid]"}}
+     </div>
+     {{else}}
+     {{!-- Inject styles of the hero image to make it responsive --}}
+--- /dev/null
++++ b/partials/home-content.hbs
+@@ -0,0 +1,340 @@
++<div class="pl-reading l-wrapper">
++<section class="pl-flagship" aria-labelledby="pl-flagship-title">
++<p class="pl-section-label">{{#if english}}An essay to start with{{else}}Эссе для знакомства{{/if}}</p>
++{{#get "posts" filter="slug:{{flagship}}" limit="1"}}{{#foreach posts}}
++<h2 id="pl-flagship-title"><a href="{{url}}">{{title}}</a></h2>
++<p>{{../../flagIntro}}</p>
++<a class="pl-text-link" href="{{url}}">{{../../flagLink}}</a>
++{{/foreach}}{{/get}}
++</section>
++<section class="pl-materials" aria-labelledby="pl-latest-title">
++<div class="pl-articles-heading"><h2 id="pl-latest-title">{{#if english}}Latest essays{{else}}Свежие статьи{{/if}}</h2><a href="{{#if english}}/en-project-map/{{else}}/karta-proekta/{{/if}}">{{#if english}}All topics →{{else}}Все темы →{{/if}}</a></div>
++<div class="pl-reading-grid">{{#get "posts" filter=latest order="published_at desc" limit="3"}}{{#foreach posts}}{{> home-reading-card}}{{/foreach}}{{/get}}</div>
++</section>
++<section class="pl-materials" aria-labelledby="pl-picks-title">
++<h2 id="pl-picks-title">{{#if english}}Author’s picks{{else}}Выбор автора{{/if}}</h2>
++<div class="pl-reading-grid">{{#get "posts" filter=picks order="published_at asc" limit="3"}}{{#foreach posts}}{{> home-reading-card}}{{/foreach}}{{/get}}</div>
++</section>
++<section class="pl-author-mini" aria-labelledby="pl-author-title">
++<img src="/content/images/2026/09/158F7AB4-907C-4963-B025-57C70B8060B1-2.png" alt="{{#if english}}Peter Milenin{{else}}Пётр Миленин{{/if}}" width="160" height="200" loading="lazy">
++<div><h2 id="pl-author-title">{{#if english}}Peter Milenin{{else}}Пётр Миленин{{/if}}</h2>
++<p>{{#if english}}I remember the sound of tuning shortwave radio and the rustle of vinyl. Today, I explore artificial intelligence and write about staying human in the age of algorithms. I share what I have experienced, noticed and continue to investigate.{{else}}Помню звук настройки коротких волн и шелест винила. Сегодня осваиваю искусственный интеллект и пишу о том, как остаться человеком в эпоху алгоритмов. Делюсь тем, что испытал сам, заметил и продолжаю исследовать.{{/if}}</p>
++<div class="pl-home-actions"><a class="pl-home-button secondary" href="{{#if english}}/en-about-the-author/{{else}}/ob-avtorie/{{/if}}">{{#if english}}About the author{{else}}Об авторе{{/if}}</a><a class="pl-home-button secondary" href="{{#if english}}/en-about-the-project/{{else}}/o-proekte/{{/if}}">{{#if english}}About the project{{else}}О проекте{{/if}}</a></div></div>
++</section>
++<section class="pl-home-subscribe" aria-labelledby="pl-subscribe-title">
++<h2 id="pl-subscribe-title">{{#if english}}New essays in your inbox{{else}}Новые эссе на почту{{/if}}</h2>
++<p>{{#if english}}I write when I have something to say. New essays only. No ads.{{else}}Пишу, когда есть что сказать. Только новые эссе, без рекламы.{{/if}}</p>
++<form id="after-login-signup" class="after-login-subscribe" action="/gostinaya/api/newsletter/subscribe" method="post" data-language="{{#if english}}en{{else}}ru{{/if}}">
++<input name="language" type="hidden" value="{{#if english}}en{{else}}ru{{/if}}"><input name="returnTo" type="hidden" value="">
++<div class="pl-signup-row"><label for="pl-home-email">Email</label><input id="pl-home-email" name="email" type="email" required autocomplete="email" placeholder="your@email.com"><button class="pl-home-button primary" type="submit">{{#if english}}Subscribe{{else}}Подписаться{{/if}}</button></div>
++<p class="after-login-subscribe__state after-login-subscribe__state--loading">{{#if english}}Sending…{{else}}Отправляем…{{/if}}</p><p class="after-login-subscribe__state after-login-subscribe__state--success">{{#if english}}Check your inbox and confirm your subscription.{{else}}Проверьте почту и подтвердите подписку.{{/if}}</p><p class="after-login-subscribe__state after-login-subscribe__state--error">{{#if english}}Please try again.{{else}}Попробуйте ещё раз.{{/if}}</p>
++</form>
++{{#unless english}}<div class="after-login-telegram"><p class="pl-telegram-note">Анонсы и короткие заметки — в Telegram-канале «После логина».</p><a class="pl-text-link" href="https://t.me/posle_logina" target="_blank" rel="noopener">Открыть Telegram →</a></div>{{/unless}}
++</section>
++<section class="pl-home-lounge" aria-labelledby="pl-lounge-title"><h2 id="pl-lounge-title">{{#if english}}The conversation continues in the Lounge{{else}}Разговор продолжается в Гостиной{{/if}}</h2><p>{{#if english}}Finished reading? Have something to add or want to debate? Come to the Lounge, where we discuss essays, share personal experiences and start our own topics.{{else}}Прочитали? Есть что добавить или хочется поспорить? В Гостиной обсуждаем эссе, делимся личным опытом и открываем собственные темы.{{/if}}</p><a class="pl-home-button primary" href="/gostinaya?lang={{#if english}}en{{else}}ru{{/if}}">{{#if english}}Go to the Lounge{{else}}Перейти в Гостиную{{/if}}</a></section>
++</div>
++                <script>
++                    (() => {
++                        function showNewsletterToast(message) {
++                            const previous = document.querySelector('.after-login-newsletter-toast');
++                            if (previous) previous.remove();
++
++                            const toast = document.createElement('div');
++                            toast.className = 'after-login-newsletter-toast';
++                            toast.setAttribute('role', 'status');
++                            toast.setAttribute('aria-live', 'polite');
++
++                            const mark = document.createElement('span');
++                            mark.className = 'after-login-newsletter-toast__mark';
++                            mark.setAttribute('aria-hidden', 'true');
++                            mark.textContent = '✓';
++
++                            const text = document.createElement('span');
++                            text.className = 'after-login-newsletter-toast__text';
++                            text.textContent = message;
++
++                            const close = document.createElement('button');
++                            close.className = 'after-login-newsletter-toast__close';
++                            close.type = 'button';
++                            close.setAttribute('aria-label', 'Close');
++                            close.textContent = '×';
++
++                            const dismiss = () => {
++                                toast.classList.remove('visible');
++                                window.setTimeout(() => toast.remove(), 220);
++                            };
++
++                            close.addEventListener('click', dismiss);
++                            toast.append(mark, text, close);
++                            document.body.appendChild(toast);
++                            window.requestAnimationFrame(() => toast.classList.add('visible'));
++                            window.setTimeout(dismiss, 8000);
++                        }
++
++                        document.querySelectorAll('.after-login-subscribe').forEach((form) => {
++                            const returnTo = form.querySelector('[name="returnTo"]');
++                            if (returnTo) returnTo.value = window.location.href;
++                            form.addEventListener('submit', async (event) => {
++                                event.preventDefault();
++                                const button = form.querySelector('button[type="submit"]');
++                                const errorState = form.querySelector('.after-login-subscribe__state--error');
++                                form.classList.remove('success', 'error');
++                                form.classList.add('loading');
++                                if (button) button.disabled = true;
++                                try {
++                                    const body = new URLSearchParams(new FormData(form));
++                                    body.set('language', form.dataset.language === 'en' ? 'en' : 'ru');
++                                    body.set('returnTo', window.location.href);
++                                    const response = await fetch(form.action, {
++                                        method: 'POST',
++                                        headers: { 'Accept': 'application/json' },
++                                        body
++                                    });
++                                    if (!response.ok) throw new Error('signup failed');
++                                    const result = await response.json();
++                                    form.classList.remove('loading');
++                                    if (result.status === 'already-subscribed') {
++                                        showNewsletterToast(form.dataset.language === 'en'
++                                            ? 'You’re already subscribed.'
++                                            : 'Вы уже подписаны.');
++                                    } else {
++                                        form.classList.add('success');
++                                    }
++                                } catch (error) {
++                                    form.classList.remove('loading');
++                                    form.classList.add('error');
++                                    if (errorState) errorState.textContent = form.dataset.language === 'en'
++                                        ? 'Could not send the confirmation email. Please try again.'
++                                        : 'Не удалось отправить письмо. Попробуйте ещё раз.';
++                                } finally {
++                                    if (button) button.disabled = false;
++                                }
++                            });
++                        });
++                        const pageUrl = new URL(window.location.href);
++                        if (pageUrl.searchParams.get('newsletter') === 'confirmed') {
++                            const form = document.querySelector('.after-login-subscribe');
++                            if (form) {
++                                showNewsletterToast(form.dataset.language === 'en'
++                                    ? 'Subscription confirmed. Thank you.'
++                                    : 'Подписка подтверждена. Спасибо.');
++                            }
++                            pageUrl.searchParams.delete('newsletter');
++                            window.history.replaceState({}, '', pageUrl.pathname + pageUrl.search + pageUrl.hash);
++                        }
++                    })();
++                </script>
++
++                <style class="after-login-invitation__styles">
++                    .after-login-invitation {
++                        margin: 3.5rem 0 3rem;
++                        padding: clamp(1.6rem, 4vw, 2.6rem);
++                        color: #f4f0e8;
++                        text-align: center;
++                        background:
++                            radial-gradient(circle at top left, rgba(169, 117, 255, .17), transparent 42%),
++                            linear-gradient(145deg, #19171f 0%, #111116 100%);
++                        border: 1px solid rgba(255, 255, 255, .1);
++                        border-radius: 22px;
++                        box-shadow: 0 20px 55px rgba(0, 0, 0, .22);
++                    }
++
++                    .after-login-invitation__part h2 {
++                        margin: 0 0 1rem;
++                        color: #fff;
++                        font-size: clamp(1.45rem, 3vw, 2rem);
++                        line-height: 1.25;
++                    }
++
++                    .after-login-invitation__part > p {
++                        max-width: 46rem;
++                        margin: 0 auto;
++                        color: rgba(244, 240, 232, .76);
++                        font-size: 1rem;
++                        line-height: 1.75;
++                    }
++
++                    .after-login-invitation__divider {
++                        height: 1px;
++                        margin: 2.1rem auto;
++                        max-width: 44rem;
++                        background: rgba(255, 255, 255, .1);
++                    }
++
++                    .after-login-invitation__actions {
++                        display: flex;
++                        justify-content: center;
++                        flex-wrap: wrap;
++                        gap: .8rem;
++                        margin: 1.45rem 0 0;
++                    }
++
++                    .after-login-invitation__button {
++                        display: inline-flex;
++                        align-items: center;
++                        justify-content: center;
++                        min-height: 3rem;
++                        padding: .78rem 1.3rem;
++                        border-radius: 999px;
++                        font: inherit;
++                        font-weight: 700;
++                        line-height: 1.2;
++                        text-decoration: none;
++                        cursor: pointer;
++                        transition: transform .18s ease, background .18s ease, border-color .18s ease;
++                    }
++
++                    .after-login-invitation__button:hover {
++                        transform: translateY(-2px);
++                        text-decoration: none;
++                    }
++
++                    .after-login-invitation__button--primary {
++                        color: #161219 !important;
++                        background: linear-gradient(135deg, #f2d9a7, #c8a5ff);
++                        border: 1px solid transparent;
++                    }
++
++                    .after-login-invitation__button--secondary {
++                        color: #f4f0e8;
++                        background: rgba(255, 255, 255, .045);
++                        border: 1px solid rgba(255, 255, 255, .18);
++                    }
++
++                    .after-login-subscribe {
++                        max-width: 44rem;
++                        margin: 1.45rem auto 0;
++                    }
++
++                    .after-login-subscribe__row {
++                        display: grid;
++                        grid-template-columns: auto minmax(12rem, 1fr) auto;
++                        align-items: center;
++                        gap: .75rem;
++                    }
++
++                    .after-login-subscribe__label {
++                        color: rgba(244, 240, 232, .72);
++                        font-size: .95rem;
++                    }
++
++                    .after-login-subscribe__input {
++                        width: 100%;
++                        min-height: 3rem;
++                        padding: .72rem 1rem;
++                        color: #f4f0e8;
++                        background: rgba(255, 255, 255, .055);
++                        border: 1px solid rgba(255, 255, 255, .18);
++                        border-radius: 999px;
++                        outline: none;
++                    }
++
++                    .after-login-subscribe__input:focus {
++                        border-color: rgba(200, 165, 255, .7);
++                        box-shadow: 0 0 0 3px rgba(200, 165, 255, .12);
++                    }
++
++                    .after-login-subscribe__state {
++                        display: none;
++                        margin: .8rem auto 0;
++                        color: rgba(244, 240, 232, .72);
++                        font-size: .92rem;
++                    }
++
++                    .after-login-subscribe.loading .after-login-subscribe__state--loading,
++                    .after-login-subscribe.success .after-login-subscribe__state--success,
++                    .after-login-subscribe.error .after-login-subscribe__state--error {
++                        display: block;
++                    }
++
++                    .after-login-subscribe.error .after-login-subscribe__state--error {
++                        color: #ffc6c6;
++                    }
++
++                    .after-login-invitation__motto {
++                        margin: 2.15rem 0 0;
++                        color: rgba(244, 240, 232, .58);
++                        font-family: Georgia, serif;
++                        font-size: .98rem;
++                    }
++
++                    .after-login-newsletter-toast {
++                        position: fixed;
++                        top: 1.25rem;
++                        right: 1.25rem;
++                        z-index: 2147483646;
++                        display: grid;
++                        grid-template-columns: auto minmax(0, 1fr) auto;
++                        align-items: center;
++                        gap: .75rem;
++                        width: min(26rem, calc(100vw - 2.5rem));
++                        padding: 1rem 1.05rem;
++                        color: #f7f4ed;
++                        text-align: left;
++                        background: rgba(24, 22, 29, .96);
++                        border: 1px solid rgba(200, 165, 255, .45);
++                        border-radius: 14px;
++                        box-shadow: 0 18px 45px rgba(0, 0, 0, .36);
++                        opacity: 0;
++                        transform: translateY(-12px);
++                        transition: opacity .2s ease, transform .2s ease;
++                    }
++
++                    .after-login-newsletter-toast.visible {
++                        opacity: 1;
++                        transform: translateY(0);
++                    }
++
++                    .after-login-newsletter-toast__mark {
++                        display: inline-flex;
++                        align-items: center;
++                        justify-content: center;
++                        width: 1.8rem;
++                        height: 1.8rem;
++                        color: #18151c;
++                        font-weight: 800;
++                        background: linear-gradient(135deg, #f2d9a7, #c8a5ff);
++                        border-radius: 50%;
++                    }
++
++                    .after-login-newsletter-toast__text {
++                        font-size: 1rem;
++                        font-weight: 700;
++                        line-height: 1.35;
++                    }
++
++                    .after-login-newsletter-toast__close {
++                        padding: .15rem .3rem;
++                        color: rgba(247, 244, 237, .72);
++                        font: inherit;
++                        font-size: 1.35rem;
++                        line-height: 1;
++                        background: transparent;
++                        border: 0;
++                        cursor: pointer;
++                    }
++
++                    @media (max-width: 600px) {
++                        .after-login-newsletter-toast {
++                            top: .75rem;
++                            right: .75rem;
++                            width: calc(100vw - 1.5rem);
++                        }
++
++                        .after-login-subscribe__row {
++                            grid-template-columns: 1fr;
++                        }
++
++                        .after-login-subscribe__label {
++                            text-align: left;
++                        }
++
++                        .after-login-invitation__actions {
++                            flex-direction: column;
++                        }
++
++                        .after-login-invitation__button {
++                            width: 100%;
++                        }
++                    }
++                </style>--- /dev/null
++++ b/partials/home-reading-card.hbs
+@@ -0,0 +1 @@
++<article class="pl-reading-card"><a href="{{url}}">{{#if feature_image}}<img src="{{img_url feature_image size="m"}}" alt="" width="600" height="340" loading="lazy">{{/if}}<div class="pl-reading-card-body"><h3>{{title}}</h3><p>{{excerpt words="26"}}</p></div></a></article>
+--- a/assets/css/home-identity.css
++++ b/assets/css/home-identity.css
+@@ -3,3 +3,6 @@
+ .pl-home-action{display:flex;flex-direction:column;align-items:stretch}.pl-home-hint{color:#edf0f5;font-size:15px;line-height:1.5;margin:10px 0 0;text-align:center}.pl-home-copy h1{max-width:760px}.pl-home-actions{gap:16px}.pl-home-hero{min-height:550px}@media(max-width:600px){.pl-home-hero{min-height:0}.pl-home-actions{gap:20px}.pl-home-hint{font-size:14px;margin-top:8px}}
+ 
+ .pl-home-promise{color:#fff;font-size:17px;line-height:1.55;margin:0 0 24px}.pl-home-action{max-width:330px}.pl-home-hint{max-width:330px}@media(max-width:600px){.pl-home-promise{font-size:16px}.pl-home-action,.pl-home-hint{max-width:none}}
++
++.pl-reading{max-width:1120px;padding-top:42px;padding-bottom:50px}.pl-reading section{margin-bottom:48px}.pl-reading h2{font-size:30px;line-height:1.25;color:var(--titles-color)}.pl-section-label{text-transform:uppercase;font-size:13px;letter-spacing:.09em;opacity:.7}.pl-flagship{border-left:3px solid #c8a5ff;padding:8px 28px;max-width:880px}.pl-flagship h2 a{color:inherit}.pl-flagship p,.pl-author-mini p,.pl-home-subscribe p{font-size:18px;line-height:1.7}.pl-text-link{font-weight:700;color:var(--titles-color);text-decoration:underline;text-underline-offset:5px}.pl-reading-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}.pl-reading-card{border:1px solid var(--primary-border-color);border-radius:14px;overflow:hidden}.pl-reading-card>a{display:block;height:100%;color:var(--titles-color)}.pl-reading-card img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}.pl-reading-card-body{padding:20px}.pl-reading-card h3{font-size:21px;line-height:1.35;margin:0 0 12px}.pl-reading-card p{font-size:15px;line-height:1.65;margin:0;opacity:.8}.pl-author-mini{display:grid;grid-template-columns:160px 1fr;gap:30px;align-items:center}.pl-author-mini>img{width:160px;height:200px;object-fit:cover;border-radius:12px}.pl-author-mini h2{margin-top:0}.pl-author-mini .pl-home-actions{margin-top:22px}.pl-home-subscribe{padding:32px;border:1px solid var(--primary-border-color);border-radius:16px}.pl-signup-row{display:flex;gap:12px;align-items:center;max-width:720px}.pl-signup-row input{min-width:0;flex:1;background:transparent;border:1px solid var(--primary-border-color);color:var(--titles-color);padding:14px;border-radius:8px}.pl-telegram-note{margin-top:24px}.pl-reading .after-login-subscribe__state{display:none}.pl-reading .loading .after-login-subscribe__state--loading,.pl-reading .success .after-login-subscribe__state--success,.pl-reading .error .after-login-subscribe__state--error{display:block}.pl-reading .pl-home-lounge{margin-bottom:0}.pl-reading .pl-home-lounge h2{color:#fff}.pl-reading .pl-home-lounge p{color:rgba(255,255,255,.85)}
++@media(max-width:700px){.pl-reading-grid{grid-template-columns:1fr}.pl-reading{padding-top:28px}.pl-reading h2{font-size:25px}.pl-author-mini{grid-template-columns:1fr;gap:20px}.pl-author-mini>img{width:120px;height:150px}.pl-home-subscribe{padding:22px}.pl-signup-row{flex-wrap:wrap}.pl-signup-row label{width:100%}.pl-signup-row input{flex-basis:100%}.pl-signup-row button{width:100%}.pl-flagship{padding-left:20px}}
+--- a/package.json
++++ b/package.json
+@@ -90,5 +90,5 @@
+     "desktop": "assets/screenshot-desktop.jpg",
+     "mobile": "assets/screenshot-mobile.jpg"
+   },
+-  "version": "2.1.8-afterlogin-v1.3.2"
++  "version": "2.1.8-afterlogin-v1.4.0"
+ }
+
