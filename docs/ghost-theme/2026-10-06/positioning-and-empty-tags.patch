@@ -1,0 +1,79 @@
+--- a/partials/header.hbs
++++ b/partials/header.hbs
+@@ -210,35 +210,23 @@
+                       {{/get}}
+                     </section>
+ 
+-                    <section class="m-tags ru-submenu-content">
+-                      <h3 class="m-submenu-title">Теги</h3>
+-                      {{#get "tags" limit="10" filter="slug:-english"}}
+-                        <ul>
+-                          {{#foreach tags}}
+-                            <li>
+-                              <a href="{{url}}">{{name}}</a>
+-                            </li>
+-                            {{else}}
+-                              <li class="m-not-found">Теги не найдены.</li>
+-                          {{/foreach}}
+-                        </ul>
+-                      {{/get}}
+-                    </section>
+-
+-                    <section class="m-tags en-submenu-content" style="display:none;">
+-                      <h3 class="m-submenu-title">Tags</h3>
+-                      {{#get "tags" limit="10" filter="slug:english"}}
+-                        <ul>
+-                          {{#foreach tags}}
+-                            <li>
+-                              <a href="{{url}}">{{name}}</a>
+-                            </li>
+-                            {{else}}
+-                              <li class="m-not-found">No tags found.</li>
+-                          {{/foreach}}
+-                        </ul>
+-                      {{/get}}
+-                    </section>                  </div>
++                    {{#get "tags" limit="10" filter="slug:-english"}}
++                      {{#if tags}}
++                        <section class="m-tags ru-submenu-content">
++                          <h3 class="m-submenu-title">Теги</h3>
++                          <ul>{{#foreach tags}}<li><a href="{{url}}">{{name}}</a></li>{{/foreach}}</ul>
++                        </section>
++                      {{/if}}
++                    {{/get}}
++
++                    {{#get "tags" limit="10" filter="slug:english"}}
++                      {{#if tags}}
++                        <section class="m-tags en-submenu-content" style="display:none;">
++                          <h3 class="m-submenu-title">Tags</h3>
++                          <ul>{{#foreach tags}}<li><a href="{{url}}">{{name}}</a></li>{{/foreach}}</ul>
++                        </section>
++                      {{/if}}
++                    {{/get}}                  </div>
+                 </div>
+               </li>
+             </ul>
+--- a/partials/home-start-ru.hbs
++++ b/partials/home-start-ru.hbs
+@@ -1,9 +1,12 @@
++<p class="after-login-project-intro">Эссе о том, как цифровой мир и искусственный интеллект меняют нашу жизнь, музыку, память и внимание. Взгляд человека, который вырос до интернета и исследует новую реальность вместе с читателями.</p>
+ <section class="after-login-start" aria-labelledby="after-login-start-title">
+   <h2 id="after-login-start-title">Впервые здесь?</h2>
+   <p>Начните с <a href="/manifiest/">Манифеста</a> — о жизни между прошлым и будущим и о том, почему появился «После логина».</p>
+   <p>Затем откройте <a href="/karta-proekta/">Карту проекта</a>: она поможет выбрать тему и найти свой маршрут по статьям.</p>
+ </section>
+ <style>
++.after-login-project-intro{max-width:960px;margin:0 auto 28px;font-size:20px;line-height:1.65;color:var(--primary-foreground-color)}
++@media(max-width:600px){.after-login-project-intro{font-size:17px}}
+ .after-login-start{max-width:960px;margin:0 auto 40px;padding:24px 28px;border:1px solid var(--primary-subtle-color);border-radius:12px;color:var(--primary-foreground-color);background:var(--background-color)}
+ .after-login-start h2{margin:0 0 14px;font-size:26px;line-height:1.3}
+ .after-login-start p{margin:10px 0;font-size:18px;line-height:1.65}
+--- a/package.json
++++ b/package.json
+@@ -90,5 +90,5 @@
+     "desktop": "assets/screenshot-desktop.jpg",
+     "mobile": "assets/screenshot-mobile.jpg"
+   },
+-  "version": "2.1.8-afterlogin-v1.2.3"
++  "version": "2.1.8-afterlogin-v1.2.4"
+ }
