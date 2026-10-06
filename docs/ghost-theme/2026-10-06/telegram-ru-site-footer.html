@@ -1,0 +1,6 @@
+<style>
+.after-login-telegram{margin:1.5rem auto 0;text-align:center}.after-login-telegram p{margin:0 auto .8rem;max-width:42rem;color:inherit;font-size:1rem;line-height:1.6}.after-login-telegram a{display:inline-flex}
+</style>
+<script>
+(function(){function addTelegram(){document.querySelectorAll("form.after-login-subscribe[data-language=ru]").forEach(function(form){if(form.nextElementSibling&&form.nextElementSibling.classList.contains("after-login-telegram"))return;var block=document.createElement("div");block.className="after-login-telegram";var text=document.createElement("p");text.textContent="Удобнее в Telegram? Анонсы статей и новости проекта — в нашем канале.";var link=document.createElement("a");link.href="https://t.me/posle_logina";link.className="after-login-invitation__button after-login-invitation__button--secondary";link.textContent="Открыть Telegram";block.appendChild(text);block.appendChild(link);form.insertAdjacentElement("afterend",block)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",addTelegram);else addTelegram()})();
+</script>
