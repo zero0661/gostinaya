@@ -1,0 +1,36 @@
+--- a/partials/home-identity.hbs
++++ b/partials/home-identity.hbs
+@@ -1,13 +1,11 @@
+ <section class="pl-home-hero" aria-labelledby="pl-home-title">
+   <div class="pl-home-copy">
+-    <p class="pl-home-eyebrow">{{#if english}}Essays and conversations for people of two worlds{{else}}Эссе и разговоры для людей двух миров{{/if}}</p>
+-    <h1 id="pl-home-title">{{#if english}}For people of two worlds{{else}}Для людей двух миров{{/if}}</h1>
+-    <p class="pl-home-lead">{{#if english}}We remember life before the internet and explore the future together.{{else}}Мы помним жизнь до интернета и осваиваем будущее вместе.{{/if}}</p>
+-    <p class="pl-home-description">{{#if english}}Essays on how the digital world and artificial intelligence change our lives, music, memory and attention.{{else}}Здесь — эссе о том, как цифровой мир и искусственный интеллект меняют нашу жизнь, музыку, память и внимание.{{/if}}</p>
++    <h1 id="pl-home-title">{{#if english}}We remember life before the internet{{else}}Мы помним жизнь до интернета{{/if}}</h1>
++    <p class="pl-home-lead">{{#if english}}And we explore a world of algorithms and AI — with curiosity, at our own pace.{{else}}И осваиваем мир алгоритмов и ИИ — с любопытством и в своём темпе.{{/if}}</p>
++    <p class="pl-home-description">{{#if english}}Essays on how the digital world changes our memory, music, attention and relationships. A place to pause, understand and talk.{{else}}Эссе о том, как цифровой мир меняет нашу память, музыку, внимание и отношения. Здесь можно остановиться, разобраться и поговорить.{{/if}}</p>
+     <div class="pl-home-actions">
+-      <a class="pl-home-button primary" href="{{#if english}}/en/the-after-login-manifesto/{{else}}/manifiest/{{/if}}">{{#if english}}Start with the Manifesto{{else}}Начать с Манифеста{{/if}}</a>
+-      <a class="pl-home-button secondary" href="/gostinaya?lang={{#if english}}en{{else}}ru{{/if}}">{{#if english}}Enter the Lounge{{else}}Войти в Гостиную{{/if}}</a>
++      <div class="pl-home-action"><a class="pl-home-button primary" href="{{#if english}}/en/the-after-login-manifesto/{{else}}/manifiest/{{/if}}">{{#if english}}Where to start?{{else}}С чего начать?{{/if}}</a><p class="pl-home-hint">{{#if english}}The project manifesto{{else}}Манифест проекта{{/if}}</p></div>
++      <div class="pl-home-action"><a class="pl-home-button secondary" href="/gostinaya?lang={{#if english}}en{{else}}ru{{/if}}">{{#if english}}Discuss in the Lounge{{else}}Обсудить в Гостиной{{/if}}</a><p class="pl-home-hint">{{#if english}}Articles and member topics{{else}}Статьи и темы участников{{/if}}</p></div>
+     </div>
+-    <p class="pl-home-route">{{#if english}}Read the essays below. In the Lounge, you can read and discuss articles, share your experiences and start a conversation on any topic.{{else}}Читайте статьи ниже. В Гостиной можно читать и обсуждать статьи, делиться своим опытом и начинать разговор на любую тему.{{/if}}</p>
+   </div>
+ </section>
+--- a/assets/css/home-identity.css
++++ b/assets/css/home-identity.css
+@@ -1 +1,3 @@
+ .pl-home-hero{position:relative;margin:0;padding:112px max(6vw,24px) 54px;min-height:590px;box-sizing:border-box;background:#101419 url('/content/images/2026/10/after-login-hero-clean-en.png') center/cover no-repeat;color:#fff}.pl-home-hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,13,20,.96) 0%,rgba(8,13,20,.88) 46%,rgba(8,13,20,.3) 100%)}.pl-home-copy{position:relative;max-width:760px;margin:0 auto 0 max(0px,calc((100vw - 1200px)/2 - 6vw))}.pl-home-eyebrow,.pl-lounge-eyebrow{font-size:14px!important;line-height:1.5;text-transform:uppercase;letter-spacing:.08em;margin:0 0 16px;font-weight:600}.pl-home-copy h1{font-size:clamp(34px,4.3vw,58px);line-height:1.08;letter-spacing:-.035em;margin:0 0 22px;color:#fff}.pl-home-lead{font-size:clamp(20px,2vw,26px);line-height:1.4;margin:0 0 15px;max-width:650px}.pl-home-description{font-size:18px;line-height:1.6;max-width:650px;margin:0 0 24px;color:#e1e6ee}.pl-home-actions{display:flex;flex-wrap:wrap;gap:12px}.pl-home-button{display:inline-flex;align-items:center;justify-content:center;padding:14px 22px;border-radius:8px;font-size:16px;font-weight:650;line-height:1.4;text-decoration:none!important;transition:transform .15s;box-sizing:border-box}.pl-home-button:hover{transform:translateY(-2px)}.pl-home-button:focus-visible{outline:3px solid #88bbff;outline-offset:4px}.pl-home-button.primary{color:#17121d;background:linear-gradient(110deg,#eadba9,#ccb4ee);border:1px solid transparent}.pl-home-button.secondary{color:#fff;border:1px solid #b4bdcd;background:rgba(10,15,23,.3)}.pl-home-route{font-size:15px;line-height:1.6;max-width:660px;color:#c5cedc;margin:22px 0 0}.pl-home-lounge{max-width:1100px;margin:0 auto 40px;padding:32px 36px;border:1px solid var(--primary-subtle-color);border-radius:14px;background:var(--secondary-background-color,var(--background-color));color:var(--primary-foreground-color)}.pl-home-lounge h2{font-size:clamp(25px,3vw,34px);line-height:1.2;margin:0 0 18px}.pl-home-lounge p{font-size:18px;line-height:1.6;margin:0 0 20px}.pl-home-lounge .pl-lounge-eyebrow{opacity:.75;margin-bottom:12px}.pl-lounge-questions{font-weight:650}.pl-articles-heading{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:0 0 24px}.pl-articles-heading h2{font-size:28px;margin:0}.pl-articles-heading a{font-size:16px;color:var(--primary-foreground-color);text-decoration:underline;text-underline-offset:4px}.pl-home-en .l-content{padding-top:40px}.pl-home-en .l-grid{margin-bottom:24px}@media(max-width:600px){.pl-home-hero{padding:94px 22px 38px;min-height:0;background-position:62% center}.pl-home-hero:before{background:rgba(8,13,20,.84)}.pl-home-copy{margin:0}.pl-home-description{font-size:16px}.pl-home-route{font-size:14px}.pl-home-actions{flex-direction:column}.pl-home-button{width:100%}.pl-home-lounge{padding:24px 22px;margin-bottom:30px}.pl-home-lounge p{font-size:16px}.pl-articles-heading h2{font-size:24px}}
++
++.pl-home-action{display:flex;flex-direction:column;align-items:stretch}.pl-home-hint{color:#edf0f5;font-size:15px;line-height:1.5;margin:10px 0 0;text-align:center}.pl-home-copy h1{max-width:760px}.pl-home-actions{gap:16px}.pl-home-hero{min-height:550px}@media(max-width:600px){.pl-home-hero{min-height:0}.pl-home-actions{gap:20px}.pl-home-hint{font-size:14px;margin-top:8px}}
+--- a/package.json
++++ b/package.json
+@@ -90,5 +90,5 @@
+     "desktop": "assets/screenshot-desktop.jpg",
+     "mobile": "assets/screenshot-mobile.jpg"
+   },
+-  "version": "2.1.8-afterlogin-v1.3.0"
++  "version": "2.1.8-afterlogin-v1.3.1"
+ }
