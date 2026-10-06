@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { NEWSLETTER_CONSENT_VERSION } from '../utils/newsletterConsent.js';
 import assert from 'node:assert/strict';
 import { NewsletterSignupService } from '../services/NewsletterSignupServiceCore.js';
 import { NewsletterDeliveryService } from '../services/NewsletterDeliveryServiceCore.js';
@@ -17,7 +18,7 @@ for (const language of ['ru', 'en']) {
       async unsubscribeMember({ newsletterName }) { channels.delete(newsletterName); return member; },
       async listNewsletterMembers(name) { return channels.has(name) ? [member] : []; }
     };
-    const signup = new NewsletterSignupService({ ghost, mailer: async mail => emails.push(mail), tokens: {
+    const signup = new NewsletterSignupService({ consents: { async record() {}, async markConfirmed() {} }, ghost, mailer: async mail => emails.push(mail), tokens: {
       async create(row) { tokens.set(row.tokenHash, row); },
       async findValid(hash, action, now) { const row = tokens.get(hash); return row?.action === action && row.expiresAt > now ? row.payload : null; },
       async remove(hash) { tokens.delete(hash); },
@@ -30,7 +31,7 @@ for (const language of ['ru', 'en']) {
         async markSent() {}, async markFailed() { assert.fail('unexpected SMTP failure'); }
       }
     });
-    await signup.issue({ email: member.email, language });
+    await signup.issue({ consent: true, consentVersion: NEWSLETTER_CONSENT_VERSION, email: member.email, language });
     assert.equal(channels.size, 0, 'unconfirmed addresses never receive publications');
     const confirmToken = new URL(emails[0].text.match(/https:\/\/\S+/)[0]).searchParams.get('token');
     assert.equal((await signup.confirm(confirmToken)).welcomeSent, true);
@@ -50,7 +51,7 @@ for (const language of ['ru', 'en']) {
     assert.equal(await signup.unsubscribe(unsubscribeToken), null);
     await delivery.deliverPublication(newsletterPublication({ ...post, id: 'second' }));
     assert.equal(emails.length, 4, 'unsubscribed reader gets no further articles');
-    await signup.issue({ email: member.email, language });
+    await signup.issue({ consent: true, consentVersion: NEWSLETTER_CONSENT_VERSION, email: member.email, language });
     const newToken = new URL(emails[4].text.match(/https:\/\/\S+/)[0]).searchParams.get('token');
     await signup.confirm(newToken);
     await delivery.deliverPublication(newsletterPublication({ ...post, id: 'third' }));
@@ -75,3 +76,4 @@ test('legacy migration preserves language choices and never revives opted-out re
   assert.deepEqual(plan.migrate.map(row => row.id), ['old-only']);
   assert.deepEqual(plan.review.map(row => row.id), ['en']);
 });
+
