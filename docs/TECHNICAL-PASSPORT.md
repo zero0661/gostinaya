@@ -1526,7 +1526,7 @@ systemctl start ghost-release-watch.service
 Изменены `app.js`, `controllers/GuestController.js`, `services/RegistrationService.js`, `views/layouts/public.ejs`, `views/auth/login.ejs` и регрессионные тесты. Production-прогон после установки: **137 tests, 137 pass, 0 fail**. PM2 перезапущен. Владелец проверил результат в приватном Safari: переход с английской версии сайта по **The Lounge** открыл английский баннер и английскую welcome-card, активным был переключатель **EN**. Исправление считается подтверждённым в production. Git: PR #33, merge `8f6a3e1a30cd4af4d6fd3c82c255ed2fae2f67bb` в `feature/article-subscriptions`.
 
 
-## 43. Ревизия финальных блоков Ghost — 6 октября 2026
+## 42. Ревизия финальных блоков Ghost — 6 октября 2026
 
 На Главной RU (`/`) и Home EN (`/en/`) опубликован блок «подписка → Гостиная → автор», повторяющий оформление и обработчик подписки из актуального `post.hbs`. На Project Map EN (`/en-project-map/`) старая HTML-карточка заменена английским вариантом этого блока. Другие страницы и шаблон статьи не изменялись.
 
