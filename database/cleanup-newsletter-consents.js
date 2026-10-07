@@ -9,7 +9,7 @@ const day = 86400000;
 try {
  const clauses = [
   ['newsletter_subscription_tokens', 'expires_at <= ?', [now]],
-  ['newsletter_consents', '(confirmed_at IS NULL AND accepted_at < ?) OR (revoked_at IS NOT NULL AND revoked_at < ?)', [new Date(now - 7 * day).toISOString(), new Date(now - 30 * day).toISOString()]]
+  ['newsletter_consents', 'confirmed_at IS NULL AND revoked_at IS NULL AND accepted_at < ?', [new Date(now - 7 * day).toISOString()]]
  ];
  database.exec('BEGIN IMMEDIATE');
  for (const [table,where,args] of clauses) {

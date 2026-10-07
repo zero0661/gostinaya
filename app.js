@@ -1,3 +1,5 @@
+import newsletterLegal from './config/newsletterLegal.js';
+import { NEWSLETTER_CONSENT_VERSION } from './utils/newsletterConsent.js';
 import AuthService from './services/AuthService.js';
 import GuestController from './controllers/GuestController.js';
 import GuestRepository from './repositories/GuestRepository.js';
@@ -92,7 +94,8 @@ app.set('view engine', 'ejs');
 app.use(expressLayouts);
 app.set('layout', 'layouts/main');
 app.set('views', path.join(__dirname, 'views'));
-app.use(morgan('dev'));
+morgan.token('safe-path', req => req.path);
+app.use(morgan(':method :safe-path :status :response-time ms'));
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json());
@@ -252,6 +255,20 @@ async function handleGhostPostWebhook(req, res) {
 
 app.post('/gostinaya/webhooks/ghost/post-published', handleGhostPostWebhook);
 app.post('/gostinaya/webhooks/ghost/post-updated', handleGhostPostWebhook);
+
+for (const kind of ['consent', 'privacy']) {
+ app.get('/gostinaya/newsletter/' + kind, (req, res) => {
+  const language = publicLanguageFromRequest(req);
+  const document = newsletterLegal[language][kind];
+  res.set('Cache-Control', 'no-store');
+  res.render('newsletter/legal', {
+   title: document.title, layout: 'layouts/newsletter', language, document,
+   documentDraft: process.env.NEWSLETTER_LEGAL_READY !== 'true',
+   version: NEWSLETTER_CONSENT_VERSION,
+   otherDocument: kind === 'consent' ? 'privacy' : 'consent'
+  });
+ });
+}
 
 app.post('/gostinaya/api/newsletter/subscribe', newsletterSignupRateLimit, async (req, res) => {
   try {

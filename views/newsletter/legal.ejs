@@ -1,0 +1,11 @@
+<article class="newsletter-status">
+ <h1><%= document.title %></h1>
+ <% if (documentDraft) { %><p role="status"><strong><%= language === 'en' ? 'Draft — the migration and retention setup are not yet complete.' : 'Проект документа — перенос и настройка сроков хранения ещё не завершены.' %></strong></p><% } %>
+ <p><%= language === 'en' ? 'Version' : 'Редакция' %>: <%= version %></p>
+ <% document.sections.forEach(([heading, text]) => { %>
+ <section><h2 style="font-size:21px;margin-top:28px"><%= heading %></h2><p><%= text %></p></section>
+ <% }); %>
+ <p><a href="mailto:milen.petr@gmail.com">milen.petr@gmail.com</a></p>
+ <p><a href="/gostinaya/newsletter/<%= otherDocument %>?lang=<%= language %>"><%= language === 'en' ? (otherDocument === 'privacy' ? 'Data processing policy' : 'Separate consent') : (otherDocument === 'privacy' ? 'Политика обработки данных' : 'Отдельное согласие') %></a></p>
+ <p><a href="<%= language === 'en' ? '/en/' : '/' %>"><%= language === 'en' ? 'Back to the website' : 'Вернуться на сайт' %></a></p>
+</article>

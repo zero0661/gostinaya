@@ -1,3 +1,4 @@
+import NewsletterConsentRepository from '../repositories/NewsletterConsentRepository.js';
 import GhostApiService from './GhostApiService.js';
 import NewsletterDeliveryRepository from '../repositories/NewsletterDeliveryRepository.js';
 import { sendNewsletterMail } from '../utils/mailer.js';
@@ -8,6 +9,7 @@ export { NewsletterDeliveryService, CHANNELS } from './NewsletterDeliveryService
 
 export default new NewsletterDeliveryService({
   ghost: GhostApiService,
+  canDeliver: (email, language) => NewsletterConsentRepository.canDeliver(email, language),
   deliveries: NewsletterDeliveryRepository,
   mailer: sendNewsletterMail,
   unsubscribeUrl: details => NewsletterSignupService.createUnsubscribeUrl(details),

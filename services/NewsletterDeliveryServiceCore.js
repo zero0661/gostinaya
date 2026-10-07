@@ -6,8 +6,9 @@ const CHANNELS = {
 };
 
 export class NewsletterDeliveryService {
-  constructor({ ghost, deliveries, mailer, unsubscribeUrl, logger = console }) {
+  constructor({ ghost, deliveries, mailer, unsubscribeUrl, canDeliver = async () => true, logger = console }) {
     this.ghost = ghost;
+    this.canDeliver = canDeliver;
     this.deliveries = deliveries;
     this.mailer = mailer;
     this.unsubscribeUrl = unsubscribeUrl;
@@ -31,6 +32,10 @@ export class NewsletterDeliveryService {
     const summary = { language, sent: 0, skipped: 0, failed: 0 };
     for (const member of members) {
       if (!member?.id || !member?.email) continue;
+      if (!await this.canDeliver(member.email, language)) {
+        summary.skipped += 1;
+        continue;
+      }
       const delivery = {
         deliveryKey: publication.deliveryKey,
         legacyDeliveryKeys: publication.legacyDeliveryKeys || [],
