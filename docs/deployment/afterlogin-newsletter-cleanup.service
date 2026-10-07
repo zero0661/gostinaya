@@ -1,0 +1,12 @@
+[Unit]
+Description=Remove expired newsletter requests and unconfirmed consents
+[Service]
+Type=oneshot
+Environment=GOSTINAYA_DB_PATH=/root/gostinaya/database/gostinaya.db
+ExecStart=/usr/local/bin/node /usr/local/lib/afterlogin-newsletter-cleanup.mjs --apply
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/root/gostinaya/database
+PrivateTmp=true
+IPAddressDeny=any

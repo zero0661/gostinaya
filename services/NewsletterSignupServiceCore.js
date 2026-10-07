@@ -79,7 +79,7 @@ export class NewsletterSignupService {
     const goodbye = en ? 'Thank you for being here.' : 'Спасибо, что вы здесь.';
     const signature = en ? 'Peter Milenin\nAuthor of After Login' : 'Пётр Миленин\nАвтор проекта «После логина»';
     const unsubscribe = en ? 'Unsubscribe' : 'Отписаться';
-    const loungeUrl = `${this.appUrl}/gostinaya/register`;
+    const loungeUrl = `${this.appUrl}/gostinaya/register?lang=${en ? 'en' : 'ru'}`;
     const logo = newsletterLogoHeader(language);
     const html = `<!doctype html>
 <html lang="${en ? 'en' : 'ru'}">

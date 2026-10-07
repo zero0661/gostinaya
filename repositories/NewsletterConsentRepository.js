@@ -1,3 +1,4 @@
+import erasureLedger from '../utils/newsletterErasureLedger.js';
 import sqlite3 from 'sqlite3';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -10,9 +11,12 @@ function run(sql, params) {
 export default {
   canDeliver(email, language) {
     return new Promise((resolve, reject) => db.get(
-      'SELECT revoked_at FROM newsletter_consents WHERE email = ? AND language = ? AND (confirmed_at IS NOT NULL OR revoked_at IS NOT NULL) ORDER BY COALESCE(confirmed_at, accepted_at) DESC, rowid DESC LIMIT 1',
+      'SELECT revoked_at, confirmed_at FROM newsletter_consents WHERE email = ? AND language = ? AND (confirmed_at IS NOT NULL OR revoked_at IS NOT NULL) ORDER BY COALESCE(confirmed_at, accepted_at) DESC, rowid DESC LIMIT 1',
       [String(email).trim().toLowerCase(), language],
-      (error, row) => error ? reject(error) : resolve(!row?.revoked_at)
+      (error, row) => {
+        if (error) return reject(error);
+        erasureLedger.blocks(email, row?.confirmed_at).then(blocked => resolve(!row?.revoked_at && !blocked), reject);
+      }
     ));
   },
   record({ id, email, language, version, acceptedAt }) {

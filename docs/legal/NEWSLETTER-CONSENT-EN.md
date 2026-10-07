@@ -1,8 +1,6 @@
 # Consent to data processing for the newsletter
 
-Candidate for publication after domain cutover and cleanup activation.
-
-Версия / Version: newsletter-2026-10-07-v1
+Редакция / Version: newsletter-2026-10-07-v1
 
 ## Controller and purpose
 

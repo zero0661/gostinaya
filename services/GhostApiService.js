@@ -17,17 +17,22 @@ function discussionTags(post) {
   return (post.tags || []).map(tag => tag.name).filter(name => /^#discussion-/i.test(name));
 }
 
-export function createGhostApiService({ fetchImpl = fetch, adminBaseUrl = 'https://milenin.pro/ghost/api/admin' } = {}) {
+export function createGhostApiService({ fetchImpl = fetch, adminBaseUrl = process.env.GHOST_ADMIN_API_URL || 'https://milenin.pro/ghost/api/admin' } = {}) {
   async function adminFetch(path, options = {}) {
     const response = await fetchImpl(`${adminBaseUrl}${path}`, {
       signal: AbortSignal.timeout(10000),
       ...options,
-      headers: { Authorization: `Ghost ${createAdminToken()}`, 'Accept-Version': 'v6.0', ...(options.headers || {}) }
+      redirect: 'error',
+      headers: {
+        ...(/^http:\/\/127\.0\.0\.1:\d+\/ghost\/api\/admin$/.test(adminBaseUrl) ? { 'X-Forwarded-Proto': 'https', Host: new URL(process.env.APP_URL || 'https://milenin.pro').host } : {}),
+        Authorization: `Ghost ${createAdminToken()}`, 'Accept-Version': 'v6.0', ...(options.headers || {})
+      }
     });
     if (!response.ok) {
       const body = await response.text();
       throw new Error(`Ghost Admin API ${response.status}: ${body.slice(0, 300)}`);
     }
+    if (response.status === 204) return null;
     return response.json();
   }
 
@@ -73,6 +78,14 @@ export function createGhostApiService({ fetchImpl = fetch, adminBaseUrl = 'https
       const filter = `email:'${escapeNql(normalized)}'`;
       const data = await adminFetch(`/members/?limit=1&include=newsletters,labels&filter=${encodeURIComponent(filter)}`);
       return data.members?.[0] || null;
+    },
+    async deleteFreeMemberByEmail(email) {
+      const existing = await this.findMemberByEmail(email);
+      if (!existing) return { deleted: false, absent: true };
+      if (existing.status !== 'free' || (existing.subscriptions || []).some(item => item.status === 'active' || item.status === 'trialing')) throw new Error('PAID_MEMBER_REQUIRES_MANUAL_REVIEW');
+      await adminFetch('/members/' + encodeURIComponent(existing.id) + '/', { method: 'DELETE' });
+      if (await this.findMemberByEmail(email)) throw new Error('GHOST_ERASURE_NOT_VERIFIED');
+      return { deleted: true, absent: true };
     },
     async getMemberById(memberId) {
       const data = await adminFetch(`/members/${encodeURIComponent(memberId)}/?include=newsletters,labels`);

@@ -65,6 +65,10 @@ export default {
           "Cloud Backup настроен на хранение последних 15 копий. Это число копий, а не гарантия удаления через 15 календарных дней. Резервные данные используются для восстановления после сбоев. При восстановлении учитываются ранее исполненные запросы об удалении и отписке; восстановление не должно возобновлять отменённую подписку."
         ],
         [
+          "Исполнение удаления",
+          "Для предотвращения восстановления удалённой подписки отдельно сохраняются HMAC адреса и время обращения, без самого email. Эти сведения являются псевдонимизированными. Они используются для исполнения запрета рассылки и проверки восстановления; их хранение пересматривается после удаления всех старых копий. Удаление активных данных не означает немедленного уничтожения прежних резервных копий."
+        ],
+        [
           "Права и обращения",
           "Можно запросить сведения об обработке, исправление адреса или языка, отозвать согласие и потребовать удаления данных. Напишите на milen.petr@gmail.com с адреса подписки. При необходимости оператор уточнит сведения для проверки принадлежности адреса. Ответ и исполнение обращения происходят в сроки, установленные применимым законодательством."
         ],
@@ -143,6 +147,10 @@ export default {
         [
           "Backups",
           "Cloud Backup retains the latest 15 copies. This is a number of copies, not a guarantee of deletion after 15 calendar days. Backup data is used for recovery. Previously fulfilled deletion and unsubscription requests must be respected during recovery; cancelled subscriptions must not be resumed by restoring a backup."
+        ],
+        [
+          "Fulfilling deletion",
+          "A separate record stores an HMAC of the address and the request timestamp, without the email itself, to prevent a deleted subscription being restored. This is pseudonymised information. It is used to honour delivery restrictions and check recovery; retention is reviewed after all earlier copies have been removed. Deleting active data does not immediately destroy earlier backup copies."
         ],
         [
           "Rights and enquiries",

@@ -1,8 +1,6 @@
 # Newsletter data processing policy
 
-Candidate for publication after domain cutover and cleanup activation.
-
-Версия / Version: newsletter-2026-10-07-v1
+Редакция / Version: newsletter-2026-10-07-v1
 
 ## Controller and scope
 
@@ -35,6 +33,10 @@ A subscription is used until unsubscription or withdrawal. Confirmation links la
 ## Backups
 
 Cloud Backup retains the latest 15 copies. This is a number of copies, not a guarantee of deletion after 15 calendar days. Backup data is used for recovery. Previously fulfilled deletion and unsubscription requests must be respected during recovery; cancelled subscriptions must not be resumed by restoring a backup.
+
+## Fulfilling deletion
+
+A separate record stores an HMAC of the address and the request timestamp, without the email itself, to prevent a deleted subscription being restored. This is pseudonymised information. It is used to honour delivery restrictions and check recovery; retention is reviewed after all earlier copies have been removed. Deleting active data does not immediately destroy earlier backup copies.
 
 ## Rights and enquiries
 
