@@ -258,7 +258,9 @@ app.post('/gostinaya/api/newsletter/subscribe', newsletterSignupRateLimit, async
     const result = await NewsletterSignupService.issue({
       email: req.body?.email,
       language: req.body?.language,
-      returnTo: req.body?.returnTo
+      returnTo: req.body?.returnTo,
+      consent: req.body?.consent,
+      consentVersion: req.body?.consentVersion
     });
     const statusCode = result.status === 'already-subscribed' ? 200 : 202;
     return res.status(statusCode).json({
@@ -267,6 +269,7 @@ app.post('/gostinaya/api/newsletter/subscribe', newsletterSignupRateLimit, async
       status: result.status
     });
   } catch (error) {
+    if (error.message === 'CONSENT_REQUIRED') return res.status(400).json({ ok: false, error: 'consent-required' });
     if (error.message === 'INVALID_EMAIL') return res.status(400).json({ ok: false, error: 'invalid-email' });
     console.error('Newsletter signup error:', error);
     return res.status(500).json({ ok: false, error: 'delivery-failed' });
@@ -1248,3 +1251,4 @@ app.post('/gostinaya/api/guests/reset-password', passwordResetCompletionRateLimi
 app.listen(PORT, '127.0.0.1', () => {
   console.log(`Gostinaya app is running on http://127.0.0.1:${PORT}`);
 });
+

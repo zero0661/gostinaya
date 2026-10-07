@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { NEWSLETTER_CONSENT_VERSION } from '../utils/newsletterConsent.js';
 import { newsletterLogoAttachment, newsletterLogoHeader } from '../utils/newsletterBrand.js';
 
 const NEWSLETTERS = {
@@ -23,7 +24,7 @@ function normalizeReturnTo(value, language) {
 }
 
 export class NewsletterSignupService {
-  constructor({ ghost, mailer, tokens, appUrl = 'https://milenin.pro', ttlMs = 24 * 60 * 60 * 1000, now = Date.now, logger = console }) {
+  constructor({ ghost, mailer, tokens, appUrl = 'https://milenin.pro', ttlMs = 24 * 60 * 60 * 1000, now = Date.now, logger = console, consents }) {
     this.ghost = ghost;
     this.mailer = mailer;
     this.tokens = tokens;
@@ -31,6 +32,7 @@ export class NewsletterSignupService {
     this.ttlMs = ttlMs;
     this.now = now;
     this.logger = logger;
+    this.consents = consents;
   }
 
   tokenHash(token) {
@@ -108,11 +110,15 @@ export class NewsletterSignupService {
     };
   }
 
-  async issue({ email, language, returnTo }) {
+  async issue({ email, language, returnTo, consent, consentVersion }) {
+    if (consent !== true || consentVersion !== NEWSLETTER_CONSENT_VERSION) throw new Error('CONSENT_REQUIRED');
+    if (!this.consents) throw new Error('CONSENT_STORAGE_UNAVAILABLE');
     const normalizedEmail = String(email || '').trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail) || normalizedEmail.length > 254) throw new Error('INVALID_EMAIL');
     const normalizedLanguage = language === 'en' ? 'en' : 'ru';
     const target = NEWSLETTERS[normalizedLanguage];
+    const consentId = crypto.randomUUID();
+    await this.consents.record({ id: consentId, email: normalizedEmail, language: normalizedLanguage, version: NEWSLETTER_CONSENT_VERSION, acceptedAt: new Date(this.now()).toISOString() });
     const alreadySubscribed = await this.ghost.isMemberSubscribed({
       email: normalizedEmail,
       newsletterName: target.name
@@ -123,6 +129,8 @@ export class NewsletterSignupService {
     const payload = {
       version: 1,
       action: 'confirm',
+      consentId,
+      consentVersion: NEWSLETTER_CONSENT_VERSION,
       email: normalizedEmail,
       language: normalizedLanguage,
       returnTo: normalizeReturnTo(returnTo, normalizedLanguage),
@@ -149,6 +157,7 @@ export class NewsletterSignupService {
     const target = NEWSLETTERS[payload.language];
     let member;
     try {
+      if (payload.consentId) await this.consents.markConfirmed(payload.consentId, new Date(this.now()).toISOString());
       member = await this.ghost.subscribeMember({ email: payload.email, newsletterName: target.name, labelName: target.label });
       if (!member?.id) throw new Error('Ghost member ID missing after subscription');
     } catch (error) {
@@ -240,3 +249,4 @@ export class NewsletterSignupService {
 }
 
 export { NEWSLETTERS };
+
