@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { NEWSLETTER_CONSENT_VERSION } from '../utils/newsletterConsent.js';
 import assert from 'node:assert/strict';
 import { NewsletterSignupService } from '../services/NewsletterSignupServiceCore.js';
 
@@ -7,7 +8,7 @@ function serviceFixture() {
   const subscribed = [];
   const unsubscribed = [];
   const tokenRows = new Map();
-  const service = new NewsletterSignupService({
+  const service = new NewsletterSignupService({ consents: { async record() {}, async markConfirmed() {} },
     now: () => 1_000_000,
     appUrl: 'https://milenin.pro',
     mailer: async message => { sent.push(message); },
@@ -36,7 +37,7 @@ function serviceFixture() {
 
 test('confirmation email and Ghost newsletter are localized independently', async () => {
   const { service, sent, subscribed } = serviceFixture();
-  await service.issue({ email: ' Reader@Example.com ', language: 'en', returnTo: 'https://milenin.pro/en/article/' });
+  await service.issue({ consent: true, consentVersion: NEWSLETTER_CONSENT_VERSION, email: ' Reader@Example.com ', language: 'en', returnTo: 'https://milenin.pro/en/article/' });
   assert.equal(sent.length, 1);
   assert.match(sent[0].subject, /Confirm your subscription/);
   assert.doesNotMatch(sent[0].subject, /Подтвердите/);
@@ -64,7 +65,7 @@ test('confirmation email and Ghost newsletter are localized independently', asyn
 
 test('Russian subscribers receive one localized welcome email after confirmation', async () => {
   const { service, sent } = serviceFixture();
-  await service.issue({ email: 'reader@example.com', language: 'ru', returnTo: 'https://milenin.pro/article/' });
+  await service.issue({ consent: true, consentVersion: NEWSLETTER_CONSENT_VERSION, email: 'reader@example.com', language: 'ru', returnTo: 'https://milenin.pro/article/' });
   const token = new URL(sent[0].text.match(/https:\/\/\S+/)[0]).searchParams.get('token');
   await service.confirm(token);
   assert.equal(sent.length, 2);
@@ -82,7 +83,7 @@ test('confirmed subscribers are recognized without sending another email', async
     assert.equal(newsletterName, 'После логина — RU');
     return true;
   };
-  const result = await service.issue({
+  const result = await service.issue({ consent: true, consentVersion: NEWSLETTER_CONSENT_VERSION,
     email: 'Reader@Example.com',
     language: 'ru',
     returnTo: 'https://milenin.pro/article/'
@@ -93,7 +94,7 @@ test('confirmed subscribers are recognized without sending another email', async
 
 test('tokens reject tampering and foreign return URLs', async () => {
   const { service, sent, subscribed } = serviceFixture();
-  await service.issue({ email: 'one@example.com', language: 'ru', returnTo: 'https://evil.example/phishing' });
+  await service.issue({ consent: true, consentVersion: NEWSLETTER_CONSENT_VERSION, email: 'one@example.com', language: 'ru', returnTo: 'https://evil.example/phishing' });
   const token = new URL(sent[0].text.match(/https:\/\/\S+/)[0]).searchParams.get('token');
   assert.equal(await service.confirm(`${token}x`), null);
   assert.equal(subscribed.length, 0);
@@ -141,7 +142,7 @@ test('missing Ghost member must not produce a false successful unsubscribe', asy
 
 test('welcome failure does not undo a confirmed subscription or reuse its token', async () => {
   const { service, sent, subscribed } = serviceFixture();
-  await service.issue({ email: 'reader@example.com', language: 'ru' });
+  await service.issue({ consent: true, consentVersion: NEWSLETTER_CONSENT_VERSION, email: 'reader@example.com', language: 'ru' });
   const token = new URL(sent[0].text.match(/https:\/\/\S+/)[0]).searchParams.get('token');
   service.logger = { error() {} };
   service.mailer = async () => { throw new Error('SMTP unavailable'); };
@@ -152,7 +153,7 @@ test('welcome failure does not undo a confirmed subscription or reuse its token'
 
 test('concurrent confirmation and unsubscribe send only one welcome and one receipt', async () => {
   const { service, sent, subscribed, unsubscribed } = serviceFixture();
-  await service.issue({ email: 'reader@example.com', language: 'ru' });
+  await service.issue({ consent: true, consentVersion: NEWSLETTER_CONSENT_VERSION, email: 'reader@example.com', language: 'ru' });
   const token = new URL(sent[0].text.match(/https:\/\/\S+/)[0]).searchParams.get('token');
   const results = await Promise.all([service.confirm(token), service.confirm(token)]);
   assert.equal(results.filter(Boolean).length, 1);
@@ -166,7 +167,7 @@ test('concurrent confirmation and unsubscribe send only one welcome and one rece
 
 test('expired confirmation cannot subscribe or send a welcome', async () => {
   const { service, sent, subscribed } = serviceFixture();
-  await service.issue({ email: 'reader@example.com', language: 'ru' });
+  await service.issue({ consent: true, consentVersion: NEWSLETTER_CONSENT_VERSION, email: 'reader@example.com', language: 'ru' });
   const token = new URL(sent[0].text.match(/https:\/\/\S+/)[0]).searchParams.get('token');
   service.now = () => 1_000_000 + service.ttlMs;
   assert.equal(await service.confirm(token), null);

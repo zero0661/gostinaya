@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { NEWSLETTER_CONSENT_VERSION } from '../utils/newsletterConsent.js';
 import { newsletterLogoAttachment, newsletterLogoHeader } from '../utils/newsletterBrand.js';
 
 const NEWSLETTERS = {
@@ -23,7 +24,7 @@ function normalizeReturnTo(value, language) {
 }
 
 export class NewsletterSignupService {
-  constructor({ ghost, mailer, tokens, appUrl = 'https://milenin.pro', ttlMs = 24 * 60 * 60 * 1000, now = Date.now, logger = console }) {
+  constructor({ ghost, mailer, tokens, appUrl = 'https://milenin.pro', ttlMs = 24 * 60 * 60 * 1000, now = Date.now, logger = console, consents }) {
     this.ghost = ghost;
     this.mailer = mailer;
     this.tokens = tokens;
@@ -31,6 +32,7 @@ export class NewsletterSignupService {
     this.ttlMs = ttlMs;
     this.now = now;
     this.logger = logger;
+    this.consents = consents;
   }
 
   tokenHash(token) {
@@ -68,8 +70,8 @@ export class NewsletterSignupService {
       ? 'Thank you for subscribing to new publications from After Login.'
       : 'Спасибо, что подписались на новые публикации проекта «После логина»!';
     const about = en
-      ? 'I write about how technology and artificial intelligence are changing people, society, and the world we thought we understood. New essays are published approximately once every two weeks. No advertising and no unnecessary emails — only new publications.'
-      : 'Я пишу о том, как технологии и искусственный интеллект меняют человека, общество и привычный нам мир. Новые материалы выходят примерно раз в две недели. Никакой рекламы и лишних писем — только новые публикации.';
+      ? 'I write about how technology and artificial intelligence are changing people, society, and the world we thought we understood. No advertising and no unnecessary emails — only new publications.'
+      : 'Я пишу о том, как технологии и искусственный интеллект меняют человека, общество и привычный нам мир. Никакой рекламы и лишних писем — только новые публикации.';
     const lounge = en
       ? 'If you would like to do more than read, you are welcome to join the Lounge. It is a place to discuss the essays, disagree with the author, respond to other readers, and suggest questions of your own.'
       : 'Если вам захочется не только читать, но и обсуждать прочитанное, присоединяйтесь к Гостиной. Там можно спорить с автором, отвечать другим читателям и предлагать собственные темы.';
@@ -108,21 +110,28 @@ export class NewsletterSignupService {
     };
   }
 
-  async issue({ email, language, returnTo }) {
+  async issue({ email, language, returnTo, consent, consentVersion }) {
+    if (consent !== true || consentVersion !== NEWSLETTER_CONSENT_VERSION) throw new Error('CONSENT_REQUIRED');
+    if (!this.consents) throw new Error('CONSENT_STORAGE_UNAVAILABLE');
     const normalizedEmail = String(email || '').trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail) || normalizedEmail.length > 254) throw new Error('INVALID_EMAIL');
     const normalizedLanguage = language === 'en' ? 'en' : 'ru';
     const target = NEWSLETTERS[normalizedLanguage];
+    const consentId = crypto.randomUUID();
+    await this.consents.record({ id: consentId, email: normalizedEmail, language: normalizedLanguage, version: NEWSLETTER_CONSENT_VERSION, acceptedAt: new Date(this.now()).toISOString() });
     const alreadySubscribed = await this.ghost.isMemberSubscribed({
       email: normalizedEmail,
       newsletterName: target.name
     });
     if (alreadySubscribed) {
+      await this.consents.markConfirmed(consentId, new Date(this.now()).toISOString());
       return { language: normalizedLanguage, status: 'already-subscribed' };
     }
     const payload = {
       version: 1,
       action: 'confirm',
+      consentId,
+      consentVersion: NEWSLETTER_CONSENT_VERSION,
       email: normalizedEmail,
       language: normalizedLanguage,
       returnTo: normalizeReturnTo(returnTo, normalizedLanguage),
@@ -149,6 +158,7 @@ export class NewsletterSignupService {
     const target = NEWSLETTERS[payload.language];
     let member;
     try {
+      if (payload.consentId) await this.consents.markConfirmed(payload.consentId, new Date(this.now()).toISOString());
       member = await this.ghost.subscribeMember({ email: payload.email, newsletterName: target.name, labelName: target.label });
       if (!member?.id) throw new Error('Ghost member ID missing after subscription');
     } catch (error) {
@@ -201,6 +211,7 @@ export class NewsletterSignupService {
     if (!await this.tokens.consume(this.tokenHash(token), 'unsubscribe', this.now())) return null;
     const target = NEWSLETTERS[payload.language];
     try {
+      if (this.consents?.markRevoked) await this.consents.markRevoked(payload.email, payload.language, new Date(this.now()).toISOString());
       const member = await this.ghost.unsubscribeMember({
         memberId: payload.memberId,
         email: payload.email,

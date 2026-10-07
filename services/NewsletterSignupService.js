@@ -1,3 +1,4 @@
+import NewsletterConsentRepository from '../repositories/NewsletterConsentRepository.js';
 import GhostApiService from './GhostApiService.js';
 import { sendNewsletterMail } from '../utils/mailer.js';
 import { NewsletterSignupService } from './NewsletterSignupServiceCore.js';
@@ -9,5 +10,6 @@ export default new NewsletterSignupService({
   ghost: GhostApiService,
   mailer: sendNewsletterMail,
   tokens: NewsletterSubscriptionTokenRepository,
+  consents: NewsletterConsentRepository,
   appUrl: process.env.APP_URL || 'https://milenin.pro'
 });
