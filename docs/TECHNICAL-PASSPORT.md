@@ -2,8 +2,8 @@
 
 **Назначение документа:** передача проекта разработчику или ИИ, развёртывание на новом сервере, восстановление после аварии и сопровождение без устных пояснений автора.
 
-**Версия паспорта:** 1.9.0
-**Дата фиксации:** 8 октября 2026 года, по результатам переноса и ручных проверок; последнее сообщение о копии Beget — 21:04 МСК
+**Версия паспорта:** 1.9.1
+**Дата фиксации:** 8 октября 2026 года, дополнено переносом контроля релизов и проверкой новой копии на Mac; последнее сообщение о копии провайдера Beget — 21:04 МСК
 **Репозиторий Гостиной:** `zero0661/gostinaya`
 **Рабочая ветка Beget:** `migration/newsletter-consent-20261007`
 **Подтверждённый runtime-коммит:** `1bb958730d233c7d917d2141f0cbb8ee959b65f1`
@@ -24,11 +24,13 @@
 | Аккаунты Гостиной | 22 исходные записи сохранены; вход владельцем проверен; старые сессии не перенесены |
 | Собственные копии | Настроены, ручные копии созданы; MySQL/SQLite восстановлены отдельно и проверены |
 | Автоматическая копия Beget | **Ещё отсутствует по сообщению владельца в 21:04 МСК; восстановление провайдера не проверено** |
+| Обновления Ghost | Ежедневный контроль официальных релизов/advisories на Beget в 06:00 МСК; без автоустановки |
+| Копия на Mac | Новый отдельный каталог `~/AfterLoginBackups/Beget`; почасовой LaunchAgent переключён на Beget; итог проверки — раздел 75 |
 | HTTPS | certbot.timer включён; simulated renewal успешен |
 | Старые серверы и копии | Yandex, Fornex и Mac сохранены; закрытие/удаление не выполнены |
 | Общий статус | Публичный перенос и основные сценарии работают; завершающие задачи открыты |
 
-**Подробная действующая инструкция — разделы 62–74 в конце документа.** Разделы 1–61 сохраняют историю до переноса, прежние адреса и выполненные редакционные ревизии. Указания Fornex, старых SMTP и прежних расписаний в этих разделах не применять к Beget без сверки с разделами 62–74. Исторический manifest раздела 30 заменён действующим manifest раздела 74. Старые утверждения «согласие не установлено», «перенос не начат» относятся только к датам своих записей.
+**Подробная действующая инструкция — разделы 62–75 в конце документа.** Разделы 1–61 сохраняют историю до переноса, прежние адреса и выполненные редакционные ревизии. Указания Fornex, старых SMTP и прежних расписаний в этих разделах не применять к Beget без сверки с разделами 62–75. Исторический manifest раздела 30 заменён действующим manifest раздела 74. Старые утверждения «согласие не установлено», «перенос не начат» относятся только к датам своих записей.
 
 ## История обслуживания Fornex на 5 октября, 09:44 МСК
 
@@ -2037,11 +2039,24 @@ backups:
   local_root: /var/backups/afterlogin
   logical_db_restore_tested: true
   daily_time_utc: '01:00'
+  encrypted_root: /root/after-login-backups
+  encrypted_daily_time_utc: '01:30'
+  encrypted_server_retention: 2
+  mac_root: ~/AfterLoginBackups/Beget
+  mac_check_interval_seconds: 3600
+  mac_verified_retention: 3
+  mac_real_download_verified: true
   consent_cleanup_time_utc: '03:00'
   provider_first_backup_present: false
   provider_backup_last_owner_check_msk: '2026-10-08 21:04'
   provider_restore_tested: false
   whole_vm_restore_tested: false
+ghost_release_watch:
+  server: Beget
+  daily_time_utc: '03:00'
+  official_release_and_advisories: true
+  automatic_upgrade: false
+  actual_run_success: true
 old_infrastructure:
   fornex_preserved: true
   yandex_preserved: true
@@ -2055,3 +2070,57 @@ verification:
   full_legal_compliance_confirmed: false
 ```
 
+
+## 75. Перенос контроля релизов Ghost и зашифрованного скачивания на Mac — 8 октября 2026
+
+Эта запись обновляет исторические разделы 35–39 и ограничения раздела 70. На Beget установлены контроль релизов и новая зашифрованная копия с выгрузкой на Mac; версия рабочего Ghost остаётся 6.67.0. Обновление до 6.69.0 в рамках этой задачи не выполняется.
+
+### 75.1. Контроль релизов
+
+`/usr/local/lib/ghost-release-watch.py`, `ghost-release-watch.service` и `.timer`. Таймер enabled/active, ежедневно 03:00 UTC / 06:00 МСК, Persistent=true. Первый запуск 8 октября 18:30:02 UTC завершился с `ExecMainStatus=0`, `Result=success`: installed=6.67.0, latest=v6.69.0, advisories=80. Установочное письмо принято действующим Postbox; получение этого конкретного технического письма владельцем ещё не подтверждено. Сохранён прежний адрес технических уведомлений в закрытом конфиге. Повторный запуск 18:31:17 UTC успешен без повторного письма.
+
+Источники — официальный GitHub REST API TryGhost/Ghost: latest stable release и опубликованные advisories. Новые/изменённые сведения вызывают письмо. Диапазоны уязвимых версий необходимо проверять вручную. Скрипт никогда не устанавливает обновления. Состояние `/var/lib/ghost-release-watch`, конфиг `/var/lib/ghost-security-watch/config.json` (600), актуальный `/usr/local/bin/node` и SMTP из текущего `.env` Beget. Секреты SMTP Fornex не копировались.
+
+`ghost-security-watch.py` перенесён как библиотека отправки писем для релизов и backup. Пятиминутный контроль изменений, его baseline и security-watch.timer этой задачей **не включены**. Не считать установку helper полноценным переносом защитного мониторинга.
+
+### 75.2. Две схемы серверных копий
+
+1. Уже установленная `afterlogin-backup.timer`: ежедневные логические копии 01:00 UTC / 04:00 МСК в `/var/backups/afterlogin`. Сохранена.
+2. Новая `after-login-backup.timer` (имя с дополнительным дефисом): ежедневная полная зашифрованная копия 01:30 UTC / 04:30 МСК в `/root/after-login-backups` (700), скрипты `/usr/local/lib/after-login-backup.py`, `after-login-backup-daily.py`, `after-login-backup-export.py` (700). Хранятся две последние завершённые зашифрованные копии; неизвестные/незавершённые каталоги не считаются успешными.
+
+Копия включает MySQL Ghost, SQLite Гостиной с журналом согласий, полный content Ghost, код/конфигурацию Гостиной, текущий `compose.json`, Nginx, Let's Encrypt и служебные scripts/units. Секреты внутри архива зашифрованы. Закрытый RSA-ключ остаётся только на Mac; на VPS передан публичный ключ. Формат `after-login-backup-v1`, RSA-OAEP-SHA256 для ключевого материала, AES-256-CBC + PBKDF2 200000, отдельный HMAC-SHA256, SHA256SUMS и COMPLETE.
+
+Перед каждой полной копией выполняются SQLite backup, integrity/foreign-key checks, mysqldump consistent transaction и восстановление SQL в случайную отдельную тестовую базу. Проверены counts posts/users/settings и CHECK TABLE пяти основных таблиц. Удаляется только временная тестовая база; production-база не заменяется. Базы согласованы отдельно, файловый контент читается вживую: это не атомарный снимок ВМ. Во время копирования избегать публикаций и деплоя.
+
+Реальный запуск 8 октября 18:30:02–18:31:26 UTC / 21:30–21:31 МСК: `/root/after-login-backups/after-login-20261008T183002Z`, размер зашифрованного архива 1493,1 MiB. `BACKUP_CREATED_AND_DATABASE_RESTORE_TESTED_OK`, `DAILY_BACKUP_AND_RETENTION_OK`, сервис Result=success/ExecMainStatus=0. Письмо о готовности принято SMTP; оно само по себе не доказывает скачивание на Mac.
+
+### 75.3. Mac: расписание, ограниченный доступ и проверка
+
+Рабочие программы: `~/AfterLoginBackups/download-beget-backup.py` и `verify-beget-backup.py` (700). Новое хранилище `~/AfterLoginBackups/Beget` (700); старые каталоги Fornex не изменены и не очищены. Ключи `~/AfterLoginBackups/private.pem` и `download-key` имеют права 600. На Beget download-key разрешён только с `restrict,command=...after-login-backup-export.py`; проба произвольной команды `id` отклонена. SSH проверяет сохранённый host key Beget.
+
+LaunchAgent `~/Library/LaunchAgents/pro.milenin.after-login-backup.plist` переключён с Fornex на Beget, plutil lint успешен, agent загружен через launchctl. RunAtLoad=true, StartInterval=3600, прежний установленный Python 3.14. Резервная копия прежнего plist сохранена в `~/AfterLoginBackups/beget-migration-tools/launchagent-before-beget-*.plist`. Журналы теперь `~/AfterLoginBackups/Beget/download.log` и `download-error.log`.
+
+Скачивание реально началось 21:32:21 МСК через LaunchAgent. Оно докачивает незавершённые файлы, сравнивает размеры и все SHA256, проверяет RSA/HMAC, полностью расшифровывает архив во временный каталог, читает gzip до конца, проверяет безопасные пути и обязательные файлы (включая `config/ghost/compose.json`), manifest, SQL dump и SQLite. Временные расшифрованные файлы удаляются. На Mac сохраняются три последние подтверждённые **Beget** копии; старые Fornex копии остаются вне этой ротации.
+
+Реальная копия `after-login-20261008T183002Z` полностью скачана и проверена 8 октября вечером: `OFFSITE_BACKUP_DECRYPTION_AND_INTEGRITY_OK`, `OFFSITE_DOWNLOAD_AND_VERIFICATION_OK`; присутствует marker `after-login-20261008T183002Z.verified.json`. Это новая копия Beget с сегодняшними данными, а не повторное скачивание архивов Fornex. Временные расшифрованные файлы удалены.
+
+Mac должен быть включён, бодрствовать, иметь сеть и пользовательский сеанс. Во сне, при выключении или отсутствии сети копии на Mac не скачиваются. При обрыве следующая попытка продолжает передачу; частичная загрузка не получает отметку verified. Пока последняя загрузка не подтверждена, серверное письмо не означает наличие свежей независимой копии.
+
+### 75.4. Сопровождение и пределы проверки
+
+Код и units сохранены в Git: `scripts/beget-operations/`, инструкция `docs/BEGET-MAC-BACKUP-AND-RELEASE-WATCH.md`. Конфиг с адресом получателя, ключи, архивы и базы не входят в Git. Команды:
+
+```bash
+systemctl start ghost-release-watch.service
+journalctl -u ghost-release-watch.service -n 20 --no-pager
+systemctl start after-login-backup.service
+journalctl -u after-login-backup.service -n 30 --no-pager
+systemctl list-timers ghost-release-watch.timer after-login-backup.timer --no-pager
+# На Mac:
+python3 ~/AfterLoginBackups/download-beget-backup.py
+launchctl print gui/$(id -u)/pro.milenin.after-login-backup
+```
+
+После успешного скачивания и проверки новой Beget копии на Fornex отключены только `ghost-release-watch.timer` и `after-login-backup.timer`: disabled/inactive. Их scripts, units, данные и старые копии сохранены. Остальные старые сервисы/защитный watcher не остановлены этой задачей. Публичный сайт, Гостиная и отдельный VPN не менялись.
+
+Ночной цикл новых таймеров ещё не наступил; проверены ручные реальные запуски и enabled/active расписания. Перезагрузка сервера/Mac и автоматический ночной запуск отдельно не испытаны. Полное восстановление сайта/ВМ из скачанного архива не проводилось: проверены изолированное восстановление SQL на VPS и чтение/расшифровка/целостность архива на Mac. Независимая автоматическая копия провайдера всё ещё не подтверждена; платный снапшот не создан. Старые серверы, диски и копии сохранены. Удаление персональных данных из старых копий и полнота правового соответствия остаются отдельными задачами.

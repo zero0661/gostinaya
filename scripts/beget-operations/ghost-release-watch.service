@@ -1,0 +1,17 @@
+[Unit]
+Description=Official Ghost release and security advisory check
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/root/gostinaya
+ExecStart=/usr/bin/python3 /usr/local/lib/ghost-release-watch.py
+TimeoutStartSec=10min
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/var/lib/ghost-release-watch
+PrivateTmp=true

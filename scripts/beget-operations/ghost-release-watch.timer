@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Ghost update check at 06:00 Moscow
+
+[Timer]
+OnCalendar=*-*-* 03:00:00 UTC
+Persistent=true
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target
