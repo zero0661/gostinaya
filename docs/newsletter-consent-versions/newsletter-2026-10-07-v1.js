@@ -17,7 +17,7 @@ export default {
         ],
         [
           "Хранение и доставка",
-          "Рабочие базы и журнал согласий размещаются на VPS Beget в России, Санкт-Петербург, ЦОД DataLine. Автоматические резервные копии Beget хранятся только в России, в отдельном ЦОД Миран в Санкт-Петербурге. Письма отправляются через Yandex Cloud Postbox. Beget предоставляет сервер и резервное копирование; ООО «Яндекс.Облако» — доставку писем. Письмо также обрабатывает выбранный мной почтовый сервис; его страна и условия зависят от моего почтового адреса."
+          "Новые рабочие базы и журнал согласий размещаются в российском регионе Yandex Cloud ru-central1; резервные копии создаёт Yandex Cloud Backup. Письма отправляются через Yandex Cloud Postbox. Технический подрядчик — ООО «Яндекс.Облако». Письмо также обрабатывает выбранный мной почтовый сервис; его страна и условия зависят от моего почтового адреса."
         ],
         [
           "Подтверждение и отзыв",
@@ -50,7 +50,7 @@ export default {
         ],
         [
           "Размещение и подрядчик",
-          "Рабочие базы Ghost и Гостиной и журнал согласий размещаются на VPS Beget в России, Санкт-Петербург, ЦОД DataLine. Автоматические копии Beget хранятся в отдельном российском ЦОД Миран в Санкт-Петербурге; дополнительные копии баз создаются на российском VPS. Beget предоставляет сервер и резервное копирование, ООО «Яндекс.Облако» — Postbox для отправки писем. Подрядчикам передаются данные, необходимые для хранения, резервирования и доставки. Полученное письмо обрабатывается почтовым сервисом адресата по его условиям. Обращение на Gmail оператора обрабатывается также сервисом Google; не присылайте в обращении паспорт или другие лишние сведения."
+          "Рабочие базы Ghost и Гостиной, журнал согласий и новые резервные копии размещаются в российском регионе Yandex Cloud ru-central1. ООО «Яндекс.Облако» предоставляет сервер, Cloud Backup и Postbox для отправки писем. Подрядчику передаются данные, необходимые для хранения, резервирования и доставки. Полученное письмо обрабатывается почтовым сервисом адресата по его условиям. Обращение на Gmail оператора обрабатывается также сервисом Google; не присылайте в обращении паспорт или другие лишние сведения."
         ],
         [
           "Переход со старого сервера",
@@ -62,7 +62,7 @@ export default {
         ],
         [
           "Резервные копии",
-          "Расписание автоматических копий Beget определяется провайдером; копии хранятся в среднем 10 суток и могут перезаписываться раньше. Дополнительно на VPS ежедневно создаются согласованные копии баз с хранением около двух недель; полное содержимое Ghost копируется еженедельно, сохраняются две последние копии. Резервные данные используются для восстановления после сбоев. При восстановлении учитываются ранее исполненные запросы об удалении и отписке; восстановление не должно возобновлять отменённую подписку."
+          "Cloud Backup настроен на хранение последних 15 копий. Это число копий, а не гарантия удаления через 15 календарных дней. Резервные данные используются для восстановления после сбоев. При восстановлении учитываются ранее исполненные запросы об удалении и отписке; восстановление не должно возобновлять отменённую подписку."
         ],
         [
           "Исполнение удаления",
@@ -101,7 +101,7 @@ export default {
         ],
         [
           "Hosting and delivery",
-          "Operational databases and the consent journal are hosted on a Beget VPS in Russia, Saint Petersburg, at DataLine. Beget automatic backups are stored only in Russia, at the separate Miran data centre in Saint Petersburg. Email is sent via Yandex Cloud Postbox. Beget provides hosting and backups; Yandex.Cloud LLC provides email delivery. My chosen email provider also processes delivered messages under its own terms and in its own locations."
+          "New operational databases and the consent journal are hosted in the Russian Yandex Cloud region ru-central1; new backups use Yandex Cloud Backup. Email is sent via Yandex Cloud Postbox. The technical provider is Yandex.Cloud LLC. My chosen email provider also processes delivered messages under its own terms and in its own locations."
         ],
         [
           "Confirmation and withdrawal",
@@ -134,7 +134,7 @@ export default {
         ],
         [
           "Location and provider",
-          "Operational Ghost and Lounge databases and the consent journal are hosted on a Beget VPS in Russia, Saint Petersburg, at DataLine. Beget automatic backups are stored at the separate Russian Miran data centre in Saint Petersburg; additional database backups are created on the Russian VPS. Beget provides hosting and backups, and Yandex.Cloud LLC provides Postbox email delivery. Providers receive data necessary for hosting, backup and delivery. Delivered email is processed by the recipient's email provider under its own terms. Enquiries sent to the controller's Gmail address are also processed by Google; please do not include passport details or other unnecessary information."
+          "Operational Ghost and Lounge databases, the consent journal and new backups are hosted in Yandex Cloud's Russian ru-central1 region. Yandex.Cloud LLC provides hosting, Cloud Backup and Postbox email delivery. The provider receives data necessary for hosting, backup and delivery. Delivered email is processed by the recipient's email provider under its own terms. Enquiries sent to the controller's Gmail address are also processed by Google; please do not include passport details or other unnecessary information."
         ],
         [
           "Migration from the previous host",
@@ -146,7 +146,7 @@ export default {
         ],
         [
           "Backups",
-          "Beget determines the automatic backup schedule. Copies are retained for an average of ten days and may be overwritten earlier. Additional consistent database backups are created daily on the VPS and retained for about two weeks. Full Ghost content is backed up weekly, retaining the two latest copies. Backup data is used for recovery. Previously fulfilled deletion and unsubscription requests must be respected during recovery; cancelled subscriptions must not be resumed by restoring a backup."
+          "Cloud Backup retains the latest 15 copies. This is a number of copies, not a guarantee of deletion after 15 calendar days. Backup data is used for recovery. Previously fulfilled deletion and unsubscription requests must be respected during recovery; cancelled subscriptions must not be resumed by restoring a backup."
         ],
         [
           "Fulfilling deletion",

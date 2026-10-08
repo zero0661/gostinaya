@@ -1,0 +1,7 @@
+[Unit]
+Description=After Login consistent database and content backups
+After=docker.service
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/afterlogin-backup
+UMask=0077

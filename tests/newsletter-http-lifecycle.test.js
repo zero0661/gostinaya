@@ -52,7 +52,7 @@ for (const language of ['ru','en']) test(language+' HTTP signup, confirmation an
   const send=body=>fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
   const missing=await send({email:'reader@example.invalid'});
   assert.equal(missing.status,400);assert.equal(messages.length,0);
-  const signup=await send({email:'reader@example.invalid',language,consent:true,consentVersion:'newsletter-2026-10-07-v1'});
+  const signup=await send({email:'reader@example.invalid',language,consent:true,consentVersion:'newsletter-2026-10-08-beget-v1'});
   assert.equal(signup.status,202,await signup.text());assert.equal(messages.length,1);assert.equal(member,null);
   const decode=text=>text.split(/\r\n--[^\r\n]+\r\n/).map(part=>{
    const separator=part.indexOf('\r\n\r\n');
@@ -68,7 +68,7 @@ for (const language of ['ru','en']) test(language+' HTTP signup, confirmation an
   const cancelled=await fetch(base+'/gostinaya/newsletter/unsubscribe',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({token:new URL(unsubscribe).searchParams.get('token')})});
   assert.equal(cancelled.status,200);assert.equal(member.newsletters.length,0);assert.equal(messages.length,3);
   const db=new DatabaseSync(dbPath);const row=db.prepare('SELECT * FROM newsletter_consents').get();
-  assert.equal(row.document_version,'newsletter-2026-10-07-v1');assert.equal(row.language,language);assert.ok(row.confirmed_at);assert.ok(row.revoked_at);db.close();
+  assert.equal(row.document_version,'newsletter-2026-10-08-beget-v1');assert.equal(row.language,language);assert.ok(row.confirmed_at);assert.ok(row.revoked_at);db.close();
  } finally {
   if(child){child.kill('SIGTERM');await new Promise(resolve=>child.once('close',resolve));}
   if(smtp.listening)await close(smtp);if(ghost.listening)await close(ghost);if(portProbe.listening)await close(portProbe);

@@ -1,0 +1,11 @@
+[Unit]
+Description=After Login expired newsletter consent cleanup
+[Service]
+Type=oneshot
+Environment=GOSTINAYA_DB_PATH=/root/gostinaya/database/gostinaya.db
+ExecStart=/usr/local/bin/node /usr/local/lib/afterlogin-newsletter-cleanup.mjs --apply
+UMask=0077
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/root/gostinaya/database
+IPAddressDeny=any

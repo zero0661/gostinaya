@@ -1,6 +1,6 @@
 /* Install only together with the consent backend and published legal documents. */
 (() => {
- const version='newsletter-2026-10-07-v1';
+ const version='newsletter-2026-10-08-beget-v1';
  const start=()=>{
   document.querySelectorAll('form.after-login-subscribe').forEach(form=>{
    if(form.querySelector('[name="consent"]'))return;

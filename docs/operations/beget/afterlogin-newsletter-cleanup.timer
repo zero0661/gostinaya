@@ -1,0 +1,7 @@
+[Unit]
+Description=After Login daily consent cleanup
+[Timer]
+OnCalendar=*-*-* 03:00:00 UTC
+Persistent=true
+[Install]
+WantedBy=timers.target
