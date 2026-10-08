@@ -4,11 +4,11 @@ Installed 2026-10-08. Runtime Ghost remains 6.67.0; this does not upgrade Ghost.
 - Existing local logical backup: 01:00 UTC / 04:00 Moscow, afterlogin-backup.timer.
 - Encrypted complete project backup with isolated MySQL restore check: 01:30 UTC / 04:30 Moscow, after-login-backup.timer. Two completed encrypted bundles retained on Beget.
 - Official GitHub stable releases and repository advisories: 03:00 UTC / 06:00 Moscow, ghost-release-watch.timer. No automatic installation.
-- Mac LaunchAgent pro.milenin.after-login-backup: once per hour in the logged-in user session. Mac must be awake and online. Program download-beget-backup.py.
+- Mac LaunchAgent pro.milenin.after-login-backup: once per three hours (StartInterval=10800) in the logged-in user session. Mac must be awake and online. Program download-beget-backup.py.
 ## Storage and verification
 Beget: /root/after-login-backups, encrypted after-login-YYYYMMDDTHHMMSSZ bundles.
 Mac: ~/AfterLoginBackups/Beget. RSA private key remains ~/AfterLoginBackups/private.pem; never copy to VPS or Git. Download key has a forced-command restriction permitting only latest metadata and encrypted file export.
-Downloader uses pinned Beget SSH host key, resumable files, SHA256 hashes, RSA-OAEP-SHA256, HMAC-SHA256, AES-256-CBC with PBKDF2 200000 iterations, full gzip read, safe archive paths, SQL dump inspection, SQLite integrity and foreign-key checks. Temporary plaintext verification files are deleted. Three verified Beget bundles retained on Mac; historical Fornex folders remain untouched.
+Downloader uses pinned Beget SSH host key, resumable files, SHA256 hashes, RSA-OAEP-SHA256, HMAC-SHA256, AES-256-CBC with PBKDF2 200000 iterations, full gzip read, safe archive paths, SQL dump inspection, SQLite integrity and foreign-key checks. Temporary plaintext verification files are deleted. Three verified Beget bundles retained on Mac; historical Fornex project archives were removed on explicit owner instruction after the successful new Beget verification on 2026-10-08.
 Archive includes consistent DB snapshots, live Ghost content and application/configuration files (including secrets, encrypted). Avoid deployments and publishing during backup; this is not an atomic VM snapshot.
 Release mail helper loads current Beget SMTP from the application; no legacy SMTP credentials transferred. Historical alert recipient preserved in private config. ghost-security-watch.py is installed as a mail helper only; the five-minute security watch baseline/timer is NOT activated by this change.
 ## Operator commands
@@ -23,3 +23,7 @@ Old Fornex monitoring/backup timers are still historical; do not restart old app
 
 ## Verified 2026-10-08
 Real bundle after-login-20261008T183002Z: isolated server MySQL restore OK; 1493.1 MiB encrypted. Mac real LaunchAgent download, SHA256/HMAC/decryption/full gzip/SQLite checks passed. Verification marker exists. Repeat 21:38 Moscow returned LATEST_OFFSITE_BACKUP_ALREADY_VERIFIED, LaunchAgent last exit code 0. Server release check found 6.69.0 vs installed 6.67.0; SMTP accepted notice; repeat produced no duplicate. Old Fornex ghost-release-watch.timer and after-login-backup.timer disabled/inactive only after new Mac verification. Historical files, archives and other services preserved. Nightly scheduled run and reboot not yet tested.
+
+## Owner-authorized archive retirement, 2026-10-08 after 21:57 Moscow
+Mac schedule changed to 10800 seconds; LaunchAgent last exit 0. Four old Fornex archives removed from ~/AfterLoginBackups and ~/Documents/AfterLoginBackups; 6,174,847,172 bytes freed. Obsolete download-backup.py removed. RSA/private and download keys preserved for Beget. Three completed verified Beget copies retained; oldest completed folders and markers are deleted after a new successful verification, not moved to Trash.
+Old Fornex backup timer disabled and service inactive; export key revoked and real old-key login attempt denied. Identified project backup archive/SQL/SQLite directories and legacy project snapshot files removed, 1,975,426,864 bytes freed. Existing old live databases, Yandex and other service backups are outside this cleanup and still exist. See passport section 76 for exact deleted paths and limits.
