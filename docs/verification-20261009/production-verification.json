@@ -1,0 +1,10 @@
+{
+  "ghost": "6.69.0",
+  "published_urls": 56,
+  "images": 56,
+  "public_pages": 11,
+  "read_only_admin_api": true,
+  "write_freeze_removed": true,
+  "consent_required": true,
+  "authority_unchanged": true
+}

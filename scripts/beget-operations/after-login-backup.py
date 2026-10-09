@@ -44,6 +44,7 @@ def main():
 
 def create():
     assert PUBLIC.is_file() and CONTENT.is_dir() and APP.is_dir()
+    assert all((APP / p).is_file() for p in ('app.js', 'database/db.js', 'package.json', 'package-lock.json')), 'Required application code missing'
     command(['openssl', 'pkey', '-pubin', '-in', str(PUBLIC), '-noout'])
     database = command(['docker','exec','ghost-db-1','sh','-c','printf "%s" "$MYSQL_DATABASE"']).decode().strip()
     assert database and all(c.isalnum() or c == '_' for c in database)
@@ -113,6 +114,7 @@ def create():
                 'ghost_database': database, 'database_charset': schema,
                 'ghost_restore_counts_posts_users_settings': counts,
                 'sql_restore_test': 'OK', 'sqlite_integrity_and_foreign_keys': 'OK',
+                'application_code_complete': True, 'required_application_files': ['gostinaya/app.js', 'gostinaya/database/db.js', 'gostinaya/package.json', 'gostinaya/package-lock.json'],
                 'archive_consistency': 'Database snapshots; live files. Avoid publishing or deploying during backup.'}
         (stage / 'manifest.json').write_text(json.dumps(info, ensure_ascii=False, indent=2))
         for name in ('ghost-ghost-1', 'ghost-db-1'):
@@ -144,8 +146,11 @@ def create():
                     archive.add(CONTENT, arcname='ghost-content')
                     def app_filter(member):
                         parts = pathlib.PurePosixPath(member.name).parts
-                        if len(parts) > 1 and parts[1] in ('node_modules', '.git', 'database'):
+                        if len(parts) > 1 and parts[1] in ('node_modules', '.git'):
                             return None
+                        if len(parts) > 2 and parts[1] == 'database':
+                            if parts[2] in ('sessions', 'backups') or parts[2].startswith('gostinaya.db'):
+                                return None
                         return member
                     archive.add(APP, arcname='gostinaya', filter=app_filter)
                     archive.add('/opt/ghost/compose.json', arcname='config/ghost/compose.json')
@@ -159,6 +164,8 @@ def create():
                         archive.add(source, arcname=target)
                     for source in ('/usr/local/lib/ghost-security-watch.py',
                                    '/usr/local/lib/ghost-release-watch.py',
+                                   '/etc/systemd/system/ghost-security-watch.service',
+                                   '/etc/systemd/system/ghost-security-watch.timer',
                                    '/etc/systemd/system/ghost-release-watch.service',
                                    '/etc/systemd/system/ghost-release-watch.timer',
                                    '/etc/systemd/system/after-login-backup.service',

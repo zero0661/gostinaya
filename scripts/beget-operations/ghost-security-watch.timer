@@ -1,0 +1,11 @@
+[Unit]
+Description=Check Ghost security every five minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+AccuracySec=15s
+Unit=ghost-security-watch.service
+
+[Install]
+WantedBy=timers.target

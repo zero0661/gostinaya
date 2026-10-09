@@ -1,0 +1,11 @@
+{
+  "version": "6.69.0",
+  "published_urls_checked": 56,
+  "feature_images_checked": 56,
+  "public_lounge_pages": 9,
+  "authenticated_lounge_pages": 6,
+  "consent_required": true,
+  "ghost_admin_api_subscribe_unsubscribe_erasure": true,
+  "external_network_blocked": true,
+  "source": "after-login-20261009T040213Z"
+}

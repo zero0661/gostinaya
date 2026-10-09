@@ -1,0 +1,13 @@
+{
+  "changed_sections": [
+    "container"
+  ],
+  "critical_unchanged": [
+    "users",
+    "roles",
+    "roles_users",
+    "integrations",
+    "api_keys",
+    "webhooks"
+  ]
+}

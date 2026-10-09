@@ -1,0 +1,16 @@
+[Unit]
+Description=Ghost security change detection
+After=docker.service network-online.target
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/root/gostinaya
+ExecStart=/usr/bin/python3 /usr/local/lib/ghost-security-watch.py check
+TimeoutStartSec=180
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/var/lib/ghost-security-watch
+PrivateTmp=true

@@ -50,12 +50,13 @@ def main():
             assert len(names) == len(set(names)), 'Duplicate archive entries'
             assert all(not pathlib.PurePosixPath(n).is_absolute() and '..' not in pathlib.PurePosixPath(n).parts for n in names), 'Unsafe archive paths'
             for name in ('data/manifest.json', 'data/ghost.sql.gz', 'data/gostinaya.db',
-                         'config/ghost/compose.json', 'gostinaya/package.json'):
+                         'config/ghost/compose.json', 'gostinaya/package.json', 'gostinaya/package-lock.json', 'gostinaya/app.js', 'gostinaya/database/db.js'):
                 assert archive.getmember(name).isfile(), 'Missing regular file: ' + name
             assert any(n.startswith('ghost-content/') for n in names), 'Ghost content missing'
             with archive.extractfile('data/manifest.json') as source:
                 manifest = json.load(source)
             assert manifest['format'] == 'after-login-backup-v1' and manifest['sql_restore_test'] == 'OK', 'Invalid manifest'
+            assert manifest.get('application_code_complete') is True, 'Incomplete application code manifest'
             with archive.extractfile('data/ghost.sql.gz') as source:
                 with gzip.GzipFile(fileobj=source) as dump:
                     total = sum(len(chunk) for chunk in iter(lambda: dump.read(1024**2), b''))
