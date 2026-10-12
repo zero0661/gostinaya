@@ -367,6 +367,7 @@ app.get('/gostinaya/register', (req, res) => {
     res.render('auth/register', {
         title: lang === 'en' ? 'Registration' : 'Регистрация',
         layout: 'layouts/public',
+        email: String(req.query.email || '').trim().slice(0, 254),
         returnTo,
         lang
     });

@@ -30,7 +30,7 @@
       <input id="name" name="name" type="text" autocomplete="name" required>
 
       <label for="email">E-mail</label>
-      <input id="email" name="email" type="email" autocomplete="email" required>
+      <input id="email" name="email" type="email" autocomplete="email" value="<%= typeof email === 'string' ? email : '' %>" required>
 
       <p class="auth-consent" data-lang="ru">Нажимая «Зарегистрироваться», вы принимаете <a href="/gostinaya/rules" target="_blank" rel="noopener">Правила Гостиной</a> и <a href="/gostinaya/privacy" target="_blank" rel="noopener">условия обработки данных</a>.</p>
       <p class="auth-consent" data-lang="en">By clicking Register, you accept the <a href="/gostinaya/rules?lang=en" target="_blank" rel="noopener">Lounge Rules</a> and <a href="/gostinaya/privacy?lang=en" target="_blank" rel="noopener">data processing terms</a>.</p>
