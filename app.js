@@ -20,6 +20,7 @@ import GhostApiService from './services/GhostApiService.js';
 import { newsletterPublication } from './services/NewsletterPublication.js';
 import { createArticleDiscussionRedirectHandler } from './controllers/ArticleDiscussionController.js';
 import requireGuest from './middleware/requireGuest.js';
+import { preventLoungePageCaching, redirectAuthenticatedGuest } from './middleware/authNavigation.js';
 import moderationRouter from './routes/moderation.js';
 import reportsRouter from './routes/reports.js';
 import translationsRouter from './routes/translations.js';
@@ -127,6 +128,8 @@ app.use(session({
     }
 }));
 
+app.use('/gostinaya', preventLoungePageCaching);
+
 app.use('/gostinaya', (req, res, next) => {
     res.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
     next();
@@ -168,6 +171,8 @@ app.use(async (req, res, next) => {
         return next(error);
     }
 });
+
+app.use('/gostinaya', redirectAuthenticatedGuest);
 
 app.use(async (req, res, next) => {
     res.locals.notificationUnreadCount = 0;
