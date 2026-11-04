@@ -1,0 +1,122 @@
+{
+  "name": "afterlogin_preview",
+  "networks": {
+    "default": {
+      "internal": true,
+      "ipam": {
+        "config": [
+          {
+            "subnet": "172.18.0.0/16"
+          }
+        ]
+      }
+    },
+    "egress": {
+      "driver": "bridge"
+    }
+  },
+  "services": {
+    "db": {
+      "command": null,
+      "entrypoint": null,
+      "environment": {
+        "MYSQL_DATABASE": "ghost",
+        "MYSQL_PASSWORD": "${MYSQL_PASSWORD:?Set MYSQL_PASSWORD}",
+        "MYSQL_ROOT_PASSWORD": "${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD}",
+        "MYSQL_USER": "${MYSQL_USER:?Set MYSQL_USER}"
+      },
+      "image": "mysql@sha256:7dcddc01f13bab2f15cde676d44d01f61fc9f99fe7785e86196dfc07d358ae2b",
+      "networks": {
+        "default": {
+          "ipv4_address": "172.18.0.2"
+        }
+      },
+      "restart": "unless-stopped",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/afterlogin-migration/mysql-data",
+          "target": "/var/lib/mysql"
+        }
+      ]
+    },
+    "ghost": {
+      "command": null,
+      "depends_on": {
+        "db": {
+          "condition": "service_started",
+          "required": true
+        }
+      },
+      "entrypoint": null,
+      "environment": {
+        "database__client": "mysql",
+        "database__connection__database": "ghost",
+        "database__connection__host": "db",
+        "database__connection__password": "${MYSQL_PASSWORD:?Set MYSQL_PASSWORD}",
+        "database__connection__user": "${MYSQL_USER:?Set MYSQL_USER}",
+        "mail__from": "\u041f\u043e\u0441\u043b\u0435 \u043b\u043e\u0433\u0438\u043d\u0430 / After Login <pm@milenin.pro>",
+        "mail__options__auth__pass": "${SMTP_PASS:?Set SMTP_PASS}",
+        "mail__options__auth__user": "${SMTP_USER:?Set SMTP_USER}",
+        "mail__options__host": "smtp.beget.com",
+        "mail__options__port": 465,
+        "mail__options__secure": "true",
+        "mail__transport": "SMTP",
+        "url": "https://milenin.pro"
+      },
+      "image": "ghost@sha256:4195f6c405e40230cd10c0770425cf500c1f542a96e9f6584c11649c150e5a89",
+      "networks": {
+        "default": {
+          "ipv4_address": "172.18.0.3"
+        },
+        "egress": {}
+      },
+      "ports": [
+        {
+          "mode": "ingress",
+          "host_ip": "127.0.0.1",
+          "target": 2368,
+          "published": "2368",
+          "protocol": "tcp"
+        }
+      ],
+      "restart": "unless-stopped",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/afterlogin-migration/restore/ghost-content",
+          "target": "/var/lib/ghost/content"
+        }
+      ]
+    },
+    "gostinaya": {
+      "image": "node:22-bookworm",
+      "working_dir": "/app",
+      "command": [
+        "node",
+        "app.js"
+      ],
+      "volumes": [
+        "/srv/afterlogin-migration/restore/gostinaya:/app"
+      ],
+      "env_file": [
+        "/srv/afterlogin-migration/restore/gostinaya/.env"
+      ],
+      "environment": {
+        "NODE_ENV": "production",
+        "PORT": "3001",
+        "GHOST_ADMIN_API_URL": "http://ghost:2368/ghost/api/admin"
+      },
+      "ports": [
+        "127.0.0.1:3001:3001"
+      ],
+      "restart": "unless-stopped",
+      "networks": {
+        "default": {
+          "ipv4_address": "172.18.0.4"
+        },
+        "egress": {}
+      }
+    }
+  }
+}

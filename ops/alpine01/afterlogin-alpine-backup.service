@@ -1,0 +1,9 @@
+[Unit]
+Description=Encrypted AfterLogin backup with SQL restore verification
+After=docker.service
+Requires=docker.service
+[Service]
+Type=oneshot
+UMask=0077
+ExecStart=/usr/bin/python3 /usr/local/lib/afterlogin-alpine-backup.py
+TimeoutStartSec=3600
