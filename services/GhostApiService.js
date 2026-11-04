@@ -24,7 +24,7 @@ export function createGhostApiService({ fetchImpl = fetch, adminBaseUrl = proces
       ...options,
       redirect: 'error',
       headers: {
-        ...(/^http:\/\/127\.0\.0\.1:\d+\/ghost\/api\/admin$/.test(adminBaseUrl) ? { 'X-Forwarded-Proto': 'https', Host: new URL(process.env.APP_URL || 'https://milenin.pro').host } : {}),
+        ...(/^http:\/\/127\.0\.0\.1:\d+\/ghost\/api\/admin$/.test(adminBaseUrl) || adminBaseUrl === 'http://ghost:2368/ghost/api/admin' ? { 'X-Forwarded-Proto': 'https', Host: new URL(process.env.APP_URL || 'https://milenin.pro').host } : {}),
         Authorization: `Ghost ${createAdminToken()}`, 'Accept-Version': 'v6.0', ...(options.headers || {})
       }
     });
